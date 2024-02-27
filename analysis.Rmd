@@ -8,4 +8,5 @@ output: github_document
 install.packages("tidyverse")
 library(tidyverse)
 library(rmarkdown)
+library(scales)
 ```
