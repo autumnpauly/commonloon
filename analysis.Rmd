@@ -1,6 +1,6 @@
 ---
-title: "The Office"
-author: ""
+title: "Common Loon Analysis"
+author: "Ellie Gabrielson, Will Draxler, Autumn Pauly"
 output: github_document
 ---
 
