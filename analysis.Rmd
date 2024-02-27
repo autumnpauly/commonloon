@@ -1,0 +1,11 @@
+---
+title: "The Office"
+author: ""
+output: github_document
+---
+
+```{r load-packages, message = FALSE}
+install.packages("tidyverse")
+library(tidyverse)
+library(rmarkdown)
+```
