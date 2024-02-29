@@ -5,7 +5,18 @@ output: github_document
 ---
 
 ```{r load-packages, message = FALSE}
-install.packages("tidyverse")
+#install.packages("tidyverse")
 library(tidyverse)
 library(rmarkdown)
+library(scales)
 ```
+
+```{r}
+loons_2023 <- read_csv("loons_2023.csv")
+```
+
+```{r}
+loons_2023 %>% 
+   mutate(weather_notes2 = case_when(weather_notes == NA ~ "1", TRUE ~ weather_notes))
+```
+
