@@ -178,19 +178,35 @@ loons_dive_2024 <- loons_dive_2024 %>%
 ```
 
 ```{r}
-
 loons_dive_2024$tide.f <- fct_relevel(loons_dive_2024$general_tide, c("low", "mid", "high"))
 ggplot(data = loons_dive_2024, mapping = aes(x = tide.f, y = dive_time_obs)) + 
   geom_boxplot()
 ```
+
 ```{r}
 woomaov = aov(dive_time_obs ~ general_tide, data = loons_dive_2024)
 summary(woomaov)
 TukeyHSD(woomaov)
 ```
+REPORT: [insert report here]
+
+# Exposure Level and Abundance - 2023
+
+```{r}
+loons_2023 %>% 
+  ggplot(mapping = aes(x = shelter_gradient, y = specific_abundance)) + 
+  geom_boxplot()
+```
+
+```{r}
+loons_2023 %>% 
+  ggplot(mapping = aes(x = specific_abundance)) +
+  geom_histogram() +
+  geom_density() + 
+  facet_wrap(~shelter_gradient, ncol = 1)
+```
 
 
-# Exposure Level and Abundance
 
 # Exposure Level and Behavior
 
