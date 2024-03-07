@@ -12,7 +12,9 @@ library(tidyverse)
 all_bird_untidy <- read_csv("loons_2023.csv")
 loons_2023 <- read_csv("loons_2023.csv")
 ```
+
 ```{r}
+#assigning exposure level to locations
 loons_2023 <- loons_2023 %>% 
   mutate(shelter_gradient = case_when(location == "BAR HARBOR PIER" ~ "exposed",
                                       location == "SEAL HARBOR BEACH" ~ "moderate",
@@ -23,7 +25,8 @@ loons_2023 <- loons_2023 %>%
                                       location == "SEAWALL" ~ "exposed",
                                       location == "SEAL COVE" ~ "moderately_exposed",
                                       location == "SAND BEACH" ~ "moderately_exposed"))
-  
+ 
+#releveling the exposure levels from most exposed to least exposed 
 shelter_factor <- fct_relevel(loons_2023$shelter_gradient, c(
                 "exposed", 
                 "moderately_exposed",
@@ -31,10 +34,12 @@ shelter_factor <- fct_relevel(loons_2023$shelter_gradient, c(
                 "moderately_sheltered",
                 "sheltered"))
 
+#saving a dataset to include only loons and the shelter factor
 loons_2023 <- loons_2023 %>% 
   mutate(shelter_factor = shelter_factor) %>% 
   filter(species == "COMMON LOON")
 
+#counting how many different exposure observations we have
 loons_2023 %>% 
   count(shelter_factor)
 ```
