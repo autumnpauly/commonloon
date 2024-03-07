@@ -3,6 +3,7 @@ title: "Common Loon Analysis"
 author: "Ellie Gabrielson, Will Draxler, Autumn Pauly"
 output: github_document
 ---
+# Load Packages and Data
 
 ```{r load-packages, message = FALSE}
 #install.packages("tidyverse")
@@ -20,7 +21,7 @@ loons_2023 %>%
    mutate(weather_notes = case_when(is.na(weather_notes) ~ "1", 
                                     TRUE ~ weather_notes))
 ```
-
+## Tidying Data Further
 ```{r}
 loons_2023_behavior <- loons_2023 %>% 
   filter(species == "COMMON LOON") %>% 
@@ -50,6 +51,8 @@ We should bootstrap all of the tidal heights so that we have equal observations.
  # generate(reps = 15000, type = "bootstrap")
 ```
 
+# Tidal Condition and Behavior
+We need to use a non-parametric test. Kruskal-Wallace
 
 ```{r}
 #1 Tidal Condition and Behavior - 2024/2023
@@ -57,4 +60,38 @@ We should bootstrap all of the tidal heights so that we have equal observations.
 Behavior_tide_ANOVA <- aov(meters_offshore ~ tide, data = loons_2023)
 summary(Behavior_tide_ANOVA)
 ```
+
+### Kruskal-Wallis Test
+A Kruskal-Wallis test is non-parametric method (a one-way ANOVA on ranks) to [insert more here]. 
+
+Even though our sample sizes are different, we will still be able to use this test, as this test allows for independent samples that have equal or differing sample sizes. 
+
+```{r kw-test-tide-behavior}
+kruskal.test(behavior ~ tide, data = loons_2023) 
+```
+
+REPORT: The behavior of G. immer was significantly different at various  tidal heights (Kruskal-Wallis chi-squared = 12.324, df = 2, p-value =
+0.002109). 
+
+### Chi-Squared Table
+We will be using a Pearson's χ2 test to assess the difference in the distributions of our categorical variables between two independent variables (`tide` and `behavior`). 
+
+**behavior is dependent, is this a good analysis to use? 
+
+```{r chi-squared-table-onlyloons}
+#creating table for chi-squared test
+forchi <- loons_2023 %>% 
+  select(behavior, tide)
+
+chitable <- table(forchi$behavior, forchi$tide)
+
+chitable
+
+#Pearson's Chi-squared test
+chisq.test(chitable, correct = FALSE)
+```
+Does this suggest that behavior is dependent on tidal height?
+Let's ask Sean!
+
+# 
 
