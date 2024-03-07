@@ -191,6 +191,9 @@ TukeyHSD(woomaov)
 REPORT: [insert report here]
 
 # Exposure Level and Abundance - 2023
+Predictor variable = categorical
+outcome variable = quantitative
+test = ANOVA
 
 ```{r}
 loons_2023 %>% 
@@ -206,9 +209,14 @@ loons_2023 %>%
   facet_wrap(~shelter_gradient, ncol = 1)
 ```
 
+```{r}
+abundanceexposureaov = aov(specific_abundance ~ shelter_gradient, data = loons_2023)
+summary(abundanceexposureaov)
+TukeyHSD(abundanceexposureaov)
+```
 
+REPORT: [insert report here]
 
 # Exposure Level and Behavior
 
-# 
 
