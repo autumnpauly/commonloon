@@ -9,10 +9,14 @@ output: github_document
 library(tidyverse)
 library(lubridate)
 ```
-
+# Loading Data - 2023
 ```{r loading-data}
-all_bird_untidy <- read_csv("loons_2023.csv")
+#2023
+all_bird_untidy_2023 <- read_csv("loons_2023.csv")
 loons_2023 <- read_csv("loons_2023.csv")
+
+#2024
+loons_2024 <- read_csv("loons_2024.csv")
 ```
 
 # Tidying the Data

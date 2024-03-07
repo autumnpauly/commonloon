@@ -152,8 +152,34 @@ Let's ask Sean!
 
 # Tidal Conditions and Dive Times - 2024
 
-```{r}
+```{r mutation, baby}
+library(stringr)
 
+loons_dive_2024 <- loons_2024 %>% 
+  filter(species == "common_loon") %>% 
+  select(tide, behavior, dive_time_obs, tidal_height) %>% 
+  filter(dive_time_obs != "n/a") %>% 
+  filter(dive_time_obs != "na")
+
+loons_dive_2024 <- loons_dive_2024 %>% 
+  separate_longer_delim(dive_time_obs, delim = ",")
+
+loons_dive_2024 <- loons_dive_2024 %>%
+  mutate(dive_time_obs = as.numeric(dive_time_obs))
+
+loons_dive_2024 <- loons_dive_2024 %>% 
+  mutate(general_tide = fct_recode(tide, "low" = "low_flood", 
+                           "low" = "low_slack",
+                           "mid" = "mid_flood",
+                           "mid" = "mid_ebb",
+                           "high" = "high_flood",
+                           "high" = "high_slack",
+                           "high" = "high_ebb"))
+```
+
+```{r}
+ggplot(data = loons_dive_2024, mapping = aes(x = general_tide, y = dive_time_obs)) + 
+  geom_boxplot()
 ```
 
 
