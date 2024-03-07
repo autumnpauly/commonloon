@@ -10,6 +10,8 @@ output: github_document
 library(tidyverse)
 library(rmarkdown)
 library(scales)
+library(ggridges)
+library(rstatix)
 ```
 
 ```{r loading-dataset}
@@ -219,4 +221,27 @@ REPORT: [insert report here]
 
 # Exposure Level and Behavior
 
+```{r}
+loons_2023 %>% 
+  count(behavior, shelter_gradient) %>% 
+  ggplot(aes(x = behavior, y = n)) +
+  geom_col(fill = "firebrick4", color = "black") +
+  facet_wrap(~ shelter_gradient, nrow = 1)
 
+loons_2023 %>% 
+  count(behavior, shelter_gradient) %>% 
+  ggplot(aes(x = shelter_gradient, y = behavior)) +
+  geom_density_ridges()
+```
+
+```{r}
+behavior_exposure_kruskal <- kruskal.test(behavior ~ shelter_gradient, data = loons_2023)
+behavior_exposure_kruskal
+
+behavior_exposure_dunn <- loons_2023 %>% dunn_test(behavior ~ shelter_gradient, p.adjust.method = "bonferroni")
+behavior_exposure_dunn
+```
+
+#REPORT
+
+#Wave Class and Behavior
