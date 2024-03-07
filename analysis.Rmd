@@ -50,3 +50,11 @@ We should bootstrap all of the tidal heights so that we have equal observations.
  # generate(reps = 15000, type = "bootstrap")
 ```
 
+
+```{r}
+#1 Tidal Condition and Behavior - 2024/2023
+
+Behavior_tide_ANOVA <- aov(meters_offshore ~ tide, data = loons_2023)
+summary(Behavior_tide_ANOVA)
+```
+
