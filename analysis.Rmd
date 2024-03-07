@@ -11,13 +11,43 @@ library(rmarkdown)
 library(scales)
 ```
 
-```{r}
+```{r loading-dataset}
 loons_2023 <- read_csv("loons_2023.csv")
 ```
 
-```{r}
+```{r weather-mutation}
 loons_2023 %>% 
    mutate(weather_notes = case_when(is.na(weather_notes) ~ "1", 
                                     TRUE ~ weather_notes))
+```
+
+```{r}
+loons_2023_behavior <- loons_2023 %>% 
+  filter(species == "COMMON LOON") %>% 
+  group_by(date, behavior, species, tide, tide_percentage) %>% 
+  count(behavior)
+
+loons_2023_behavior
+
+#counting the occurances of behavior of loons
+ggplot(data = loons_2023_behavior, mapping = aes(x = behavior)) + 
+  geom_bar()
+
+#counting how many low, high, and mid tide observations we have
+ggplot(data = loons_2023_behavior, mapping = aes(x = tide)) + 
+  geom_bar()
+
+loons_2023_behavior %>% 
+  group_by(tide) %>% 
+  count(tide)
+```
+
+```{r bootstrapping}
+boot_loon_2023 <- loons_2023_behavior %>% 
+  specify(response = behavior) %>% 
+  generate(reps = 15000, type = "bootstrap")
+
+bootstrap
+
 ```
 
