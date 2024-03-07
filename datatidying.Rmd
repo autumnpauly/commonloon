@@ -3,16 +3,19 @@ title: "Common Loon Analysis"
 author: "Ellie Gabrielson, Will Draxler, Autumn Pauly"
 output: github_document
 ---
+# Loading the Packages and Data
 
-```{r}
+```{r loading-packages}
 library(tidyverse)
 ```
 
-```{r}
+```{r loading-data}
 all_bird_untidy <- read_csv("loons_2023.csv")
 loons_2023 <- read_csv("loons_2023.csv")
 ```
 
+# Tidying the Data
+## Exposure
 ```{r}
 #assigning exposure level to locations
 loons_2023 <- loons_2023 %>% 
@@ -42,5 +45,35 @@ loons_2023 <- loons_2023 %>%
 #counting how many different exposure observations we have
 loons_2023 %>% 
   count(shelter_factor)
+```
+
+## Changing `chr` variables to `num`
+
+There are a number of variables within this dataset that are character variables that should be numeric variables (i.e. meters_offshore, longitude, latitude)
+
+```{r chr-to-num}
+loons_2023 <- loons_2023 %>% 
+  mutate(meters_offshore = as.numeric(meters_offshore)) %>% 
+  mutate(latitude = as.numeric(latitude)) %>% 
+  mutate(longitude = as.numeric(longitude)) %>% 
+  mutate(barometer = as.numeric(barometer)) %>% 
+  mutate(date = as.Date(date, format = "%m/%d/%Y"))
+
+glimpse(loons_2023)
+```
+
+
+## Location
+```{r location-tidying}
+#determining how many locations we have
+unique(loons_2023$location)
+
+#renaming to fit tidy format? we'll see if we have to do this...
+#...
+```
+
+## Behavior
+```{r behavior-tidying}
+unique(loons_2023$behavior)
 ```
 
