@@ -13,7 +13,7 @@ library(scales)
 ```
 
 ```{r loading-dataset}
-loons_2023 <- read_csv("loons_2023.csv")
+#loons_2023 <- read_csv("loons_2023.csv")
 ```
 
 ```{r weather-mutation}
@@ -51,25 +51,40 @@ We should bootstrap all of the tidal heights so that we have equal observations.
  # generate(reps = 15000, type = "bootstrap")
 ```
 
-# Tidal Condition and Behavior
+# Tidal Condition and Behavior for 2023 and 2024
 We need to use a non-parametric test. Kruskal-Wallace
 
 ```{r}
 #1 Tidal Condition and Behavior - 2024/2023
 
-Behavior_tide_ANOVA <- aov(meters_offshore ~ tide, data = loons_2023)
-summary(Behavior_tide_ANOVA)
+#Behavior_tide_ANOVA <- aov(meters_offshore ~ tide, data = loons_2023)
+#summary(Behavior_tide_ANOVA)
 ```
 
 ### Kruskal-Wallis Test
 A Kruskal-Wallis test is non-parametric method (a one-way ANOVA on ranks) to [insert more here]. Even though our sample sizes are different, we will still be able to use this test, as this test allows for independent samples that have equal or differing sample sizes. 
 
 ```{r kw-test-tide-behavior}
-kruskal.test(behavior ~ tide, data = loons_2023) 
+kw <- kruskal.test(behavior ~ tide, data = loons_2023)
+kw
 ```
 
-REPORT: The behavior of G. immer was significantly different at various  tidal heights (Kruskal-Wallis chi-squared = 12.324, df = 2, p-value =
-0.002109). 
+REPORT: The behavior of G. immer was significantly different at various  tidal heights (Kruskal-Wallis chi-squared = 12.324, df = 2, p-value = 0.002109).
+
+### Dunn Test
+We now need to use the Dunn test to determine which groups are different. 
+
+```{r dunn-test-tide-behavior}
+#install packages
+# install.packages("ggpubr")
+# library(ggpubr)
+# installed.packages("rstatix")
+# library(rstatix)
+
+#dunn test
+dtkw <- loons_2023 %>% dunn_test(behavior ~ tide, p.adjust.method = "bonferroni")
+dtkw
+```
 
 **Can we determine the differences between high tide and low tide
 
