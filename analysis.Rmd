@@ -62,9 +62,7 @@ summary(Behavior_tide_ANOVA)
 ```
 
 ### Kruskal-Wallis Test
-A Kruskal-Wallis test is non-parametric method (a one-way ANOVA on ranks) to [insert more here]. 
-
-Even though our sample sizes are different, we will still be able to use this test, as this test allows for independent samples that have equal or differing sample sizes. 
+A Kruskal-Wallis test is non-parametric method (a one-way ANOVA on ranks) to [insert more here]. Even though our sample sizes are different, we will still be able to use this test, as this test allows for independent samples that have equal or differing sample sizes. 
 
 ```{r kw-test-tide-behavior}
 kruskal.test(behavior ~ tide, data = loons_2023) 
@@ -72,6 +70,8 @@ kruskal.test(behavior ~ tide, data = loons_2023)
 
 REPORT: The behavior of G. immer was significantly different at various  tidal heights (Kruskal-Wallis chi-squared = 12.324, df = 2, p-value =
 0.002109). 
+
+**Can we determine the differences between high tide and low tide
 
 ### Chi-Squared Table
 We will be using a Pearson's χ2 test to assess the difference in the distributions of our categorical variables between two independent variables (`tide` and `behavior`). 
