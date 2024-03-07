@@ -7,6 +7,7 @@ output: github_document
 
 ```{r loading-packages}
 library(tidyverse)
+library(lubridate)
 ```
 
 ```{r loading-data}
@@ -57,7 +58,9 @@ loons_2023 <- loons_2023 %>%
   mutate(latitude = as.numeric(latitude)) %>% 
   mutate(longitude = as.numeric(longitude)) %>% 
   mutate(barometer = as.numeric(barometer)) %>% 
-  mutate(date = as.Date(date, format = "%m/%d/%Y"))
+  mutate(date = as_date(date, format = "%m/%d/%Y")) %>% 
+  mutate(time = hms::as_hms(time)) %>% 
+  select(-year, -day, -month)
 
 glimpse(loons_2023)
 ```
