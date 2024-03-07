@@ -80,7 +80,22 @@ unique(loons_2023$location)
 unique(loons_2023$behavior)
 ```
 
-## Write a CSV
+
+## Tide-Behavior visualizations - to be moved to analysis
+```{r}
+loons_2023 %>% 
+  mutate(tide_value = case_when(tide == "LOW" ~ 1,
+                                tide == "MID" ~ 2,
+                                tide == "HIGH" ~ 3)) %>% 
+  count(behavior, tide)%>% 
+  ggplot(aes(x = behavior, y = n)) +
+  geom_col() +
+  facet_wrap(~ tide)
+loons_2023 %>% 
+  count(tide) %>% 
+  ggplot(aes(x = tide, y = n)) +
+      geom_col()
+```
 
 
 
