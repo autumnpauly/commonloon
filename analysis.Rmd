@@ -137,7 +137,7 @@ We will be using a Pearson's χ2 test to assess the difference in the distributi
 ```{r chi-squared-table-onlyloons}
 #creating table for chi-squared test
 #forchi <- loons_2023 %>% 
-  select(behavior, tide)
+  #select(behavior, tide)
 
 #chitable <- table(forchi$behavior, forchi$tide)
 
@@ -202,11 +202,25 @@ loons_2023 %>%
 ```
 
 ```{r}
+#install packages
+install.packages("ggridges")
+library(ggridges)
+
 loons_2023 %>% 
   ggplot(mapping = aes(x = specific_abundance)) +
   geom_histogram() +
   geom_density() + 
   facet_wrap(~shelter_gradient, ncol = 1)
+
+#plot
+loons_2023 %>% 
+  ggplot(aes(x = specific_abundance, y = shelter_gradient, fill = shelter_gradient)) + 
+  geom_density_ridges(alpha = 0.6, bins = 1) + 
+  theme_ridges() + 
+   theme(legend.position = "none", panel.spacing = unit(0.1, "lines"),
+      strip.text.x = element_text(size = 8))+
+  theme_minimal() +
+  scale_fill_viridis_d()
 ```
 
 ```{r}
