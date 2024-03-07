@@ -259,3 +259,20 @@ behavior_exposure_dunn
 #REPORT
 
 #Wave Class and Behavior
+```{r}
+loons_2023 %>% 
+ ggplot(aes(x = wave_class)) +
+  geom_histogram() +
+  facet_wrap(~ behavior)
+
+loons_2023 %>%
+  ggplot(aes(x = wave_class, y = behavior, fill = behavior)) + 
+  geom_density_ridges(alpha = 0.6, bins = 1)
+
+waveclassaov = aov(wave_class ~ behavior, data = loons_2023)
+summary(waveclassaov)
+  
+```
+
+
+#Wind Direction/Speed and Behavior
