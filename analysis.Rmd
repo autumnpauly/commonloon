@@ -73,15 +73,15 @@ rsq <- function(formula, data, indices)
 } 
 
 # bootstrapping with 1000 replications
-loon_results <- boot(data=loon_tide_behavior, statistic=rsq,
-   R=100, formula=behavior~tide)
+#loon_results <- boot(data=loon_tide_behavior, statistic=rsq,
+   #R=100, formula=behavior~tide)
 
 # view results
-loon_results
-plot(loon_results)
+#loon_results
+#plot(loon_results)
 
 # get 95% confidence interval
-boot.ci(loon_results, type="bca")
+#boot.ci(loon_results, type="bca")
 ```
 
 ```{r sampling-tides-behavior}
@@ -119,8 +119,8 @@ We now need to use the Dunn test to determine which groups are different.
 #install packages
 # install.packages("ggpubr")
 # library(ggpubr)
-# installed.packages("rstatix")
-# library(rstatix)
+ install.packages("rstatix")
+ library(rstatix)
 
 ggplot(data = loons_2023, mapping = aes(x = tide, y = ))
 
@@ -136,15 +136,15 @@ We will be using a Pearson's χ2 test to assess the difference in the distributi
 
 ```{r chi-squared-table-onlyloons}
 #creating table for chi-squared test
-forchi <- loons_2023 %>% 
+#forchi <- loons_2023 %>% 
   select(behavior, tide)
 
-chitable <- table(forchi$behavior, forchi$tide)
+#chitable <- table(forchi$behavior, forchi$tide)
 
-chitable
+#chitable
 
 #Pearson's Chi-squared test
-chisq.test(chitable, correct = FALSE)
+#chisq.test(chitable, correct = FALSE)
 ```
 Does this suggest that behavior is dependent on tidal height?
 Let's ask Sean!
@@ -178,8 +178,15 @@ loons_dive_2024 <- loons_dive_2024 %>%
 ```
 
 ```{r}
-ggplot(data = loons_dive_2024, mapping = aes(x = general_tide, y = dive_time_obs)) + 
+
+loons_dive_2024$tide.f <- fct_relevel(loons_dive_2024$general_tide, c("low", "mid", "high"))
+ggplot(data = loons_dive_2024, mapping = aes(x = tide.f, y = dive_time_obs)) + 
   geom_boxplot()
+```
+```{r}
+woomaov = aov(dive_time_obs ~ general_tide, data = loons_dive_2024)
+summary(woomaov)
+TukeyHSD(woomaov)
 ```
 
 
