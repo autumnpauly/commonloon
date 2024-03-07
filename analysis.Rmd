@@ -42,12 +42,11 @@ loons_2023_behavior %>%
   count(tide)
 ```
 
+We should bootstrap all of the tidal heights so that we have equal observations... maybe not? 
+
 ```{r bootstrapping}
-boot_loon_2023 <- loons_2023_behavior %>% 
-  specify(response = behavior) %>% 
-  generate(reps = 15000, type = "bootstrap")
-
-bootstrap
-
+#boot_loon_2023 <- loons_2023_behavior %>% 
+ # specify(response = behavior) %>% 
+ # generate(reps = 15000, type = "bootstrap")
 ```
 
