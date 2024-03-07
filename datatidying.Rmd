@@ -9,6 +9,33 @@ library(tidyverse)
 ```
 
 ```{r}
+all_bird_untidy <- read_csv("loons_2023.csv")
+loons_2023 <- read_csv("loons_2023.csv")
+```
+```{r}
+loons_2023 <- loons_2023 %>% 
+  mutate(shelter_gradient = case_when(location == "BAR HARBOR PIER" ~ "exposed",
+                                      location == "SEAL HARBOR BEACH" ~ "moderate",
+                                      location == "BRACY HARBOR" ~ "moderate",
+                                      location == "NORTHEAST HARBOR" ~ "moderately_sheltered",
+                                      location == "SOMES SOUND" ~ "sheltered",
+                                      location == "SOUTHWEST HARBOR" ~ "moderately_sheltered",
+                                      location == "SEAWALL" ~ "exposed",
+                                      location == "SEAL COVE" ~ "moderately_exposed",
+                                      location == "SAND BEACH" ~ "moderately_exposed"))
+  
+shelter_factor <- fct_relevel(loons_2023$shelter_gradient, c(
+                "exposed", 
+                "moderately_exposed",
+                "moderate",
+                "moderately_sheltered",
+                "sheltered"))
 
+loons_2023 <- loons_2023 %>% 
+  mutate(shelter_factor = shelter_factor) %>% 
+  filter(species == "COMMON LOON")
+
+loons_2023 %>% 
+  count(shelter_factor)
 ```
 
