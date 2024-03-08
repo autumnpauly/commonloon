@@ -241,11 +241,6 @@ loons_2023 %>%
   ggplot(aes(x = behavior, y = n)) +
   geom_col(fill = "firebrick4", color = "black") +
   facet_wrap(~ shelter_gradient, nrow = 1)
-
-loons_2023 %>% 
-  count(behavior, shelter_gradient) %>% 
-  ggplot(aes(x = shelter_gradient, y = behavior)) +
-  geom_density_ridges()
 ```
 
 ```{r}
@@ -256,7 +251,7 @@ behavior_exposure_dunn <- loons_2023 %>% dunn_test(behavior ~ shelter_gradient, 
 behavior_exposure_dunn
 ```
 
-#REPORT
+### REPORT
 
 #Wave Class and Behavior
 ```{r}
@@ -275,4 +270,30 @@ summary(waveclassaov)
 ```
 
 
-#Wind Direction/Speed and Behavior
+#Meters Offshore and Dive Times
+With the dive time and how many meters offshore the loon was seen are both quantitative variables, we should use a simple regression statistical test to determine if there is a statistical significance between the location of the loons (by meters offshore) and their dive times. 
+
+```{r}
+loons_dive_2024 <- loons_2024 %>% 
+  filter(species == "common_loon") %>% 
+  select(tide, behavior, dive_time_obs, tidal_height, meters_offshore) %>% 
+  filter(dive_time_obs != "n/a") %>% 
+  filter(dive_time_obs != "na")
+
+loons_dive_2024 <- loons_dive_2024 %>% 
+  separate_longer_delim(dive_time_obs, delim = ",") %>% 
+  mutate(dive_time_obs = as.numeric(dive_time_obs))
+
+loons_dive_2024 %>% 
+  ggplot(aes(x = meters_offshore, y = dive_time_obs)) + 
+  geom_jitter() + 
+  geom_smooth()
+
+#linear model
+loon.dive.meters.lm <- lm(dive_time_obs ~ meters_offshore, data = loons_dive_2024)
+
+summary(loon.dive.meters.lm)
+```
+
+
+
