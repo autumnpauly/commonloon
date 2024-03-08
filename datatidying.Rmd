@@ -81,25 +81,29 @@ unique(loons_2023$location)
 
 ## Behavior
 ```{r behavior-tidying}
+
 unique(loons_2023$behavior)
+
+loons_2023_behavior <- loons_2023 %>% 
+  filter(species == "COMMON LOON") %>% 
+  group_by(date, behavior, species, tide, tide_percentage) %>% 
+  count(behavior)
+
+loons_2023_behavior
+
+#counting the occurances of behavior of loons
+ggplot(data = loons_2023_behavior, mapping = aes(x = behavior)) + 
+  geom_bar()
+
+#counting how many low, high, and mid tide observations we have
+ggplot(data = loons_2023_behavior, mapping = aes(x = tide)) + 
+  geom_bar()
+
+
 ```
 
 
-## Tide-Behavior visualizations - to be moved to analysis
-```{r}
-loons_2023 %>% 
-  mutate(tide_value = case_when(tide == "LOW" ~ 1,
-                                tide == "MID" ~ 2,
-                                tide == "HIGH" ~ 3)) %>% 
-  count(behavior, tide)%>% 
-  ggplot(aes(x = behavior, y = n)) +
-  geom_col() +
-  facet_wrap(~ tide)
-loons_2023 %>% 
-  count(tide) %>% 
-  ggplot(aes(x = tide, y = n)) +
-      geom_col()
-```
+
 
 
 

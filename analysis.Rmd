@@ -14,37 +14,6 @@ library(ggridges)
 library(rstatix)
 ```
 
-```{r loading-dataset}
-#loons_2023 <- read_csv("loons_2023.csv")
-```
-
-```{r weather-mutation}
-loons_2023 %>% 
-   mutate(weather_notes = case_when(is.na(weather_notes) ~ "1", 
-                                    TRUE ~ weather_notes))
-```
-## Tidying Data Further
-```{r}
-loons_2023_behavior <- loons_2023 %>% 
-  filter(species == "COMMON LOON") %>% 
-  group_by(date, behavior, species, tide, tide_percentage) %>% 
-  count(behavior)
-
-loons_2023_behavior
-
-#counting the occurances of behavior of loons
-ggplot(data = loons_2023_behavior, mapping = aes(x = behavior)) + 
-  geom_bar()
-
-#counting how many low, high, and mid tide observations we have
-ggplot(data = loons_2023_behavior, mapping = aes(x = tide)) + 
-  geom_bar()
-
-loons_2023 %>% 
-  group_by(tide) %>% 
-  count(tide)
-  
-```
 
 We should bootstrap all of the tidal heights so that we have equal observations... maybe not? 
 
@@ -91,6 +60,16 @@ rsq <- function(formula, data, indices)
 loon_tide_behavior <- loons_2023 %>% 
   select(behavior, tide)
 
+## Tide-Behavior visualizations - to be moved to analysis
+loons_2023 %>% 
+  count(behavior, tide) %>% 
+  ggplot(aes(x = behavior, y = n)) +
+  geom_col() +
+  facet_wrap(~ tide)
+loons_2023 %>% 
+  count(tide) %>% 
+  ggplot(aes(x = tide, y = n)) +
+      geom_col()
 
 ```
 
@@ -258,7 +237,7 @@ behavior_exposure_dunn
 loons_2023 %>% 
  ggplot(aes(x = wave_class)) +
   geom_histogram() +
-  facet_wrap(~ behavior)
+  facet_wrap(~ behavior, nrow = 1)
 
 loons_2023 %>%
   ggplot(aes(x = wave_class, y = behavior, fill = behavior)) + 
@@ -287,13 +266,45 @@ loons_dive_2024 <- loons_dive_2024 %>%
 loons_dive_2024 %>% 
   ggplot(aes(x = meters_offshore, y = dive_time_obs)) + 
   geom_jitter() + 
-  geom_smooth()
+  geom_smooth(method = "lm")
 
 #linear model
 loon.dive.meters.lm <- lm(dive_time_obs ~ meters_offshore, data = loons_dive_2024)
 
 summary(loon.dive.meters.lm)
+
+#Cedar suggested that the p-values aren't really an indication of the fit with linear models, that's the r2 which is fine
 ```
 
+#Tidal height and dive times
+```{r}
+loons_dive_2024 %>% 
+  ggplot(aes(x = tidal_height, y = dive_time_obs)) + 
+  geom_point() +
+  geom_smooth(method = "lm")
+
+
+dive_time_tide_height_lm <- lm(dive_time_obs ~ tidal_height, data = loons_dive_2024)
+summary(dive_time_tide_height_lm)
+
+#This is actually so interesting
+```
+#Tidal classification and dive times
+```{r}
+loons_dive_2024$tide <- fct_relevel(loons_dive_2024$tide, c("mid_ebb",
+                                                            "low_slack",
+                                                            "low_flood",
+                                                            "mid_flood",
+                                                            "high_flood",
+                                                            "high_slack",
+                                                            "high_ebb"))
+loons_dive_2024 %>% 
+ggplot(mapping = aes(x = tide, y = dive_time_obs)) + 
+  geom_boxplot()
+full_tide_aov = aov(dive_time_obs ~ tide, data = loons_dive_2024)
+summary(full_tide_aov)
+TukeyHSD(full_tide_aov)
+#Is this useful?
+```
 
 
