@@ -66,11 +66,23 @@ loons_2023 %>%
   count(behavior, tide) %>% 
   ggplot(aes(x = behavior, y = n)) +
   geom_col() +
-  facet_wrap(~ tide)
+  facet_wrap(~ tide) + 
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+ 
+  labs(title = "Count of Behavior", 
+       subtitle = "by Tidal Stage", 
+       x = "Behavior", 
+       y = "Count")
+
+#tidal stage count graph
 loons_2023 %>% 
   count(tide) %>% 
   ggplot(aes(x = tide, y = n)) +
-      geom_col()
+      geom_col() + 
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + 
+  labs(title = "Count of Observations", 
+       subtitle = "by Tidal Stage", 
+       x = "Tidal Stage", 
+       y = "Count")
 ```
 
 
@@ -226,7 +238,11 @@ test = ANOVA
 ```{r}
 loons_2023 %>% 
   ggplot(mapping = aes(x = shelter_gradient, y = specific_abundance)) + 
-  geom_boxplot()
+  geom_boxplot() +
+  labs(title = "Common Loon Abundance", 
+       subtitle = "by Shelter Gradient", 
+       x = "Shelter Gradient", 
+       y = "Abundance")
 ```
 
 ```{r}
@@ -248,7 +264,12 @@ loons_2023 %>%
    theme(legend.position = "none", panel.spacing = unit(0.1, "lines"),
       strip.text.x = element_text(size = 8))+
   theme_minimal() +
-  scale_fill_viridis_d()
+  scale_fill_viridis_d() +
+  labs(title = "Common Loon Abundance", 
+       subtitle = "by Shelter Gradient", 
+       x = "Abundance", 
+       y = "Shelter Gradient", 
+       fill = "Shelter Gradient")
 ```
 
 ```{r}
@@ -266,7 +287,12 @@ loons_2023 %>%
   count(behavior, shelter_gradient) %>% 
   ggplot(aes(x = behavior, y = n)) +
   geom_col(fill = "firebrick4", color = "black") +
-  facet_wrap(~ shelter_gradient, nrow = 1)
+  facet_wrap(~ shelter_gradient, nrow = 1) + 
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  labs(title = "Count of Common Loon Behavior", 
+       subtitle = "by Shelter Gradient", 
+       x = "Behavior", 
+       y = "Count")
 ```
 
 ```{r}
