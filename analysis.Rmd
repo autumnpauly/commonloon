@@ -12,6 +12,7 @@ library(rmarkdown)
 library(scales)
 library(ggridges)
 library(rstatix)
+library(parsnip)
 ```
 
 
@@ -162,16 +163,61 @@ loons_dive_2024 <- loons_dive_2024 %>%
 
 ```{r}
 loons_dive_2024$tide.f <- fct_relevel(loons_dive_2024$general_tide, c("low", "mid", "high"))
+
 ggplot(data = loons_dive_2024, mapping = aes(x = tide.f, y = dive_time_obs)) + 
-  geom_boxplot()
+  geom_boxplot() +
+  labs(title = "Tidal Conditions and Dive Times", 
+       subtitle = "of Gavia immer", 
+       x = "Tidal Stage", 
+       y = "Dive Time (seconds)")
 ```
 
 ```{r}
 woomaov = aov(dive_time_obs ~ general_tide, data = loons_dive_2024)
 summary(woomaov)
 TukeyHSD(woomaov)
+
+#high to low
+loons_dive_2024_1 <- loons_dive_2024 %>% 
+  filter(general_tide == "high"|general_tide == "mid")
+
+t.test(dive_time_obs ~ general_tide, data = loons_dive_2024_1)
+
+#low to high
+loons_dive_2024_1 <- loons_dive_2024 %>% 
+  filter(general_tide == "high"|general_tide == "low")
+
+t.test(dive_time_obs ~ general_tide, data = loons_dive_2024_1)
+
+#low to mid
+loons_dive_2024_1 <- loons_dive_2024 %>% 
+  filter(general_tide == "mid"|general_tide == "low")
+
+t.test(dive_time_obs ~ general_tide, data = loons_dive_2024_1)
 ```
-REPORT: [insert report here]
+REPORT: There was no significant difference between dive times during low tides and high tides [insert test stat] and between dive times during mid tides and high tides [insert test statistic]. The dive times during mid tides were significantly lower than dive times during low tides [insert test statistic]. 
+
+The average dive time during high tide was 42.02 seconds, 30.6 seconds during mid tides, and 47.4 seconds during low tides. 
+
+```{r adjusted-r-squared}
+
+#setting linear model- using tidal height
+times_vs_tide_model <- linear_reg() %>% 
+  set_engine("lm") %>% 
+  fit(dive_time_obs ~ tidal_height, data = loons_dive_2024)
+
+#augmenting the weight data
+times_vs_tide_model_augment <- augment(times_vs_tide_model$fit)
+
+ggplot(times_vs_tide_model_augment, mapping = aes(x = .fitted, y = .resid)) +
+  geom_jitter(alpha = 0.75) +
+  geom_smooth(color = "black") +
+  labs(x = "Predicted Dive Time", y = "Residuals")
+
+#assessing the r-squared value
+glance(times_vs_tide_model)$r.squared
+```
+R_SQUARED REPORT: The r-squared value is `[...]`, which means that the variable `general_tide` accounts for [...] of the variation in the dependent variable, `dive_time_obs`. 
 
 # Exposure Level and Abundance - 2023
 Predictor variable = categorical
