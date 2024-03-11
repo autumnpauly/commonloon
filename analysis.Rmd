@@ -29,31 +29,31 @@ We should bootstrap all of the tidal heights so that we have equal observations.
 ### Bootstrapping
 
 ```{r bootstrapping-tide-behavior}
-#download packages
-library(boot)
-
-#this is the dataset that we want to sample from? 
-loon_tide_behavior <- loons_2023 %>% 
-  select(behavior, tide)
-
-#function to obtain R-Squared from the data 
-rsq <- function(formula, data, indices)
-{
-  d <- data[indices,] # allows boot to select sample
-  fit <- lm(formula, data=d)
-  return(summary(fit)$r.square)
-} 
-
-# bootstrapping with 1000 replications
-#loon_results <- boot(data=loon_tide_behavior, statistic=rsq,
-   #R=100, formula=behavior~tide)
-
-# view results
-#loon_results
-#plot(loon_results)
-
-# get 95% confidence interval
-#boot.ci(loon_results, type="bca")
+# #download packages
+# library(boot)
+# 
+# #this is the dataset that we want to sample from? 
+# loon_tide_behavior <- loons_2023 %>% 
+#   select(behavior, tide)
+# 
+# #function to obtain R-Squared from the data 
+# rsq <- function(formula, data, indices)
+# {
+#   d <- data[indices,] # allows boot to select sample
+#   fit <- lm(formula, data=d)
+#   return(summary(fit)$r.square)
+# } 
+# 
+# # bootstrapping with 1000 replications
+# #loon_results <- boot(data=loon_tide_behavior, statistic=rsq,
+#    #R=100, formula=behavior~tide)
+# 
+# # view results
+# #loon_results
+# #plot(loon_results)
+# 
+# # get 95% confidence interval
+# #boot.ci(loon_results, type="bca")
 ```
 
 ```{r sampling-tides-behavior}
@@ -71,7 +71,6 @@ loons_2023 %>%
   count(tide) %>% 
   ggplot(aes(x = tide, y = n)) +
       geom_col()
-
 ```
 
 
