@@ -110,6 +110,8 @@ dtkw <- loons_2023 %>% dunn_test(behavior ~ tide, p.adjust.method = "bonferroni"
 dtkw
 ```
 
+REPORT: The behavior of G. immer at high tide was not significantly different from their behavior at low or high tide. The behavior of G. immer at low tide was significantly different from their behavior at mid tide [insert test here]. 
+
 ### Chi-Squared Table
 We will be using a Pearson's χ2 test to assess the difference in the distributions of our categorical variables between two independent variables (`tide` and `behavior`). 
 
@@ -289,6 +291,7 @@ summary(dive_time_tide_height_lm)
 
 #This is actually so interesting
 ```
+
 #Tidal classification and dive times
 ```{r}
 loons_dive_2024$tide <- fct_relevel(loons_dive_2024$tide, c("mid_ebb",
