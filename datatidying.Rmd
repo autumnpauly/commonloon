@@ -108,6 +108,8 @@ unique(loons_2023$behavior)
 unique(loons_2024$behavior)
 ```
 
+Now, we'll want to create a dataset where the only species being observed are Common Loons. 
+
 ```{r behavior-tidying}
 #Count occurence of behaviors
 loons_2023_behavior <- loons_2023 %>% 
@@ -116,7 +118,9 @@ loons_2023_behavior <- loons_2023 %>%
   count(behavior)
 
 loons_2023_behavior
+```
 
+```{r}
 #Count the occurrences of behavior of loons
 ggplot(data = loons_2023_behavior, mapping = aes(x = behavior)) + 
   geom_bar()
@@ -125,3 +129,4 @@ ggplot(data = loons_2023_behavior, mapping = aes(x = behavior)) +
 ggplot(data = loons_2023_behavior, mapping = aes(x = tide)) + 
   geom_bar()
 ```
+
