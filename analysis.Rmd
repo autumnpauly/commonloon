@@ -357,7 +357,7 @@ waveclassaov = aov(wave_class ~ behavior, data = loons_2023)
 summary(waveclassaov)
   
 ```
-
+# Wave class did not significantly affect G. immer behavior (one-way ANOVA, F_4,126 = 2.356, P = 0.0572).
 
 #Meters Offshore and Dive Times
 
@@ -390,6 +390,7 @@ summary(loon.dive.meters.lm)
 
 #Cedar suggested that the p-values aren't really an indication of the fit with linear models, that's the r2 which is fine
 ```
+# A linear model demonstrated a significant positive relationship between dive time and meters off shore (F1,89 = 27.81 : p = <0.5). 24% of the total variability in dive time can be predicted through a knowledge of meters off shore.
 
 #Tidal height and dive times
 
@@ -409,6 +410,7 @@ summary(dive_time_tide_height_lm)
 
 #This is actually so interesting
 ```
+# A linear model demonstrated no significant relationship between dive time and tidal height (F1,88 = 0.014 : p = 0.91).
 
 #Tidal classification and dive times
 
