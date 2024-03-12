@@ -44,7 +44,6 @@ Hypothesis: Tidal height has a significant effect on G. immer behavior
 Null Hypothesis: Tidal height will not have a significant effect on G. immer behavior
 
 ### Bootstrapping
-
 ```{r bootstrapping-tide-behavior}
 # #download packages
 # library(boot)
@@ -72,7 +71,6 @@ Null Hypothesis: Tidal height will not have a significant effect on G. immer beh
 # # get 95% confidence interval
 # #boot.ci(loon_results, type="bca")
 ```
-
 
 ```{r sampling-tides-behavior}
 #this is the dataset that we want to sample from? 
@@ -112,6 +110,13 @@ We need to use a non-parametric test. Kruskal-Wallace
 #Behavior_tide_ANOVA <- aov(meters_offshore ~ tide, data = loons_2023)
 #summary(Behavior_tide_ANOVA)
 ```
+
+### Chi-Squared Goodness of Fit Test
+
+```{r}
+table(loons_2023$tide, loons_2024$behavior)
+```
+
 
 ### Kruskal-Wallis Test
 A Kruskal-Wallis test is non-parametric method (a one-way ANOVA on ranks) to [insert more here]. Even though our sample sizes are different, we will still be able to use this test, as this test allows for independent samples that have equal or differing sample sizes. 
