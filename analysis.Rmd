@@ -306,8 +306,7 @@ summary(abundanceexposureaov)
 TukeyHSD(abundanceexposureaov)
 ```
 
-REPORT: An Analysis of Variance test demonstrated that coastal exposure levl has a significant effect on the abundance of G. immer (ANOVA, F_4,126 = 6.167; p = 0.000145). 
-An uplanned analytical comparison demonstrated that G. immer prescence
+REPORT: An Analysis of Variance test demonstrated that coastal exposure levl has a significant effect on the abundance of G. immer (ANOVA, F_4,126 = 6.167; p = 0.000145). An uplanned analytical comparison demonstrated that G. immer abundance differed significantly between habitats which were exposed, and habitats which were moderately exposed (p = 0.0166513). The test also found that there was a significant difference in abundance between moderately sheltered habitats and exposed habitats (p = 0.0008059).
 
 # Exposure Level and Behavior
 
@@ -337,7 +336,7 @@ behavior_exposure_dunn <- loons_2023 %>% dunn_test(behavior ~ shelter_gradient, 
 behavior_exposure_dunn
 ```
 
-### REPORT
+REPORT: A Kruskal-Wallis rank sum test demonstrated that G. immer behavior did not significantly differ based on habitat exposure level (Kruskal-Wallis, F_4 = 7.741; p = 0.1015)
 
 #Wave Class and Behavior
 
