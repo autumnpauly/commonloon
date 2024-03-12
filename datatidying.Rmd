@@ -1,14 +1,16 @@
 ---
-title: "Common Loon Analysis"
+title: "Common Loon Data Tidying"
 author: "Ellie Gabrielson, Will Draxler, Autumn Pauly"
-output: github_document
+output: pdf_document
 ---
-# Loading the Packages and Data
 
+
+# Loading the Packages and Data
 ```{r loading-packages}
 library(tidyverse)
 library(lubridate)
 ```
+
 # Loading Data - 2023
 ```{r loading-data}
 #2023
@@ -21,7 +23,7 @@ loons_2024 <- read_csv("loons_2024.csv")
 
 # Tidying the Data
 ## Exposure
-```{r}
+```{r refactor-exposure-level}
 #assigning exposure level to locations
 loons_2023 <- loons_2023 %>% 
   mutate(shelter_gradient = case_when(location == "BAR HARBOR PIER" ~ "exposed",
@@ -57,6 +59,8 @@ loons_2023 %>%
 There are a number of variables within this dataset that are character variables that should be numeric variables (i.e. meters_offshore, longitude, latitude)
 
 ```{r chr-to-num}
+
+#Change character numbers to numeric
 loons_2023 <- loons_2023 %>% 
   mutate(meters_offshore = as.numeric(meters_offshore)) %>% 
   mutate(latitude = as.numeric(latitude)) %>% 
@@ -72,11 +76,10 @@ glimpse(loons_2023)
 
 ## Location
 ```{r location-tidying}
+
 #determining how many locations we have
 unique(loons_2023$location)
 
-#renaming to fit tidy format? we'll see if we have to do this...
-#...
 ```
 
 ## Behavior
@@ -84,6 +87,7 @@ unique(loons_2023$location)
 
 unique(loons_2023$behavior)
 
+#Count occurence of behaviors
 loons_2023_behavior <- loons_2023 %>% 
   filter(species == "COMMON LOON") %>% 
   group_by(date, behavior, species, tide, tide_percentage) %>% 
@@ -91,25 +95,12 @@ loons_2023_behavior <- loons_2023 %>%
 
 loons_2023_behavior
 
-#counting the occurances of behavior of loons
+#Count the occurrences of behavior of loons
 ggplot(data = loons_2023_behavior, mapping = aes(x = behavior)) + 
   geom_bar()
 
-#counting how many low, high, and mid tide observations we have
+#Count how many low, high, and mid tide observations we have
 ggplot(data = loons_2023_behavior, mapping = aes(x = tide)) + 
   geom_bar()
 
-
 ```
-
-
-
-
-
-
-
-
-
-
-
-
