@@ -515,6 +515,8 @@ tidying needed for this variable.</p>
 <pre class="r"><code>unique(loons_2024$behavior)</code></pre>
 <pre><code>## [1] &quot;diving&quot;   &quot;peering&quot;  &quot;drifting&quot; &quot;dabbling&quot; &quot;preening&quot; &quot;ashore&quot;   NA        
 ## [8] &quot;floating&quot; &quot;feeding&quot;</code></pre>
+<p>Now, we’ll want to create a dataset where the only species being
+observed are Common Loons.</p>
 <pre class="r"><code>#Count occurence of behaviors
 loons_2023_behavior &lt;- loons_2023 %&gt;% 
   filter(species == &quot;COMMON LOON&quot;) %&gt;% 

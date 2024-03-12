@@ -84,8 +84,6 @@ loons_2023 <- loons_2023 %>%
   mutate(date = as_date(date, format = "%m/%d/%Y")) %>% 
   mutate(time = hms::as_hms(time)) %>% 
   select(-year, -day, -month)
-
-glimpse(loons_2023)
 ```
 
 
@@ -116,8 +114,6 @@ loons_2023_behavior <- loons_2023 %>%
   filter(species == "COMMON LOON") %>% 
   group_by(date, behavior, species, tide, tide_percentage) %>% 
   count(behavior)
-
-loons_2023_behavior
 ```
 
 ```{r}
