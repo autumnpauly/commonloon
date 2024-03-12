@@ -114,7 +114,7 @@ We need to use a non-parametric test. Kruskal-Wallace
 ### Chi-Squared Goodness of Fit Test
 
 ```{r}
-table(loons_2023$tide, loons_2024$behavior)
+#table(loons_2023$tide, loons_2024$behavior) #Sowy just needed  to comment this out to knit
 ```
 
 
@@ -278,15 +278,11 @@ loons_2023 %>%
 ```
 
 ```{r}
-#install packages
-install.packages("ggridges")
-library(ggridges)
-
 loons_2023 %>% 
   ggplot(mapping = aes(x = specific_abundance)) +
   geom_histogram() +
   geom_density() + 
-  facet_wrap(~shelter_gradient, ncol = 1)
+  facet_wrap(~shelter_gradient, ncol = 2)
 
 #plot
 loons_2023 %>% 
@@ -310,7 +306,8 @@ summary(abundanceexposureaov)
 TukeyHSD(abundanceexposureaov)
 ```
 
-REPORT: [insert report here]
+REPORT: An Analysis of Variance test demonstrated that coastal exposure levl has a significant effect on the abundance of G. immer (ANOVA, F_4,126 = 6.167; p = 0.000145). 
+An uplanned analytical comparison demonstrated that G. immer prescence
 
 # Exposure Level and Behavior
 
@@ -362,15 +359,13 @@ waveclassaov = aov(wave_class ~ behavior, data = loons_2023)
 summary(waveclassaov)
   
 ```
-# Wave class did not significantly affect G. immer behavior (one-way ANOVA, F_4,126 = 2.356, P = 0.0572).
+Wave class did not significantly affect G. immer behavior (one-way ANOVA, F_4,126 = 2.356, P = 0.0572).
 
 #Meters Offshore and Dive Times
 
 Hypothesis: Distance from shore will significantly affect G. immer dive times. 
 
 Null Hypothesis: Distance from shore will not significantly affect G. immer dive times.
-
-#With the dive time and how many meters offshore the loon was seen are both quantitative variables, we should use a simple regression statistical test to determine if there is a statistical significance between the location of the loons (by meters offshore) and their dive times. 
 
 ```{r}
 loons_dive_2024 <- loons_2024 %>% 
@@ -393,9 +388,9 @@ loon.dive.meters.lm <- lm(dive_time_obs ~ meters_offshore, data = loons_dive_202
 
 summary(loon.dive.meters.lm)
 
-#Cedar suggested that the p-values aren't really an indication of the fit with linear models, that's the r2 which is fine
 ```
-# A linear model demonstrated a significant positive relationship between dive time and meters off shore (F1,89 = 27.81 : p = <0.5). 24% of the total variability in dive time can be predicted through a knowledge of meters off shore.
+
+A linear model demonstrated a significant positive relationship between dive time and meters off shore (F1,89 = 27.81 : p = <0.5). 24% of the total variability in dive time can be predicted through a knowledge of meters off shore.
 
 #Tidal height and dive times
 
@@ -415,7 +410,8 @@ summary(dive_time_tide_height_lm)
 
 #This is actually so interesting
 ```
-# A linear model demonstrated no significant relationship between dive time and tidal height (F1,88 = 0.014 : p = 0.91).
+
+A linear model demonstrated no significant relationship between dive time and tidal height (F1,88 = 0.014 : p = 0.91).
 
 #Tidal classification and dive times
 
@@ -437,9 +433,9 @@ ggplot(mapping = aes(x = tide, y = dive_time_obs)) +
 full_tide_aov = aov(dive_time_obs ~ tide, data = loons_dive_2024)
 summary(full_tide_aov)
 TukeyHSD(full_tide_aov)
-#Is this useful?
 ```
 
+An Analysis of Variance test demonstrated that tidal class has a significant effect on the length of G. immer dive times (ANOVA, F_6,86 = 4.599; p = 0.000427). An uplanned analytical comparison demonstrated that G. immer dive times at low slack tide were signficantly different than those at mid ebb tide (TukeyB, p < 0.0005055), and dive lengths at high ebb tide were significantly different than those at mid ebb tide (TukeyB, p = 0.0017457). Otherwise, there were no significant differences in dive times between other tidal classes (TukeyB, p > 0.05)
 
 # Discussion / Conclusion
 
