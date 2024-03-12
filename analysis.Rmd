@@ -147,25 +147,106 @@ dtkw
 
 REPORT: The behavior of G. immer at high tide was not significantly different from their behavior at low or high tide. The behavior of G. immer at low tide was significantly different from their behavior at mid tide [insert test here]. 
 
-### Chi-Squared Table
-We will be using a Pearson's χ2 test to assess the difference in the distributions of our categorical variables between two independent variables (`tide` and `behavior`). 
+### Chi-Squared Test of Independence
+The Chi-Squared Test of Independence examines whether there is a relationship between two categorical variables. Our null hypothesis, that tidal height will not have a significant effect on G. immer behavior, assumes that tidal condition and behavior are independent. Our hypothesis, that tidal height will have a significant effect on G. immer behavior, assumes that tidal condition and behavior are dependent.
 
-**behavior is dependent, is this a good analysis to use? 
+#### Expected Frequencies and Contingency Table
+Before performing the chi-square test, we need to calculate the expected frequencies for each cell in the contingency table. These expected frequencies represent what you would expect to observe if there were no association between tidal condition and behavior.
 
-```{r chi-squared-table-onlyloons}
-#creating table for chi-squared test
-#forchi <- loons_2023 %>% 
-  #select(behavior, tide)
-
-#chitable <- table(forchi$behavior, forchi$tide)
-
-#chitable
-
-#Pearson's Chi-squared test
-#chisq.test(chitable, correct = FALSE)
+```{r contingency-table}
+contingency_table1 <- table(loons_2023$tide, loons_2023$behavior)
+contingency_table1
 ```
-Does this suggest that behavior is dependent on tidal height?
-Let's ask Sean!
+
+#### Chi-square Test
+Now that we have the contingency table of expected frequencies, we can perform the statistical test. 
+
+```{r chi-square-test}
+chi_sq_test1 <- chisq.test(contingency_table1)
+chi_sq_test1
+
+# # x-squared
+# chi_sq_test1$statistic
+# 
+# #p-value
+# chi_sq_test1$p.value
+# 
+# #expected frequencies
+# chi_sq_test1$expected
+```
+
+REPORT: The behavior of Common Loons is dependent on tidal condition (Pearson's Chi-squared test; X-squared = 33.184, df = 10, p-value > 0.005). 
+
+#### Adjusted Residual Analysis
+[...] 
+
+First, we need to calculate adjusted residuals. 
+
+```{r}
+adjusted_res1 <- residuals(chi_sq_test1, type = "pearson")
+```
+
+Then, we can identify significant differences. 
+
+```{r}
+# Identify significant differences
+significant_diff1 <- abs(adjusted_res1) > 2
+significant_diff1
+```
+
+Now, we visualize the results. 
+
+```{r}
+# Visualize results
+heatmap(adjusted_res1, main = "Adjusted Residuals Heatmap")
+```
+
+```{r}
+# Create a plot of adjusted residuals
+barplot(adjusted_res1, main = "Adjusted Residuals", beside = TRUE)
+```
+
+#### Second Method
+
+```{r}
+summary(table(loons_2023$tide, loons_2023$behavior))
+```
+
+#### Third Method
+
+```{r}
+# third method:
+install.packages("vcd")
+library(vcd)
+
+assocstats(table(loons_2023$tide, loons_2023$behavior))
+
+install.packages("ggplotstats")
+library(ggstatsplot)
+ggbarstats(
+  data = loons_2023,
+  x = behavior,
+  y = tide
+) +
+  labs(caption = NULL) # remove caption
+```
+
+```{r}
+install.packages("summarytools")
+library(summarytools)
+library(dplyr)
+
+# fourth method:
+loons_2023 %$%
+  ctable(tide, behavior,
+    prop = "r", chisq = TRUE, headings = FALSE
+  ) %>%
+  print(
+    method = "render",
+    style = "rmarkdown",
+    footnote = NA
+  )
+```
 
 
 # Tidal Conditions and Dive Times - 2024
@@ -306,7 +387,8 @@ summary(abundanceexposureaov)
 TukeyHSD(abundanceexposureaov)
 ```
 
-REPORT: An Analysis of Variance test demonstrated that coastal exposure levl has a significant effect on the abundance of G. immer (ANOVA, F_4,126 = 6.167; p = 0.000145). An uplanned analytical comparison demonstrated that G. immer abundance differed significantly between habitats which were exposed, and habitats which were moderately exposed (p = 0.0166513). The test also found that there was a significant difference in abundance between moderately sheltered habitats and exposed habitats (p = 0.0008059).
+REPORT: An Analysis of Variance test demonstrated that coastal exposure levl has a significant effect on the abundance of G. immer (ANOVA, F_4,126 = 6.167; p = 0.000145). 
+An uplanned analytical comparison demonstrated that G. immer prescence
 
 # Exposure Level and Behavior
 
@@ -336,7 +418,7 @@ behavior_exposure_dunn <- loons_2023 %>% dunn_test(behavior ~ shelter_gradient, 
 behavior_exposure_dunn
 ```
 
-REPORT: A Kruskal-Wallis rank sum test demonstrated that G. immer behavior did not significantly differ based on habitat exposure level (Kruskal-Wallis, F_4 = 7.741; p = 0.1015)
+### REPORT
 
 #Wave Class and Behavior
 
