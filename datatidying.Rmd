@@ -1,18 +1,26 @@
 ---
 title: "Common Loon Data Tidying"
+subtitle: "for Statistics Final Project"
 author: "Ellie Gabrielson, Will Draxler, Autumn Pauly"
-output: pdf_document
+date: "03/12/2024"
+output: 
+  html_document: 
+    toc: true
 ---
+## Loading the Packages and Data
 
+We will be using the `tidyverse` and `lubridate` packages to assist with data tidying. 
 
-# Loading the Packages and Data
-```{r loading-packages}
+```{r loading-packages, warning=FALSE, message=FALSE}
 library(tidyverse)
 library(lubridate)
 ```
 
-# Loading Data - 2023
-```{r loading-data}
+## Loading Data
+
+First we need to load in the data that was collected in 2023 and 2024. 
+
+```{r loading-data, warning=FALSE, message=FALSE}
 #2023
 all_bird_untidy_2023 <- read_csv("loons_2023.csv")
 loons_2023 <- read_csv("loons_2023.csv")
@@ -21,9 +29,12 @@ loons_2023 <- read_csv("loons_2023.csv")
 loons_2024 <- read_csv("loons_2024.csv")
 ```
 
-# Tidying the Data
-## Exposure
-```{r refactor-exposure-level}
+## Tidying the Data
+### Exposure
+
+The nine locations that are going to be used to assess the environmental preferences of the Common Loon need to be refactored by exposure level. 
+
+```{r refactor-exposure-level, message=FALSE, warning=FALSE}
 #assigning exposure level to locations
 loons_2023 <- loons_2023 %>% 
   mutate(shelter_gradient = case_when(location == "BAR HARBOR PIER" ~ "exposed",
@@ -43,7 +54,11 @@ shelter_factor <- fct_relevel(loons_2023$shelter_gradient, c(
                 "moderate",
                 "moderately_sheltered",
                 "sheltered"))
+```
 
+After tidying this, we need to save these changes into our dataset. 
+
+```{r saving-new-dataset, message=FALSE, warning=FALSE}
 #saving a dataset to include only loons and the shelter factor
 loons_2023 <- loons_2023 %>% 
   mutate(shelter_factor = shelter_factor) %>% 
@@ -54,12 +69,12 @@ loons_2023 %>%
   count(shelter_factor)
 ```
 
-## Changing `chr` variables to `num`
+
+### Changing `chr` variables to `num`
 
 There are a number of variables within this dataset that are character variables that should be numeric variables (i.e. meters_offshore, longitude, latitude)
 
-```{r chr-to-num}
-
+```{r chr-to-num, warning=FALSE, message=FALSE}
 #Change character numbers to numeric
 loons_2023 <- loons_2023 %>% 
   mutate(meters_offshore = as.numeric(meters_offshore)) %>% 
@@ -74,19 +89,26 @@ glimpse(loons_2023)
 ```
 
 
-## Location
-```{r location-tidying}
+### Location
 
+There are nine locations that were visited during the 2023 study and six locations were visited during the 2024 dataset. This suggests that there is a limited amount of spatial analysis that can be conducted between the years. There appears to be no further tidying needed for this variable.
+
+```{r location-tidying, warning=FALSE}
 #determining how many locations we have
 unique(loons_2023$location)
-
+unique(loons_2024$location)
 ```
 
-## Behavior
-```{r behavior-tidying}
+### Behavior
 
+There are five values for the variable `behavior` to assess the behavior of the species being observed in 2023 and eight values for the species observed in 2024. There appears to be no further tidying needed for this variable. 
+
+```{r}
 unique(loons_2023$behavior)
+unique(loons_2024$behavior)
+```
 
+```{r behavior-tidying}
 #Count occurence of behaviors
 loons_2023_behavior <- loons_2023 %>% 
   filter(species == "COMMON LOON") %>% 
@@ -102,5 +124,4 @@ ggplot(data = loons_2023_behavior, mapping = aes(x = behavior)) +
 #Count how many low, high, and mid tide observations we have
 ggplot(data = loons_2023_behavior, mapping = aes(x = tide)) + 
   geom_bar()
-
 ```
