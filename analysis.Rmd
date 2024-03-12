@@ -43,35 +43,6 @@ Hypothesis: Tidal height has a significant effect on G. immer behavior
 
 Null Hypothesis: Tidal height will not have a significant effect on G. immer behavior
 
-### Bootstrapping
-```{r bootstrapping-tide-behavior}
-# #download packages
-# library(boot)
-# 
-# #this is the dataset that we want to sample from? 
-# loon_tide_behavior <- loons_2023 %>% 
-#   select(behavior, tide)
-# 
-# #function to obtain R-Squared from the data 
-# rsq <- function(formula, data, indices)
-# {
-#   d <- data[indices,] # allows boot to select sample
-#   fit <- lm(formula, data=d)
-#   return(summary(fit)$r.square)
-# } 
-# 
-# # bootstrapping with 1000 replications
-# #loon_results <- boot(data=loon_tide_behavior, statistic=rsq,
-#    #R=100, formula=behavior~tide)
-# 
-# # view results
-# #loon_results
-# #plot(loon_results)
-# 
-# # get 95% confidence interval
-# #boot.ci(loon_results, type="bca")
-```
-
 ```{r sampling-tides-behavior}
 # #this is the dataset that we want to sample from? 
 # loon_tide_behavior <- loons_2023 %>% 
@@ -100,35 +71,6 @@ loons_2023 %>%
        x = "Tidal Stage", 
        y = "Count")
 ```
-
-### Kruskal-Wallis Test
-A Kruskal-Wallis test is non-parametric method (a one-way ANOVA on ranks) to [insert more here]. Even though our sample sizes are different, we will still be able to use this test, as this test allows for independent samples that have equal or differing sample sizes. 
-
-```{r kw-test-tide-behavior}
-kw <- kruskal.test(behavior ~ tide, data = loons_2023)
-kw
-```
-
-REPORT: The behavior of G. immer was significantly different at various tidal heights (Kruskal-Wallis chi-squared = 12.324, df = 2, p-value = 0.002109).
-
-### Dunn Test
-We now need to use the Dunn test to determine which groups are different. 
-
-```{r dunn-test-tide-behavior}
-#install packages
-# install.packages("ggpubr")
-# library(ggpubr)
- install.packages("rstatix")
- library(rstatix)
-
-ggplot(data = loons_2023, mapping = aes(x = tide, y = ))
-
-#dunn test
-dtkw <- loons_2023 %>% dunn_test(behavior ~ tide, p.adjust.method = "bonferroni")
-dtkw
-```
-
-REPORT: The behavior of G. immer at high tide was not significantly different from their behavior at low or high tide. The behavior of G. immer at low tide was significantly different from their behavior at mid tide [insert test here]. 
 
 ### Chi-Squared Test of Independence
 The Chi-Squared Test of Independence examines whether there is a relationship between two categorical variables. Our null hypothesis, that tidal height will not have a significant effect on G. immer behavior, assumes that tidal condition and behavior are independent. Our hypothesis, that tidal height will have a significant effect on G. immer behavior, assumes that tidal condition and behavior are dependent.
@@ -177,18 +119,48 @@ loons_2023 %$%
   )
 ```
 
-#### Poisson Regression Analysis
-If we want to compare the abundance of diving behavior between the three tidal stages (high tide, mid tide, and low tide), we need to compare the means of a count variable (number of diving behaviors) across different groups (tidal stages). One suitable test for this scenario is the Poisson regression analysis.
+#### ANOVA
+If we want to compare the abundance of diving behavior between the three tidal stages (high tide, mid tide, and low tide), we need to compare the means of a count variable (number of diving behaviors) across different groups (tidal stages). ANOVA is suitable for comparing means across multiple groups, which makes it appropriate for this scenario.
 
 ```{r}
-#loon_2023_behavior <-
-
-loons_2023 %>% 
+loon_2023_behavior <- loons_2023 %>% 
   select(species, behavior, date, tide) %>% 
   filter(species == "COMMON LOON") %>% 
-  filter(behavior == "DIVING") %>% 
+  mutate(behavior =  if_else(behavior == "DIVING", "DIVING", "OTHER")) %>% 
   group_by(date, tide, behavior) %>% 
   count(behavior)
+```
+
+Running an ANOVA test
+
+```{r}
+# Perform ANOVA
+anova_model1 <- aov(n ~ tide, data = loon_2023_behavior)
+summary(anova_model1)
+
+# Perform Tukey's HSD test for pairwise comparisons
+tukey_results1 <- TukeyHSD(anova_model1)
+print(tukey_results1)
+```
+
+REPORT: 
+
+
+#### Pairwise Comparison Test
+
+```{r}
+#load packages
+install.packages("multcomp")
+library(multcomp)
+
+#define contrasts
+# Define contrasts for pairwise comparisons
+contrasts <- matrix(c(0, 1, -1, 0, 0, 1), nrow = 3, byrow = TRUE,
+                    dimnames = list(c("HIGH vs. MID", "HIHG vs. LOW", "MID vs. LOW"), NULL))
+
+# Perform pairwise comparisons
+pairwise_comparison <- glht(poisson_model, linfct = contrasts)
+summary(pairwise_comparison)
 ```
 
 
