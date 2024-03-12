@@ -73,9 +73,9 @@ Null Hypothesis: Tidal height will not have a significant effect on G. immer beh
 ```
 
 ```{r sampling-tides-behavior}
-#this is the dataset that we want to sample from? 
-loon_tide_behavior <- loons_2023 %>% 
-  select(behavior, tide)
+# #this is the dataset that we want to sample from? 
+# loon_tide_behavior <- loons_2023 %>% 
+#   select(behavior, tide)
 
 ## Tide-Behavior visualizations - to be moved to analysis
 loons_2023 %>% 
@@ -100,23 +100,6 @@ loons_2023 %>%
        x = "Tidal Stage", 
        y = "Count")
 ```
-
-
-We need to use a non-parametric test. Kruskal-Wallace
-
-```{r}
-#1 Tidal Condition and Behavior - 2024/2023
-
-#Behavior_tide_ANOVA <- aov(meters_offshore ~ tide, data = loons_2023)
-#summary(Behavior_tide_ANOVA)
-```
-
-### Chi-Squared Goodness of Fit Test
-
-```{r}
-#table(loons_2023$tide, loons_2024$behavior) #Sowy just needed  to comment this out to knit
-```
-
 
 ### Kruskal-Wallis Test
 A Kruskal-Wallis test is non-parametric method (a one-way ANOVA on ranks) to [insert more here]. Even though our sample sizes are different, we will still be able to use this test, as this test allows for independent samples that have equal or differing sample sizes. 
@@ -177,60 +160,6 @@ chi_sq_test1
 
 REPORT: The behavior of Common Loons is dependent on tidal condition (Pearson's Chi-squared test; X-squared = 33.184, df = 10, p-value > 0.005). 
 
-#### Adjusted Residual Analysis
-[...] 
-
-First, we need to calculate adjusted residuals. 
-
-```{r}
-adjusted_res1 <- residuals(chi_sq_test1, type = "pearson")
-```
-
-Then, we can identify significant differences. 
-
-```{r}
-# Identify significant differences
-significant_diff1 <- abs(adjusted_res1) > 2
-significant_diff1
-```
-
-Now, we visualize the results. 
-
-```{r}
-# Visualize results
-heatmap(adjusted_res1, main = "Adjusted Residuals Heatmap")
-```
-
-```{r}
-# Create a plot of adjusted residuals
-barplot(adjusted_res1, main = "Adjusted Residuals", beside = TRUE)
-```
-
-#### Second Method
-
-```{r}
-summary(table(loons_2023$tide, loons_2023$behavior))
-```
-
-#### Third Method
-
-```{r}
-# third method:
-install.packages("vcd")
-library(vcd)
-
-assocstats(table(loons_2023$tide, loons_2023$behavior))
-
-install.packages("ggplotstats")
-library(ggstatsplot)
-ggbarstats(
-  data = loons_2023,
-  x = behavior,
-  y = tide
-) +
-  labs(caption = NULL) # remove caption
-```
-
 ```{r}
 install.packages("summarytools")
 library(summarytools)
@@ -246,6 +175,20 @@ loons_2023 %$%
     style = "rmarkdown",
     footnote = NA
   )
+```
+
+#### Poisson Regression Analysis
+If we want to compare the abundance of diving behavior between the three tidal stages (high tide, mid tide, and low tide), we need to compare the means of a count variable (number of diving behaviors) across different groups (tidal stages). One suitable test for this scenario is the Poisson regression analysis.
+
+```{r}
+#loon_2023_behavior <-
+
+loons_2023 %>% 
+  select(species, behavior, date, tide) %>% 
+  filter(species == "COMMON LOON") %>% 
+  filter(behavior == "DIVING") %>% 
+  group_by(date, tide, behavior) %>% 
+  count(behavior)
 ```
 
 
