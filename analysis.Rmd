@@ -16,6 +16,11 @@ library(rstatix)
 library(parsnip)
 ```
 
+```{r read-in-data}
+loons_2023 <- read_csv("loons_2023.csv")
+loons_2024 <- read_csv("loons_2024.csv")
+```
+
 
 We should bootstrap all of the tidal heights so that we have equal observations... maybe not? 
 
@@ -26,6 +31,10 @@ We should bootstrap all of the tidal heights so that we have equal observations.
 ```
 
 # Tidal Condition and Behavior for 2023 and 2024
+
+Hypothesis: Tidal height has a significant effect on G. immer behavior
+
+Null Hypothesis: Tidal height will not have a significant effect on G. immer behavior
 
 ### Bootstrapping
 
@@ -56,6 +65,7 @@ We should bootstrap all of the tidal heights so that we have equal observations.
 # # get 95% confidence interval
 # #boot.ci(loon_results, type="bca")
 ```
+
 
 ```{r sampling-tides-behavior}
 #this is the dataset that we want to sample from? 
@@ -148,6 +158,10 @@ Let's ask Sean!
 
 # Tidal Conditions and Dive Times - 2024
 
+Hypothesis: Low tide will cause G. immer to have significantly longer dive times. 
+
+Null Hypothesis: Low tide will not cause G. immer to have significantly longer dive times. 
+
 ```{r mutation, baby}
 library(stringr)
 
@@ -232,6 +246,11 @@ glance(times_vs_tide_model)$r.squared
 R_SQUARED REPORT: The r-squared value is `[...]`, which means that the variable `general_tide` accounts for [...] of the variation in the dependent variable, `dive_time_obs`. 
 
 # Exposure Level and Abundance - 2023
+
+Hypothesis: Higher exposure level of location significantly positively affects G. immer presence. 
+
+Null Hypothesis: Higher exposure level of location will not significantly positively affect G. immer presence. 
+
 Predictor variable = categorical
 outcome variable = quantitative
 test = ANOVA
@@ -283,6 +302,11 @@ REPORT: [insert report here]
 
 # Exposure Level and Behavior
 
+Hypothesis: Exposure level of location significantly impacts G. immer behavior. 
+
+Null Hypothesis: Exposure level of location has no significant impact on G. immer behavior. 
+
+
 ```{r}
 loons_2023 %>% 
   count(behavior, shelter_gradient) %>% 
@@ -307,6 +331,11 @@ behavior_exposure_dunn
 ### REPORT
 
 #Wave Class and Behavior
+
+Hypothesis: Wave class will significantly affect G. immer behavior.
+
+Null Hypothesis: Wave class will not significantly affect G. immer behavior.
+
 ```{r}
 loons_2023 %>% 
  ggplot(aes(x = wave_class)) +
@@ -324,7 +353,12 @@ summary(waveclassaov)
 
 
 #Meters Offshore and Dive Times
-With the dive time and how many meters offshore the loon was seen are both quantitative variables, we should use a simple regression statistical test to determine if there is a statistical significance between the location of the loons (by meters offshore) and their dive times. 
+
+Hypothesis: Distance from shore will significantly affect G. immer dive times. 
+
+Null Hypothesis: Distance from shore will not significantly affect G. immer dive times.
+
+#With the dive time and how many meters offshore the loon was seen are both quantitative variables, we should use a simple regression statistical test to determine if there is a statistical significance between the location of the loons (by meters offshore) and their dive times. 
 
 ```{r}
 loons_dive_2024 <- loons_2024 %>% 
@@ -351,6 +385,11 @@ summary(loon.dive.meters.lm)
 ```
 
 #Tidal height and dive times
+
+Hypothesis: Tidal height will significantly affect G. immer dive times.
+
+Null Hypothesis: Tidal height will not significantly affect G. immer dive times.
+
 ```{r}
 loons_dive_2024 %>% 
   ggplot(aes(x = tidal_height, y = dive_time_obs)) + 
@@ -365,6 +404,11 @@ summary(dive_time_tide_height_lm)
 ```
 
 #Tidal classification and dive times
+
+Hypothesis: Tidal class will significantly affect G. immer dive times.
+
+Null Hypothesis: Tidal class will not significantly affect G. immer dive times.
+
 ```{r}
 loons_dive_2024$tide <- fct_relevel(loons_dive_2024$tide, c("mid_ebb",
                                                             "low_slack",
