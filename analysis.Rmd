@@ -4,8 +4,17 @@ author: "Ellie Gabrielson, Will Draxler, Autumn Pauly"
 output: github_document
 ---
 # Background Information
+## Introduction
+Although Common Loons (Gavia immer) have been studied extensively during the breeding season not much is known of their behavior on their ocean wintering grounds, where Loons spend a significant part of their lives (Bent, 2009). The few studies that do look at winter behavior often yield conflicting results (McIntyre, 1978; Daub, 1989; Ford and Gieg, 1995). The possible use of different shoreline habitats for activities such as feeding, sleeping, or taking shelter is worthy of study. McIntyre (1978) found common loons were semi-social and formed loose rafts and that loon behavior varied with tides, weather, and time of day. Daub (1989) and later Ford and Gieg (1995) found refuting evidence suggesting loons were neither social nor territorial, and did not change their behavior much by tide. Holm and Burger (2002) found that the general pattern for loons was that they foraged during slack and main-flow water. Additionally, the possible difference in dive times as a result of varying tidal heights is worthy of study. Thompson and Price (2006) observed that dive times were longer during low tide in comparison to other tidal stages, though more studies should be conducted to assess the use of tidal stage and behavior. 
 
-# Load Packages and Data
+Our general hypothesis when analyzing this data is that environmental conditions affect the behavior of the G. immer. The null hypothesis to this statement is that environmental conditions do not affect the behavior of the G. immer.
+
+## Methods
+In 2023, observations were conducted at nine established observation sites along the coastline of Mount Desert Island in Hancock County (Maine). Observations occurred from January 2023 to March 2023 on a biweekly basis, where each waterfowl individual was recorded as well as their behaviors, referencing Daub’s (1989) list of behaviors, and coordinate location. Locational coordinates were obtained by estimating the individual’s rough location digitally (accurate to + or - 10 m). Each transect site was visited for roughly 5-10 minutes, where data collection followed initial observation. Utilizing a Kestrel 2500, weather data was recorded accurately to + or - 1°C of temperatures and within 3% of wind speed. Referencing Daub’s (1989) list of behaviors, each species’ behavior during the observation was noted. The weather and environmental data recorded included wind speed and direction, barometer, cloud cover, precipitation, humidity, temperature, tidal percentage, and wave class (Beaufort Wind Speed). Tidal data was gathered from NOAA’s digital tidal charts. This study was repeated in 2024 with the addition of observational variables including species dive times and tidal height. 
+
+
+# Analysis
+## Load Packages and Data
 ```{r load-packages, message = FALSE}
 #install.packages("tidyverse")
 library(tidyverse)
@@ -25,7 +34,7 @@ We should bootstrap all of the tidal heights so that we have equal observations.
  # generate(reps = 15000, type = "bootstrap")
 ```
 
-# Tidal Condition and Behavior for 2023 and 2024
+## Tidal Condition and Behavior for 2023 and 2024
 
 ### Bootstrapping
 
@@ -146,7 +155,7 @@ Does this suggest that behavior is dependent on tidal height?
 Let's ask Sean!
 
 
-# Tidal Conditions and Dive Times - 2024
+## Tidal Conditions and Dive Times - 2024
 
 ```{r mutation, baby}
 library(stringr)
@@ -231,7 +240,7 @@ glance(times_vs_tide_model)$r.squared
 ```
 R_SQUARED REPORT: The r-squared value is `[...]`, which means that the variable `general_tide` accounts for [...] of the variation in the dependent variable, `dive_time_obs`. 
 
-# Exposure Level and Abundance - 2023
+## Exposure Level and Abundance - 2023
 Predictor variable = categorical
 outcome variable = quantitative
 test = ANOVA
@@ -281,7 +290,7 @@ TukeyHSD(abundanceexposureaov)
 
 REPORT: [insert report here]
 
-# Exposure Level and Behavior
+## Exposure Level and Behavior
 
 ```{r}
 loons_2023 %>% 
@@ -306,7 +315,7 @@ behavior_exposure_dunn
 
 ### REPORT
 
-#Wave Class and Behavior
+## Wave Class and Behavior
 ```{r}
 loons_2023 %>% 
  ggplot(aes(x = wave_class)) +
@@ -323,7 +332,7 @@ summary(waveclassaov)
 ```
 
 
-#Meters Offshore and Dive Times
+## Meters Offshore and Dive Times
 With the dive time and how many meters offshore the loon was seen are both quantitative variables, we should use a simple regression statistical test to determine if there is a statistical significance between the location of the loons (by meters offshore) and their dive times. 
 
 ```{r}
@@ -350,7 +359,7 @@ summary(loon.dive.meters.lm)
 #Cedar suggested that the p-values aren't really an indication of the fit with linear models, that's the r2 which is fine
 ```
 
-#Tidal height and dive times
+## Tidal height and dive times
 ```{r}
 loons_dive_2024 %>% 
   ggplot(aes(x = tidal_height, y = dive_time_obs)) + 
@@ -364,7 +373,7 @@ summary(dive_time_tide_height_lm)
 #This is actually so interesting
 ```
 
-#Tidal classification and dive times
+## Tidal classification and dive times
 ```{r}
 loons_dive_2024$tide <- fct_relevel(loons_dive_2024$tide, c("mid_ebb",
                                                             "low_slack",
@@ -382,4 +391,17 @@ TukeyHSD(full_tide_aov)
 #Is this useful?
 ```
 
+# Discussion / Conclusion
 
+# Citations
+Bent, A. C. 2009. Life Histories of North American Diving Birds. Cornell University Press: Ithaca, New York.
+
+Daub, B. C. 1989. Behavior of Common Loons in Winter. Journal of Field Ornithology 60: 305-311.
+
+Ford, T. B. and Gieg, J. A. 1995. Winter Behavior of the Common Loon. Journal of Field Ornithology 66: 22-29.
+
+McIntyre, J. W. 1978. Wintering Behavior of Common Loons. The Auk 95: 396-403.
+
+Holm, K. and Burger, A. 2002. Foraging Behavior and Resource Partitioning by Diving Birds During Winter in Areas of Strong Tidal Currents. Waterbirds 25(3): 312-325.
+
+Thompson, Stephanie A. & Price, J. J. (2006). Water Clarity and Diving Behavior in Wintering Common Loons. Waterbirds: The International Journal of Waterbird Biology, 29(2), 169–175.
