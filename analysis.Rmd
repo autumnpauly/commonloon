@@ -3,8 +3,9 @@ title: "Common Loon Analysis"
 author: "Ellie Gabrielson, Will Draxler, Autumn Pauly"
 output: github_document
 ---
-# Load Packages and Data
+# Background Information
 
+# Load Packages and Data
 ```{r load-packages, message = FALSE}
 #install.packages("tidyverse")
 library(tidyverse)
