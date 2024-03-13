@@ -203,7 +203,7 @@ dive_samples <- rbind(dive_samples, sampled_mid)
 
 Now, we can see that we have a normal distribution of dive times during all tidal cycles, which now makes an ANOVA an appropriate statistical test to use for this data frame. 
 
-```{r}
+```{r sampledivetimes, warning=FALSE, echo=FALSE}
 ggplot(data = dive_samples, mapping = aes(x = stat)) + 
   geom_histogram() + 
   facet_wrap(~tide, ncol = 1) + 
@@ -215,7 +215,6 @@ ggplot(data = dive_samples, mapping = aes(x = stat)) +
 ```
 
 ### Visualizations
-
 Below we are visualizing dive times in the form of a boxplot. As we can see below, it appears as though the dive times are longest during low tide, followed by second longest during high tide, and shortest during low tide. We will need to perform statistical tests to see if there are any significant differences between the tidal stages.  
 
 ```{r echo=FALSE, warning=FALSE}
@@ -232,11 +231,11 @@ ggplot(data = dive_samples, mapping = aes(x = tide, y = stat)) +
 ### Statistics
 To determine if there is a significant difference in dive times of Common loons during different tidal stages, where the tidal stages are categorical with three levels (high tide, mid tide, and low tide), and the dive time is a continuous numerical variable, a one-way analysis of variance (ANOVA) will be used. 
 
-```{r diveaov, message=FALSE, echo=FALSE}
+```{r diveaov, echo=FALSE}
 diveaov = aov(stat ~ tide, data = dive_samples)
 ```
 
-```{r ,warning=FALSE, echo=FALSE}
+```{r anova2,warning=FALSE, echo=FALSE}
 summary(diveaov)
 TukeyHSD(diveaov)
 ```
@@ -263,19 +262,17 @@ t.test(stat ~ tide, data = loons_dive_2024_1)
 
 REPORT: An analysis of variance (ANOVA) on these dive times yielded significant variation among various tidal stages (One-Way ANOVA; F(2,2997) = 5713, p <0.005). A post hoc Tukey HSD test showed that each tidal stage differed significantly from each other (Figure above). The average dive time during high tide was 41.97 seconds, 30.4 during mid tide, and 47.45 during low tide. 
 
-## Exposure Level and Abundance - 2023
+## Exposure Level and Abundance in 2023
+
+The third analysis that will be conducted will be investigating the potential relationship between exposure level and *G. immer* abundance during the 2023 observation period. The null hypothesis for this analysis suggests that *G. immer* abundance will be independent of exposure level, whilst the hypothesis suggests the opposite. 
+
+Null Hypothesis: Higher exposure level of location will not significantly positively affect *G. immer* presence.  
 
 Hypothesis: Higher exposure level of location significantly positively affects *G. immer* presence. 
 
-Null Hypothesis: Higher exposure level of location will not significantly positively affect *G. immer* presence. 
-
-Predictor variable = categorical
-outcome variable = quantitative
-test = ANOVA
-
 ### Visualizations
 
-```{r}
+```{r warning=FALSE, echo=FALSE}
 loons_2023 %>% 
   ggplot(mapping = aes(x = shelter_gradient, y = specific_abundance)) + 
   geom_boxplot() +
@@ -285,13 +282,16 @@ loons_2023 %>%
        y = "Abundance")
 ```
 
-```{r}
+```{r warning=FALSE, echo=FALSE}
 loons_2023 %>% 
   ggplot(mapping = aes(x = specific_abundance)) +
   geom_histogram() +
   geom_density() + 
   facet_wrap(~shelter_gradient, ncol = 2)
+```
 
+
+```{r warning=FALSE, echo=FALSE}
 #plot
 loons_2023 %>% 
   ggplot(aes(x = specific_abundance, y = shelter_gradient, fill = shelter_gradient)) + 
@@ -309,6 +309,7 @@ loons_2023 %>%
 ```
 
 ### Statistics
+To determine if there is a significant difference in the abundance of *G. immer* in locations with varying exposure levels, where the exposure levels are categorical variable with five levels (exposed, moderately exposed, moderate, moderately sheltered, and sheltered), and the abundance is a continuous numerical variable, a one-way analysis of variance (ANOVA) will be used. 
 
 ```{r}
 abundanceexposureaov = aov(specific_abundance ~ shelter_gradient, data = loons_2023)
@@ -321,9 +322,11 @@ An unplanned analytical comparison demonstrated that *G. immer* presence [finish
 
 ## Exposure Level and Behavior
 
-Hypothesis: Exposure level of location significantly impacts *G. immer* behavior. 
+The third analysis that will be conducted will be investigating the potential relationship between exposure level and *G. immer* behavior during the 2023 observation period. The null hypothesis for this analysis suggests that *G. immer* behavior will be independent of exposure level, whilst the hypothesis suggests the opposite. 
 
 Null Hypothesis: Exposure level of location has no significant impact on *G. immer* behavior. 
+
+Hypothesis: Exposure level of location significantly impacts *G. immer* behavior. 
 
 ### Visualizations
 
