@@ -271,6 +271,9 @@ Null Hypothesis: Higher exposure level of location will not significantly positi
 Hypothesis: Higher exposure level of location significantly positively affects *G. immer* presence. 
 
 ### Visualizations
+Below we are visualizing abundance in the form of boxplots. 
+
+As we can see below, it appears as though there is the highest abundance at locations that are exposed and the lowest abundance at locations that are sheltered. Statistical tests will need to be performed to see if there is a significant difference in the abundances at different exposure levels. 
 
 ```{r warning=FALSE, echo=FALSE}
 loons_2023 %>% 
@@ -345,7 +348,7 @@ loons_2023 %>%
 
 ### Statistics
 
-```{r}
+```{r, warning=FALSE, echo=FALSE}
 behavior_exposure_kruskal <- kruskal.test(behavior ~ shelter_gradient, data = loons_2023)
 behavior_exposure_kruskal
 
@@ -353,7 +356,63 @@ behavior_exposure_dunn <- loons_2023 %>% dunn_test(behavior ~ shelter_gradient, 
 behavior_exposure_dunn
 ```
 
-### REPORT
+#### Chi-Squared Test of Independence
+The Chi-Squared Test of Independence examines whether there is a relationship between two categorical variables. Our null hypothesis, that exposure will not have a significant effect on *G. immer* behavior, assumes that exposure level and behavior are independent.
+
+#### Expected Frequencies and Contingency Table
+Before performing the chi-square test, we need to calculate the expected frequencies for each cell in the contingency table. These expected frequencies represent what you would expect to observe if there were no association between exposure and behavior.
+
+```{r contingency-table2, echo=FALSE}
+contingency_table2 <- table(loons_2023$shelter_gradient, loons_2023$behavior)
+contingency_table2
+```
+
+#### Chi-square Test
+Now that we have the contingency table of expected frequencies, we can perform the statistical test. 
+
+```{r chi-square-test2, warning=FALSE, echo=FALSE}
+chi_sq_test2 <- chisq.test(contingency_table2)
+chi_sq_test2
+```
+
+REPORT: There was no significant association between exposure level and behavior, so there is no need for a Post-hoc test. 
+
+#### Bonferroni Adjustment
+[insert section about what a bonferroni adjustment is]
+
+```{r}
+#calculating expected vs. observed frequencies
+observed <- chi_sq_test2$observed
+expected <- chi_sq_test2$expected
+
+#calculating residuals
+residuals <- observed - expected
+
+#calculate number of exposure levels
+n_levels <- nrow(contingency_table2)
+
+#creating matrix to store p-vales for pairwise comparison
+p_values <- matrix(NA, ncol = n_levels, nrow = n_levels)
+
+#pairwise comparison
+for (i in 1:(n_levels - 1)) {
+  for (j in (i + 1):n_levels) {
+
+#Calculate standardized residuals for the cell (i, j)
+cell_residual <- residuals[i, j]
+    
+#calculate Bonferroni-adjusted p-value
+    p_values[i, j] <- pchisq(cell_residual^2, df = 1, lower.tail = FALSE) * (n_levels * (n_levels - 1)) / 2
+  }
+}
+
+p_values <- p_values + t(p_values)
+diag(p_values) <- 1  # Set diagonal to 1 since we're not interested in self-comparisons
+
+p_value
+```
+
+REPORT: 
 
 ## Wave Class and Behavior
 
