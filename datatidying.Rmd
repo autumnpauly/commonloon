@@ -125,3 +125,11 @@ ggplot(data = loons_2023_behavior, mapping = aes(x = tide)) +
   geom_bar()
 ```
 
+# Writing CSV
+
+Now, we should write this new tidied dataset as a CSV so that it can be read across all the .Rmd files. 
+
+```{r CSV-writing}
+write_csv(loons_2023, "loon_2023_tidy.csv")
+write_csv(loons_2024, "loon_2024_tidy.csv")
+```
