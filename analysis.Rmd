@@ -24,8 +24,8 @@ library(parsnip)
 ```
 
 ```{r read-in-data}
-loons_2023 <- read_csv("loons_2023.csv")
-loons_2024 <- read_csv("loons_2024.csv")
+loons_2023 <- read_csv("loon_2023_tidy.csv")
+loons_2024 <- read_csv("loon_2024_tidy.csv")
 ```
 
 # Tidal Condition and Behavior for 2023 and 2024
@@ -94,20 +94,20 @@ chi_sq_test1
 REPORT: The behavior of Common Loons is dependent on tidal condition (Pearson's Chi-squared test; X-squared = 33.184, df = 10, p-value > 0.005). 
 
 ```{r}
-install.packages("summarytools")
-library(summarytools)
-library(dplyr)
-
-# fourth method:
-loons_2023 %$%
-  ctable(tide, behavior,
-    prop = "r", chisq = TRUE, headings = FALSE
-  ) %>%
-  print(
-    method = "render",
-    style = "rmarkdown",
-    footnote = NA
-  )
+# install.packages("summarytools")
+# library(summarytools)
+# library(dplyr)
+# 
+# # fourth method:
+# loons_2023 %$%
+#   ctable(tide, behavior,
+#     prop = "r", chisq = TRUE, headings = FALSE
+#   ) %>%
+#   print(
+#     method = "render",
+#     style = "rmarkdown",
+#     footnote = NA
+#   )
 ```
 
 <!-- #### ANOVA -->
@@ -152,8 +152,8 @@ Null Hypothesis: Low tide will not cause G. immer to have significantly longer d
 ```{r mutation, baby}
 library(stringr)
 library(ggpubr)
-install.packages("moments")
-library(moments)
+# install.packages("moments")
+# library(moments)
 
 loons_dive_2024 <- loons_2024 %>% 
   filter(species == "common_loon") %>% 
@@ -292,11 +292,11 @@ loons_dive_2024_1 <- dive_samples %>%
 t.test(stat ~ tide, data = loons_dive_2024_1)
 ```
 
-REPORT: The dive times of Common Loons were significantly longer during high tide in comparision to dives during mid tide (Welch's Two Sample t-test; t = 77.381, df = 1212, p-value < 0.0005). The average dive time during high tide was 41.97 seconds. The average dive time during mid tide was 30.4 seconds. 
+REPORT: The dive times of Common Loons were significantly longer during high tide in comparison to dives during mid tide (Welch's Two Sample t-test; t = 77.381, df = 1212, p-value < 0.0005). The average dive time during high tide was 41.97 seconds. The average dive time during mid tide was 30.4 seconds. 
 
-REPORT: The dive times of Common Loons were significantly longer during low tide in comparision to dives during high tide (Welch's Two Sample t-test; t = -39.158, df = 1244.3, p-value < 0.0005). The average dive time during low tide was 47.45 seconds. The average dive time during high tide was 41.97 seconds.
+REPORT: The dive times of Common Loons were significantly longer during low tide in comparison to dives during high tide (Welch's Two Sample t-test; t = -39.158, df = 1244.3, p-value < 0.0005). The average dive time during low tide was 47.45 seconds. The average dive time during high tide was 41.97 seconds.
 
-REPORT: The dive times of Common Loons were significantly longer during low tide in comparision to dives during mid tide (Welch's Two Sample t-test; t = 87.921, df = 1987.6, p-value < 0.0005). The average dive time during low tide was 47.45 seconds. The average dive time during mid tide was 30.4 seconds. 
+REPORT: The dive times of Common Loons were significantly longer during low tide in comparison to dives during mid tide (Welch's Two Sample t-test; t = 87.921, df = 1987.6, p-value < 0.0005). The average dive time during low tide was 47.45 seconds. The average dive time during mid tide was 30.4 seconds. 
 
 # Exposure Level and Abundance - 2023
 
@@ -342,6 +342,7 @@ loons_2023 %>%
 ```
 
 ```{r}
+#there might be an error in this statistical test, so I would double check this.
 abundanceexposureaov = aov(specific_abundance ~ shelter_gradient, data = loons_2023)
 summary(abundanceexposureaov)
 TukeyHSD(abundanceexposureaov)
