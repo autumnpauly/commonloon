@@ -342,14 +342,13 @@ loons_2023 %>%
 ```
 
 ```{r}
-#there might be an error in this statistical test, so I would double check this.
 abundanceexposureaov = aov(specific_abundance ~ shelter_gradient, data = loons_2023)
 summary(abundanceexposureaov)
 TukeyHSD(abundanceexposureaov)
 ```
 
-REPORT: An Analysis of Variance test demonstrated that coastal exposure levl has a significant effect on the abundance of G. immer (ANOVA, F_4,126 = 6.167; p = 0.000145). 
-An uplanned analytical comparison demonstrated that G. immer prescence
+REPORT: An Analysis of Variance test demonstrated that coastal exposure level has a significant effect on the abundance of G. immer (ANOVA, F_4,126 = 6.167; p = 0.000145). 
+An unplanned analytical comparison demonstrated that G. immer presence [finish this]. 
 
 # Exposure Level and Behavior
 
