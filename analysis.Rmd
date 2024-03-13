@@ -126,9 +126,15 @@ If we want to compare the abundance of diving behavior between the three tidal s
 loon_2023_behavior <- loons_2023 %>% 
   select(species, behavior, date, tide) %>% 
   filter(species == "COMMON LOON") %>% 
+  group_by(date) %>% 
+  count(date) %>% 
+  mutate(total_behavior = n)
+
+
+#  loon_2023_behavior <- 
+loon_2023_behavior %>%
   mutate(behavior =  if_else(behavior == "DIVING", "DIVING", "OTHER")) %>% 
-  group_by(date, tide, behavior) %>% 
-  count(behavior)
+  group_by(date, tide, behavior, total_behavior)
 ```
 
 Running an ANOVA test
