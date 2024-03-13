@@ -147,8 +147,13 @@ Hypothesis: Low tide will cause G. immer to have significantly longer dive times
 
 Null Hypothesis: Low tide will not cause G. immer to have significantly longer dive times. 
 
+### Data Tidying
+
 ```{r mutation, baby}
 library(stringr)
+library(ggpubr)
+install.packages("moments")
+library(moments)
 
 loons_dive_2024 <- loons_2024 %>% 
   filter(species == "common_loon") %>% 
@@ -172,10 +177,86 @@ loons_dive_2024 <- loons_dive_2024 %>%
                            "high" = "high_ebb"))
 ```
 
-```{r}
-loons_dive_2024$tide.f <- fct_relevel(loons_dive_2024$general_tide, c("low", "mid", "high"))
+### Randomly Sampling
 
-ggplot(data = loons_dive_2024, mapping = aes(x = tide.f, y = dive_time_obs)) + 
+```{r}
+library(tidymodels)
+
+#low tide
+loons_lowdive_2024 <- loons_dive_2024 %>% 
+  filter(general_tide == "low") %>% 
+  select(dive_time_obs)
+
+set.seed(101)
+
+sampled_low <- loons_lowdive_2024 %>%
+  specify(response = dive_time_obs) %>% 
+  generate(reps = 1000, type = "bootstrap") %>% 
+  calculate(stat = "mean")
+
+sampled_low <- sampled_low %>% 
+  mutate(replicate = as.character(replicate)) %>% 
+  mutate(tide = if_else(replicate != 0, "low", replicate)) %>% 
+  select(tide, stat)
+
+#mid tide
+loons_middive_2024 <- loons_dive_2024 %>% 
+  filter(general_tide == "mid") %>% 
+  select(dive_time_obs)
+
+set.seed(101)
+
+sampled_mid <- loons_middive_2024 %>%
+  specify(response = dive_time_obs) %>% 
+  generate(reps = 1000, type = "bootstrap") %>% 
+  calculate(stat = "mean")
+
+sampled_mid <- sampled_mid %>% 
+  mutate(replicate = as.character(replicate)) %>% 
+  mutate(tide = if_else(replicate != 0, "mid", replicate)) %>% 
+  select(tide, stat)
+
+#high tide
+loons_highdive_2024 <- loons_dive_2024 %>% 
+  filter(general_tide == "high") %>% 
+  select(dive_time_obs)
+
+set.seed(101)
+
+sampled_high <- loons_highdive_2024 %>%
+  specify(response = dive_time_obs) %>% 
+  generate(reps = 1000, type = "bootstrap") %>% 
+  calculate(stat = "mean")
+
+sampled_high <- sampled_high %>% 
+  mutate(replicate = as.character(replicate)) %>% 
+  mutate(tide = if_else(replicate != 0, "high", replicate)) %>% 
+  select(tide, stat)
+
+#joining dataset
+dive_samples <- rbind(sampled_low, sampled_high)
+dive_samples <- rbind(dive_samples, sampled_mid)
+```
+
+### Visualizations
+
+```{r}
+ggplot(data = dive_samples, mapping = aes(x = stat)) + 
+  geom_histogram() + 
+  facet_wrap(~tide, ncol = 1) + 
+  theme_minimal() +
+  labs(title = "Dive Times of Common Loons", 
+       subtitle = "during low, mid, and high tide", 
+       x = "Dive Time (seconds)", 
+       y = "Count")
+```
+
+Below we are visualizing dive times in the form of a boxplot. 
+
+```{r}
+dive_samples$tide <- fct_relevel(dive_samples$tide, c("low", "mid", "high"))
+
+ggplot(data = dive_samples, mapping = aes(x = tide, y = stat)) + 
   geom_boxplot() +
   labs(title = "Tidal Conditions and Dive Times", 
        subtitle = "of Gavia immer", 
@@ -183,52 +264,39 @@ ggplot(data = loons_dive_2024, mapping = aes(x = tide.f, y = dive_time_obs)) +
        y = "Dive Time (seconds)")
 ```
 
+### Statistics
+
 ```{r}
-woomaov = aov(dive_time_obs ~ general_tide, data = loons_dive_2024)
-summary(woomaov)
-TukeyHSD(woomaov)
+diveaov = aov(stat ~ tide, data = dive_samples)
+summary(diveaov)
+TukeyHSD(diveaov)
+```
 
+```{r}
 #high to low
-loons_dive_2024_1 <- loons_dive_2024 %>% 
-  filter(general_tide == "high"|general_tide == "mid")
+loons_dive_2024_1 <- dive_samples %>%
+  filter(tide == "high"|tide == "mid")
 
-t.test(dive_time_obs ~ general_tide, data = loons_dive_2024_1)
+t.test(stat ~ tide, data = loons_dive_2024_1)
 
 #low to high
-loons_dive_2024_1 <- loons_dive_2024 %>% 
-  filter(general_tide == "high"|general_tide == "low")
+loons_dive_2024_1 <- dive_samples %>%
+  filter(tide == "high"|tide == "low")
 
-t.test(dive_time_obs ~ general_tide, data = loons_dive_2024_1)
+t.test(stat ~ tide, data = loons_dive_2024_1)
 
 #low to mid
-loons_dive_2024_1 <- loons_dive_2024 %>% 
-  filter(general_tide == "mid"|general_tide == "low")
+loons_dive_2024_1 <- dive_samples %>%
+  filter(tide == "mid"|tide == "low")
 
-t.test(dive_time_obs ~ general_tide, data = loons_dive_2024_1)
+t.test(stat ~ tide, data = loons_dive_2024_1)
 ```
-REPORT: There was no significant difference between dive times during low tides and high tides [insert test stat] and between dive times during mid tides and high tides [insert test statistic]. The dive times during mid tides were significantly lower than dive times during low tides [insert test statistic]. 
 
-The average dive time during high tide was 42.02 seconds, 30.6 seconds during mid tides, and 47.4 seconds during low tides. 
+REPORT: The dive times of Common Loons were significantly longer during high tide in comparision to dives during mid tide (Welch's Two Sample t-test; t = 77.381, df = 1212, p-value < 0.0005). The average dive time during high tide was 41.97 seconds. The average dive time during mid tide was 30.4 seconds. 
 
-```{r adjusted-r-squared}
+REPORT: The dive times of Common Loons were significantly longer during low tide in comparision to dives during high tide (Welch's Two Sample t-test; t = -39.158, df = 1244.3, p-value < 0.0005). The average dive time during low tide was 47.45 seconds. The average dive time during high tide was 41.97 seconds.
 
-#setting linear model- using tidal height
-times_vs_tide_model <- linear_reg() %>% 
-  set_engine("lm") %>% 
-  fit(dive_time_obs ~ tidal_height, data = loons_dive_2024)
-
-#augmenting the weight data
-times_vs_tide_model_augment <- augment(times_vs_tide_model$fit)
-
-ggplot(times_vs_tide_model_augment, mapping = aes(x = .fitted, y = .resid)) +
-  geom_jitter(alpha = 0.75) +
-  geom_smooth(color = "black") +
-  labs(x = "Predicted Dive Time", y = "Residuals")
-
-#assessing the r-squared value
-glance(times_vs_tide_model)$r.squared
-```
-R_SQUARED REPORT: The r-squared value is `[...]`, which means that the variable `general_tide` accounts for [...] of the variation in the dependent variable, `dive_time_obs`. 
+REPORT: The dive times of Common Loons were significantly longer during low tide in comparision to dives during mid tide (Welch's Two Sample t-test; t = 87.921, df = 1987.6, p-value < 0.0005). The average dive time during low tide was 47.45 seconds. The average dive time during mid tide was 30.4 seconds. 
 
 # Exposure Level and Abundance - 2023
 
