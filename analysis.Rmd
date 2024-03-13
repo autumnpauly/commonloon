@@ -119,56 +119,36 @@ loons_2023 %$%
   )
 ```
 
-#### ANOVA
-If we want to compare the abundance of diving behavior between the three tidal stages (high tide, mid tide, and low tide), we need to compare the means of a count variable (number of diving behaviors) across different groups (tidal stages). ANOVA is suitable for comparing means across multiple groups, which makes it appropriate for this scenario.
+<!-- #### ANOVA -->
+<!-- If we want to compare the abundance of diving behavior between the three tidal stages (high tide, mid tide, and low tide), we need to compare the means of a count variable (number of diving behaviors) across different groups (tidal stages). ANOVA is suitable for comparing means across multiple groups, which makes it appropriate for this scenario. -->
 
-```{r}
-loon_2023_behavior <- loons_2023 %>% 
-  select(species, behavior, date, tide) %>% 
-  filter(species == "COMMON LOON") %>% 
-  group_by(date) %>% 
-  count(date) %>% 
-  mutate(total_behavior = n)
+<!-- ```{r} -->
+<!-- loon_2023_diving <- loons_2023 %>% -->
+<!--   select(species, behavior, date, tide, overall_abundance, specific_abundance) %>% -->
+<!--   filter(species == "COMMON LOON") %>% -->
+<!--   mutate(behavior = if_else(behavior == "DIVING", "diving", "other")) %>% -->
+<!--   group_by(date, overall_abundance, tide) %>% -->
+<!--   count(behavior) %>% -->
+<!--   mutate(diving_count = n) -->
 
+<!-- loon_2023_diving <-loon_2023_diving %>% -->
+<!--   filter(behavior == "diving") %>% -->
+<!--   mutate(diving_percentage = diving_count/overall_abundance) -->
+<!-- ``` -->
 
-#  loon_2023_behavior <- 
-loon_2023_behavior %>%
-  mutate(behavior =  if_else(behavior == "DIVING", "DIVING", "OTHER")) %>% 
-  group_by(date, tide, behavior, total_behavior)
-```
+<!-- Running an ANOVA test -->
 
-Running an ANOVA test
+<!-- ```{r} -->
+<!-- # Perform ANOVA -->
+<!-- anova_model1 <- aov(diving_percentage ~ tide, data = loon_2023_diving) -->
+<!-- summary(anova_model1) -->
 
-```{r}
-# Perform ANOVA
-anova_model1 <- aov(n ~ tide, data = loon_2023_behavior)
-summary(anova_model1)
+<!-- # Perform Tukey's HSD test for pairwise comparisons -->
+<!-- tukey_results1 <- TukeyHSD(anova_model1) -->
+<!-- print(tukey_results1) -->
+<!-- ``` -->
 
-# Perform Tukey's HSD test for pairwise comparisons
-tukey_results1 <- TukeyHSD(anova_model1)
-print(tukey_results1)
-```
-
-REPORT: 
-
-
-#### Pairwise Comparison Test
-
-```{r}
-#load packages
-install.packages("multcomp")
-library(multcomp)
-
-#define contrasts
-# Define contrasts for pairwise comparisons
-contrasts <- matrix(c(0, 1, -1, 0, 0, 1), nrow = 3, byrow = TRUE,
-                    dimnames = list(c("HIGH vs. MID", "HIHG vs. LOW", "MID vs. LOW"), NULL))
-
-# Perform pairwise comparisons
-pairwise_comparison <- glht(poisson_model, linfct = contrasts)
-summary(pairwise_comparison)
-```
-
+<!-- REPORT: -->
 
 # Tidal Conditions and Dive Times - 2024
 
