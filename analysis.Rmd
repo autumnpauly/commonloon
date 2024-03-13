@@ -1,19 +1,24 @@
 ---
-title: "Common Loon Analysis"
+title: "Winter Habitat Use by Common Loons (Gavia Immer)"
+subtitle: "on Mount Desert Island, Maine"
 author: "Ellie Gabrielson, Will Draxler, Autumn Pauly"
-output: github_document
+date: "03/12/2024"
+output: 
+  html_document: 
+    toc: true
 ---
 # Background Information
 ## Introduction
 Although Common Loons (Gavia immer) have been studied extensively during the breeding season not much is known of their behavior on their ocean wintering grounds, where Loons spend a significant part of their lives (Bent, 2009). The few studies that do look at winter behavior often yield conflicting results (McIntyre, 1978; Daub, 1989; Ford and Gieg, 1995). The possible use of different shoreline habitats for activities such as feeding, sleeping, or taking shelter is worthy of study. McIntyre (1978) found common loons were semi-social and formed loose rafts and that loon behavior varied with tides, weather, and time of day. Daub (1989) and later Ford and Gieg (1995) found refuting evidence suggesting loons were neither social nor territorial, and did not change their behavior much by tide. Holm and Burger (2002) found that the general pattern for loons was that they foraged during slack and main-flow water. Additionally, the possible difference in dive times as a result of varying tidal heights is worthy of study. Thompson and Price (2006) observed that dive times were longer during low tide in comparison to other tidal stages, though more studies should be conducted to assess the use of tidal stage and behavior. 
 
-Our general hypothesis when analyzing this data is that environmental conditions affect the behavior of the G. immer. The null hypothesis to this statement is that environmental conditions do not affect the behavior of the G. immer.
+Our general hypothesis when analyzing this data is that environmental conditions affect the behavior of the *G. immer*. The null hypothesis to this statement is that environmental conditions do not affect the behavior of the *G. immer*.
 
 ## Methods
 In 2023, observations were conducted at nine established observation sites along the coastline of Mount Desert Island in Hancock County (Maine). Observations occurred from January 2023 to March 2023 on a biweekly basis, where each waterfowl individual was recorded as well as their behaviors, referencing Daub’s (1989) list of behaviors, and coordinate location. Locational coordinates were obtained by estimating the individual’s rough location digitally (accurate to + or - 10 m). Each transect site was visited for roughly 5-10 minutes, where data collection followed initial observation. Utilizing a Kestrel 2500, weather data was recorded accurately to + or - 1°C of temperatures and within 3% of wind speed. Referencing Daub’s (1989) list of behaviors, each species’ behavior during the observation was noted. The weather and environmental data recorded included wind speed and direction, barometer, cloud cover, precipitation, humidity, temperature, tidal percentage, and wave class (Beaufort Wind Speed). Tidal data was gathered from NOAA’s digital tidal charts. This study was repeated in 2024 with the addition of observational variables including species dive times and tidal height. 
 
-# Load Packages and Data
-```{r load-packages, message = FALSE}
+# Data Analysis
+## Load Packages and Data
+```{r load-packages, message = FALSE, warning=FALSE}
 #install.packages("tidyverse")
 library(tidyverse)
 library(rmarkdown)
@@ -23,23 +28,23 @@ library(rstatix)
 library(parsnip)
 ```
 
-```{r read-in-data}
+```{r read-in-data, message = FALSE, warning=FALSE}
 loons_2023 <- read_csv("loon_2023_tidy.csv")
 loons_2024 <- read_csv("loon_2024_tidy.csv")
 ```
 
-# Tidal Condition and Behavior for 2023 and 2024
+## Tidal Condition and Behavior for 2023
 
-Hypothesis: Tidal height has a significant effect on G. immer behavior
+The first analysis that will be conducted will be investigating the potential relationship between tidal condition and *G. immer* behavior. As was stated above, the behaviors chosen are referencing Daub’s (1989) list of behaviors. The tidal condition was sorted into three categories: `high`, `mid`, and `low`. 
 
-Null Hypothesis: Tidal height will not have a significant effect on G. immer behavior
+Hypothesis: Tidal height has a significant effect on *G. immer* behavior
+Null Hypothesis: Tidal height will not have a significant effect on *G. immer* behavior
 
-```{r sampling-tides-behavior}
-# #this is the dataset that we want to sample from? 
-# loon_tide_behavior <- loons_2023 %>% 
-#   select(behavior, tide)
+The null hypothesis for this analysis suggests that behaviors of Common Loons will be dependent of tidal condition, whilst the hypothesis suggests the opposite. 
 
-## Tide-Behavior visualizations - to be moved to analysis
+### Visualizations
+
+```{r sampling-tides-behavior, echo=FALSE}
 loons_2023 %>% 
   count(behavior, tide) %>% 
   ggplot(aes(x = behavior, y = n)) +
@@ -63,13 +68,14 @@ loons_2023 %>%
        y = "Count")
 ```
 
-### Chi-Squared Test of Independence
-The Chi-Squared Test of Independence examines whether there is a relationship between two categorical variables. Our null hypothesis, that tidal height will not have a significant effect on G. immer behavior, assumes that tidal condition and behavior are independent. Our hypothesis, that tidal height will have a significant effect on G. immer behavior, assumes that tidal condition and behavior are dependent.
+### Statistics
+#### Chi-Squared Test of Independence
+The Chi-Squared Test of Independence examines whether there is a relationship between two categorical variables. Our null hypothesis, that tidal height will not have a significant effect on *G. immer* behavior, assumes that tidal condition and behavior are independent. Our hypothesis, that tidal height will have a significant effect on *G. immer* behavior, assumes that tidal condition and behavior are dependent.
 
 #### Expected Frequencies and Contingency Table
 Before performing the chi-square test, we need to calculate the expected frequencies for each cell in the contingency table. These expected frequencies represent what you would expect to observe if there were no association between tidal condition and behavior.
 
-```{r contingency-table}
+```{r contingency-table, echo=FALSE}
 contingency_table1 <- table(loons_2023$tide, loons_2023$behavior)
 contingency_table1
 ```
@@ -77,7 +83,7 @@ contingency_table1
 #### Chi-square Test
 Now that we have the contingency table of expected frequencies, we can perform the statistical test. 
 
-```{r chi-square-test}
+```{r chi-square-test, warning=FALSE, echo=FALSE}
 chi_sq_test1 <- chisq.test(contingency_table1)
 chi_sq_test1
 
@@ -93,68 +99,20 @@ chi_sq_test1
 
 REPORT: The behavior of Common Loons is dependent on tidal condition (Pearson's Chi-squared test; X-squared = 33.184, df = 10, p-value > 0.005). 
 
-```{r}
-# install.packages("summarytools")
-# library(summarytools)
-# library(dplyr)
-# 
-# # fourth method:
-# loons_2023 %$%
-#   ctable(tide, behavior,
-#     prop = "r", chisq = TRUE, headings = FALSE
-#   ) %>%
-#   print(
-#     method = "render",
-#     style = "rmarkdown",
-#     footnote = NA
-#   )
-```
+## Tidal Conditions and Dive Times in 2024
 
-<!-- #### ANOVA -->
-<!-- If we want to compare the abundance of diving behavior between the three tidal stages (high tide, mid tide, and low tide), we need to compare the means of a count variable (number of diving behaviors) across different groups (tidal stages). ANOVA is suitable for comparing means across multiple groups, which makes it appropriate for this scenario. -->
+The second analysis that will be conducted will be investigating the potential relationship between tidal condition and *G. immer* dive times. The null hypothesis for this analysis suggests that dive times of *G. immer* will be dependent of tidal condition, whilst the hypothesis suggests the opposite. 
 
-<!-- ```{r} -->
-<!-- loon_2023_diving <- loons_2023 %>% -->
-<!--   select(species, behavior, date, tide, overall_abundance, specific_abundance) %>% -->
-<!--   filter(species == "COMMON LOON") %>% -->
-<!--   mutate(behavior = if_else(behavior == "DIVING", "diving", "other")) %>% -->
-<!--   group_by(date, overall_abundance, tide) %>% -->
-<!--   count(behavior) %>% -->
-<!--   mutate(diving_count = n) -->
+Hypothesis: Low tide will cause *G. immer* to have significantly longer dive times. 
+Null Hypothesis: Low tide will not cause *G. immer* to have significantly longer dive times. 
 
-<!-- loon_2023_diving <-loon_2023_diving %>% -->
-<!--   filter(behavior == "diving") %>% -->
-<!--   mutate(diving_percentage = diving_count/overall_abundance) -->
-<!-- ``` -->
-
-<!-- Running an ANOVA test -->
-
-<!-- ```{r} -->
-<!-- # Perform ANOVA -->
-<!-- anova_model1 <- aov(diving_percentage ~ tide, data = loon_2023_diving) -->
-<!-- summary(anova_model1) -->
-
-<!-- # Perform Tukey's HSD test for pairwise comparisons -->
-<!-- tukey_results1 <- TukeyHSD(anova_model1) -->
-<!-- print(tukey_results1) -->
-<!-- ``` -->
-
-<!-- REPORT: -->
-
-# Tidal Conditions and Dive Times - 2024
-
-Hypothesis: Low tide will cause G. immer to have significantly longer dive times. 
-
-Null Hypothesis: Low tide will not cause G. immer to have significantly longer dive times. 
-
-### Data Tidying
-
-```{r mutation, baby}
+```{r message=FALSE, echo=FALSE, warning=FALSE}
 library(stringr)
 library(ggpubr)
-# install.packages("moments")
-# library(moments)
+library(tidymodels)
+```
 
+```{r mutation, baby, echo=FALSE, message=FALSE, warning=FALSE}
 loons_dive_2024 <- loons_2024 %>% 
   filter(species == "common_loon") %>% 
   select(tide, behavior, dive_time_obs, tidal_height) %>% 
@@ -178,10 +136,15 @@ loons_dive_2024 <- loons_dive_2024 %>%
 ```
 
 ### Randomly Sampling
+As can be seen in the histograms below, we do not have a normal distribution of data during any of the tidal cycles. To mitigate this, we will be randomly sampling dive times during each tidal stage 100 times. 
 
-```{r}
-library(tidymodels)
+```{r , warning=FALSE, echo=FALSE}
+ggplot(data = loons_dive_2024, mapping = aes(x = dive_time_obs)) + 
+  geom_histogram()+ 
+  facet_wrap(~general_tide)
+```
 
+```{r, warning=FALSE}
 #low tide
 loons_lowdive_2024 <- loons_dive_2024 %>% 
   filter(general_tide == "low") %>% 
@@ -238,7 +201,7 @@ dive_samples <- rbind(sampled_low, sampled_high)
 dive_samples <- rbind(dive_samples, sampled_mid)
 ```
 
-### Visualizations
+Now, we can see that we have a normal distribution of dive times during all tidal cycles, which now makes an ANOVA an appropriate statistical test to use for this data frame. 
 
 ```{r}
 ggplot(data = dive_samples, mapping = aes(x = stat)) + 
@@ -251,9 +214,11 @@ ggplot(data = dive_samples, mapping = aes(x = stat)) +
        y = "Count")
 ```
 
-Below we are visualizing dive times in the form of a boxplot. 
+### Visualizations
 
-```{r}
+Below we are visualizing dive times in the form of a boxplot. As we can see below, it appears as though the dive times are longest during low tide, followed by second longest during high tide, and shortest during low tide. We will need to perform statistical tests to see if there are any significant differences between the tidal stages.  
+
+```{r echo=FALSE, warning=FALSE}
 dive_samples$tide <- fct_relevel(dive_samples$tide, c("low", "mid", "high"))
 
 ggplot(data = dive_samples, mapping = aes(x = tide, y = stat)) + 
@@ -265,14 +230,18 @@ ggplot(data = dive_samples, mapping = aes(x = tide, y = stat)) +
 ```
 
 ### Statistics
+To determine if there is a significant difference in dive times of Common loons during different tidal stages, where the tidal stages are categorical with three levels (high tide, mid tide, and low tide), and the dive time is a continuous numerical variable, a one-way analysis of variance (ANOVA) will be used. 
 
-```{r}
+```{r diveaov, message=FALSE, echo=FALSE}
 diveaov = aov(stat ~ tide, data = dive_samples)
+```
+
+```{r ,warning=FALSE, echo=FALSE}
 summary(diveaov)
 TukeyHSD(diveaov)
 ```
 
-```{r}
+```{r ,message=FALSE, echo=FALSE, warning=FALSE}
 #high to low
 loons_dive_2024_1 <- dive_samples %>%
   filter(tide == "high"|tide == "mid")
@@ -292,21 +261,19 @@ loons_dive_2024_1 <- dive_samples %>%
 t.test(stat ~ tide, data = loons_dive_2024_1)
 ```
 
-REPORT: The dive times of Common Loons were significantly longer during high tide in comparison to dives during mid tide (Welch's Two Sample t-test; t = 77.381, df = 1212, p-value < 0.0005). The average dive time during high tide was 41.97 seconds. The average dive time during mid tide was 30.4 seconds. 
+REPORT: An analysis of variance (ANOVA) on these dive times yielded significant variation among various tidal stages (One-Way ANOVA; F(2,2997) = 5713, p <0.005). A post hoc Tukey HSD test showed that each tidal stage differed significantly from each other (Figure above). The average dive time during high tide was 41.97 seconds, 30.4 during mid tide, and 47.45 during low tide. 
 
-REPORT: The dive times of Common Loons were significantly longer during low tide in comparison to dives during high tide (Welch's Two Sample t-test; t = -39.158, df = 1244.3, p-value < 0.0005). The average dive time during low tide was 47.45 seconds. The average dive time during high tide was 41.97 seconds.
+## Exposure Level and Abundance - 2023
 
-REPORT: The dive times of Common Loons were significantly longer during low tide in comparison to dives during mid tide (Welch's Two Sample t-test; t = 87.921, df = 1987.6, p-value < 0.0005). The average dive time during low tide was 47.45 seconds. The average dive time during mid tide was 30.4 seconds. 
+Hypothesis: Higher exposure level of location significantly positively affects *G. immer* presence. 
 
-# Exposure Level and Abundance - 2023
-
-Hypothesis: Higher exposure level of location significantly positively affects G. immer presence. 
-
-Null Hypothesis: Higher exposure level of location will not significantly positively affect G. immer presence. 
+Null Hypothesis: Higher exposure level of location will not significantly positively affect *G. immer* presence. 
 
 Predictor variable = categorical
 outcome variable = quantitative
 test = ANOVA
+
+### Visualizations
 
 ```{r}
 loons_2023 %>% 
@@ -341,21 +308,24 @@ loons_2023 %>%
        fill = "Shelter Gradient")
 ```
 
+### Statistics
+
 ```{r}
 abundanceexposureaov = aov(specific_abundance ~ shelter_gradient, data = loons_2023)
 summary(abundanceexposureaov)
 TukeyHSD(abundanceexposureaov)
 ```
 
-REPORT: An Analysis of Variance test demonstrated that coastal exposure level has a significant effect on the abundance of G. immer (ANOVA, F_4,126 = 6.167; p = 0.000145). 
-An unplanned analytical comparison demonstrated that G. immer presence [finish this]. 
+REPORT: An Analysis of Variance test demonstrated that coastal exposure level has a significant effect on the abundance of *G. immer* (ANOVA, F_4,126 = 6.167; p = 0.000145). 
+An unplanned analytical comparison demonstrated that *G. immer* presence [finish this]. 
 
-# Exposure Level and Behavior
+## Exposure Level and Behavior
 
-Hypothesis: Exposure level of location significantly impacts G. immer behavior. 
+Hypothesis: Exposure level of location significantly impacts *G. immer* behavior. 
 
-Null Hypothesis: Exposure level of location has no significant impact on G. immer behavior. 
+Null Hypothesis: Exposure level of location has no significant impact on *G. immer* behavior. 
 
+### Visualizations
 
 ```{r}
 loons_2023 %>% 
@@ -370,6 +340,8 @@ loons_2023 %>%
        y = "Count")
 ```
 
+### Statistics
+
 ```{r}
 behavior_exposure_kruskal <- kruskal.test(behavior ~ shelter_gradient, data = loons_2023)
 behavior_exposure_kruskal
@@ -380,11 +352,13 @@ behavior_exposure_dunn
 
 ### REPORT
 
-#Wave Class and Behavior
+## Wave Class and Behavior
 
-Hypothesis: Wave class will significantly affect G. immer behavior.
+Hypothesis: Wave class will significantly affect *G. immer* behavior.
 
-Null Hypothesis: Wave class will not significantly affect G. immer behavior.
+Null Hypothesis: Wave class will not significantly affect *G. immer* behavior.
+
+### Visualizations
 
 ```{r}
 loons_2023 %>% 
@@ -395,18 +369,25 @@ loons_2023 %>%
 loons_2023 %>%
   ggplot(aes(x = wave_class, y = behavior, fill = behavior)) + 
   geom_density_ridges(alpha = 0.6, bins = 1)
+```
 
+### Statistics
+
+```{r}
 waveclassaov = aov(wave_class ~ behavior, data = loons_2023)
 summary(waveclassaov)
-  
 ```
-Wave class did not significantly affect G. immer behavior (one-way ANOVA, F_4,126 = 2.356, P = 0.0572).
 
-#Meters Offshore and Dive Times
 
-Hypothesis: Distance from shore will significantly affect G. immer dive times. 
+Wave class did not significantly affect *G. immer* behavior (one-way ANOVA, F_4,126 = 2.356, P = 0.0572).
 
-Null Hypothesis: Distance from shore will not significantly affect G. immer dive times.
+## Meters Offshore and Dive Times
+
+Hypothesis: Distance from shore will significantly affect *G. immer* dive times. 
+
+Null Hypothesis: Distance from shore will not significantly affect *G. immer* dive times.
+
+### Visualizations
 
 ```{r}
 loons_dive_2024 <- loons_2024 %>% 
@@ -423,42 +404,54 @@ loons_dive_2024 %>%
   ggplot(aes(x = meters_offshore, y = dive_time_obs)) + 
   geom_jitter() + 
   geom_smooth(method = "lm")
+```
 
+### Statistics
+
+```{r}
 #linear model
 loon.dive.meters.lm <- lm(dive_time_obs ~ meters_offshore, data = loons_dive_2024)
 
 summary(loon.dive.meters.lm)
-
 ```
+
 
 A linear model demonstrated a significant positive relationship between dive time and meters off shore (F1,89 = 27.81 : p = <0.5). 24% of the total variability in dive time can be predicted through a knowledge of meters off shore.
 
-#Tidal height and dive times
+## Tidal height and dive times
 
-Hypothesis: Tidal height will significantly affect G. immer dive times.
+Hypothesis: Tidal height will significantly affect *G. immer* dive times.
 
-Null Hypothesis: Tidal height will not significantly affect G. immer dive times.
+Null Hypothesis: Tidal height will not significantly affect *G. immer* dive times.
+
+### Visualizations
 
 ```{r}
 loons_dive_2024 %>% 
   ggplot(aes(x = tidal_height, y = dive_time_obs)) + 
   geom_point() +
   geom_smooth(method = "lm")
+```
 
+### Statistics
 
+```{r}
 dive_time_tide_height_lm <- lm(dive_time_obs ~ tidal_height, data = loons_dive_2024)
 summary(dive_time_tide_height_lm)
 
 #This is actually so interesting
 ```
 
+
 A linear model demonstrated no significant relationship between dive time and tidal height (F1,88 = 0.014 : p = 0.91).
 
-#Tidal classification and dive times
+## Tidal classification and dive times
 
-Hypothesis: Tidal class will significantly affect G. immer dive times.
+Hypothesis: Tidal class will significantly affect *G. immer* dive times.
 
-Null Hypothesis: Tidal class will not significantly affect G. immer dive times.
+Null Hypothesis: Tidal class will not significantly affect *G. immer* dive times.
+
+### Visualizations
 
 ```{r}
 loons_dive_2024$tide <- fct_relevel(loons_dive_2024$tide, c("mid_ebb",
@@ -471,12 +464,17 @@ loons_dive_2024$tide <- fct_relevel(loons_dive_2024$tide, c("mid_ebb",
 loons_dive_2024 %>% 
 ggplot(mapping = aes(x = tide, y = dive_time_obs)) + 
   geom_boxplot()
+```
+
+### Statistics
+
+```{r}
 full_tide_aov = aov(dive_time_obs ~ tide, data = loons_dive_2024)
 summary(full_tide_aov)
 TukeyHSD(full_tide_aov)
 ```
 
-An Analysis of Variance test demonstrated that tidal class has a significant effect on the length of G. immer dive times (ANOVA, F_6,86 = 4.599; p = 0.000427). An uplanned analytical comparison demonstrated that G. immer dive times at low slack tide were signficantly different than those at mid ebb tide (TukeyB, p < 0.0005055), and dive lengths at high ebb tide were significantly different than those at mid ebb tide (TukeyB, p = 0.0017457). Otherwise, there were no significant differences in dive times between other tidal classes (TukeyB, p > 0.05)
+An Analysis of Variance test demonstrated that tidal class has a significant effect on the length of *G. immer* dive times (ANOVA, F_6,86 = 4.599; p = 0.000427). An uplanned analytical comparison demonstrated that *G. immer* dive times at low slack tide were signficantly different than those at mid ebb tide (TukeyB, p < 0.0005055), and dive lengths at high ebb tide were significantly different than those at mid ebb tide (TukeyB, p = 0.0017457). Otherwise, there were no significant differences in dive times between other tidal classes (TukeyB, p > 0.05)
 
 # Discussion / Conclusion
 

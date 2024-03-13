@@ -4,13 +4,72 @@ Ellie Gabrielson, Will Draxler, Autumn Pauly
 
 # Background Information
 
+## Introduction
+
+Although Common Loons (Gavia immer) have been studied extensively during
+the breeding season not much is known of their behavior on their ocean
+wintering grounds, where Loons spend a significant part of their lives
+(Bent, 2009). The few studies that do look at winter behavior often
+yield conflicting results (McIntyre, 1978; Daub, 1989; Ford and Gieg,
+1995). The possible use of different shoreline habitats for activities
+such as feeding, sleeping, or taking shelter is worthy of study.
+McIntyre (1978) found common loons were semi-social and formed loose
+rafts and that loon behavior varied with tides, weather, and time of
+day. Daub (1989) and later Ford and Gieg (1995) found refuting evidence
+suggesting loons were neither social nor territorial, and did not change
+their behavior much by tide. Holm and Burger (2002) found that the
+general pattern for loons was that they foraged during slack and
+main-flow water. Additionally, the possible difference in dive times as
+a result of varying tidal heights is worthy of study. Thompson and Price
+(2006) observed that dive times were longer during low tide in
+comparison to other tidal stages, though more studies should be
+conducted to assess the use of tidal stage and behavior.
+
+Our general hypothesis when analyzing this data is that environmental
+conditions affect the behavior of the G. immer. The null hypothesis to
+this statement is that environmental conditions do not affect the
+behavior of the G. immer.
+
+## Methods
+
+In 2023, observations were conducted at nine established observation
+sites along the coastline of Mount Desert Island in Hancock County
+(Maine). Observations occurred from January 2023 to March 2023 on a
+biweekly basis, where each waterfowl individual was recorded as well as
+their behaviors, referencing Daub’s (1989) list of behaviors, and
+coordinate location. Locational coordinates were obtained by estimating
+the individual’s rough location digitally (accurate to + or - 10 m).
+Each transect site was visited for roughly 5-10 minutes, where data
+collection followed initial observation. Utilizing a Kestrel 2500,
+weather data was recorded accurately to + or - 1°C of temperatures and
+within 3% of wind speed. Referencing Daub’s (1989) list of behaviors,
+each species’ behavior during the observation was noted. The weather and
+environmental data recorded included wind speed and direction,
+barometer, cloud cover, precipitation, humidity, temperature, tidal
+percentage, and wave class (Beaufort Wind Speed). Tidal data was
+gathered from NOAA’s digital tidal charts. This study was repeated in
+2024 with the addition of observational variables including species dive
+times and tidal height.
+
 # Load Packages and Data
 
 ``` r
 #install.packages("tidyverse")
 library(tidyverse)
+```
+
+    ## Warning: package 'tidyverse' was built under R version 4.3.3
+
+    ## Warning: package 'ggplot2' was built under R version 4.3.3
+
+``` r
 library(rmarkdown)
 library(scales)
+```
+
+    ## Warning: package 'scales' was built under R version 4.3.3
+
+``` r
 library(ggridges)
 ```
 
@@ -29,14 +88,14 @@ library(parsnip)
     ## Warning: package 'parsnip' was built under R version 4.3.3
 
 ``` r
-loons_2023 <- read_csv("loons_2023.csv")
+loons_2023 <- read_csv("loon_2023_tidy.csv")
 ```
 
-    ## Rows: 131 Columns: 31
+    ## Rows: 131 Columns: 34
     ## ── Column specification ────────────────────────────────────────────────────────
     ## Delimiter: ","
     ## chr  (16): tide, cal, location, species, behavior, behavior_notes, sky_condi...
-    ## dbl  (13): tide_percentage, number, latitude, longitude, meters_offshore, te...
+    ## dbl  (16): year, month, day, tide_percentage, number, latitude, longitude, m...
     ## date  (1): date
     ## time  (1): time
     ## 
@@ -44,7 +103,7 @@ loons_2023 <- read_csv("loons_2023.csv")
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 ``` r
-loons_2024 <- read_csv("loons_2024.csv")
+loons_2024 <- read_csv("loon_2024_tidy.csv")
 ```
 
     ## Rows: 775 Columns: 31
@@ -57,15 +116,6 @@ loons_2024 <- read_csv("loons_2024.csv")
     ## ℹ Use `spec()` to retrieve the full column specification for this data.
     ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
-We should bootstrap all of the tidal heights so that we have equal
-observations… maybe not?
-
-``` r
-#boot_loon_2023 <- loons_2023_behavior %>% 
- # specify(response = behavior) %>% 
- # generate(reps = 15000, type = "bootstrap")
-```
-
 # Tidal Condition and Behavior for 2023 and 2024
 
 Hypothesis: Tidal height has a significant effect on G. immer behavior
@@ -73,40 +123,10 @@ Hypothesis: Tidal height has a significant effect on G. immer behavior
 Null Hypothesis: Tidal height will not have a significant effect on G.
 immer behavior
 
-### Bootstrapping
-
 ``` r
-# #download packages
-# library(boot)
-# 
 # #this is the dataset that we want to sample from? 
 # loon_tide_behavior <- loons_2023 %>% 
 #   select(behavior, tide)
-# 
-# #function to obtain R-Squared from the data 
-# rsq <- function(formula, data, indices)
-# {
-#   d <- data[indices,] # allows boot to select sample
-#   fit <- lm(formula, data=d)
-#   return(summary(fit)$r.square)
-# } 
-# 
-# # bootstrapping with 1000 replications
-# #loon_results <- boot(data=loon_tide_behavior, statistic=rsq,
-#    #R=100, formula=behavior~tide)
-# 
-# # view results
-# #loon_results
-# #plot(loon_results)
-# 
-# # get 95% confidence interval
-# #boot.ci(loon_results, type="bca")
-```
-
-``` r
-#this is the dataset that we want to sample from? 
-loon_tide_behavior <- loons_2023 %>% 
-  select(behavior, tide)
 
 ## Tide-Behavior visualizations - to be moved to analysis
 loons_2023 %>% 
@@ -138,100 +158,111 @@ loons_2023 %>%
 
 ![](analysis_files/figure-gfm/sampling-tides-behavior-2.png)<!-- -->
 
-We need to use a non-parametric test. Kruskal-Wallace
+### Chi-Squared Test of Independence
+
+The Chi-Squared Test of Independence examines whether there is a
+relationship between two categorical variables. Our null hypothesis,
+that tidal height will not have a significant effect on G. immer
+behavior, assumes that tidal condition and behavior are independent. Our
+hypothesis, that tidal height will have a significant effect on G. immer
+behavior, assumes that tidal condition and behavior are dependent.
+
+#### Expected Frequencies and Contingency Table
+
+Before performing the chi-square test, we need to calculate the expected
+frequencies for each cell in the contingency table. These expected
+frequencies represent what you would expect to observe if there were no
+association between tidal condition and behavior.
 
 ``` r
-#1 Tidal Condition and Behavior - 2024/2023
-
-#Behavior_tide_ANOVA <- aov(meters_offshore ~ tide, data = loons_2023)
-#summary(Behavior_tide_ANOVA)
+contingency_table1 <- table(loons_2023$tide, loons_2023$behavior)
+contingency_table1
 ```
 
-### Kruskal-Wallis Test
+    ##       
+    ##        ASHORE DIVING DRIFTING MAINTENANCE PEERING
+    ##   HIGH      0     23        7           2       1
+    ##   LOW       1     38       26           1       2
+    ##   MID       0     29        0           0       1
 
-A Kruskal-Wallis test is non-parametric method (a one-way ANOVA on
-ranks) to \[insert more here\]. Even though our sample sizes are
-different, we will still be able to use this test, as this test allows
-for independent samples that have equal or differing sample sizes.
+#### Chi-square Test
+
+Now that we have the contingency table of expected frequencies, we can
+perform the statistical test.
 
 ``` r
-kw <- kruskal.test(behavior ~ tide, data = loons_2023)
-kw
+chi_sq_test1 <- chisq.test(contingency_table1)
+```
+
+    ## Warning in chisq.test(contingency_table1): Chi-squared approximation may be
+    ## incorrect
+
+``` r
+chi_sq_test1
 ```
 
     ## 
-    ##  Kruskal-Wallis rank sum test
+    ##  Pearson's Chi-squared test
     ## 
-    ## data:  behavior by tide
-    ## Kruskal-Wallis chi-squared = 12.324, df = 2, p-value = 0.002109
-
-REPORT: The behavior of G. immer was significantly different at various
-tidal heights (Kruskal-Wallis chi-squared = 12.324, df = 2, p-value =
-0.002109).
-
-### Dunn Test
-
-We now need to use the Dunn test to determine which groups are
-different.
+    ## data:  contingency_table1
+    ## X-squared = 21.276, df = 8, p-value = 0.006449
 
 ``` r
-#install packages
-# install.packages("ggpubr")
-# library(ggpubr)
- install.packages("rstatix")
+# # x-squared
+# chi_sq_test1$statistic
+# 
+# #p-value
+# chi_sq_test1$p.value
+# 
+# #expected frequencies
+# chi_sq_test1$expected
 ```
 
-    ## Warning: package 'rstatix' is in use and will not be installed
+REPORT: The behavior of Common Loons is dependent on tidal condition
+(Pearson’s Chi-squared test; X-squared = 33.184, df = 10, p-value \>
+0.005).
 
 ``` r
- library(rstatix)
-
-ggplot(data = loons_2023, mapping = aes(x = tide, y = ))
+# install.packages("summarytools")
+# library(summarytools)
+# library(dplyr)
+# 
+# # fourth method:
+# loons_2023 %$%
+#   ctable(tide, behavior,
+#     prop = "r", chisq = TRUE, headings = FALSE
+#   ) %>%
+#   print(
+#     method = "render",
+#     style = "rmarkdown",
+#     footnote = NA
+#   )
 ```
 
-![](analysis_files/figure-gfm/dunn-test-tide-behavior-1.png)<!-- -->
-
-``` r
-#dunn test
-dtkw <- loons_2023 %>% dunn_test(behavior ~ tide, p.adjust.method = "bonferroni")
-dtkw
-```
-
-    ## # A tibble: 3 × 9
-    ##   .y.      group1 group2    n1    n2 statistic        p   p.adj p.adj.signif
-    ## * <chr>    <chr>  <chr>  <int> <int>     <dbl>    <dbl>   <dbl> <chr>       
-    ## 1 behavior HIGH   LOW       33    68     0.929 0.353    1       ns          
-    ## 2 behavior HIGH   MID       33    30    -2.26  0.0236   0.0707  ns          
-    ## 3 behavior LOW    MID       68    30    -3.51  0.000456 0.00137 **
-
-REPORT: The behavior of G. immer at high tide was not significantly
-different from their behavior at low or high tide. The behavior of G.
-immer at low tide was significantly different from their behavior at mid
-tide \[insert test here\].
-
-### Chi-Squared Table
-
-We will be using a Pearson’s χ2 test to assess the difference in the
-distributions of our categorical variables between two independent
-variables (`tide` and `behavior`).
-
-\*\*behavior is dependent, is this a good analysis to use?
-
-``` r
-#creating table for chi-squared test
-#forchi <- loons_2023 %>% 
-  #select(behavior, tide)
-
-#chitable <- table(forchi$behavior, forchi$tide)
-
-#chitable
-
-#Pearson's Chi-squared test
-#chisq.test(chitable, correct = FALSE)
-```
-
-Does this suggest that behavior is dependent on tidal height? Let’s ask
-Sean!
+<!-- #### ANOVA -->
+<!-- If we want to compare the abundance of diving behavior between the three tidal stages (high tide, mid tide, and low tide), we need to compare the means of a count variable (number of diving behaviors) across different groups (tidal stages). ANOVA is suitable for comparing means across multiple groups, which makes it appropriate for this scenario. -->
+<!-- ```{r} -->
+<!-- loon_2023_diving <- loons_2023 %>% -->
+<!--   select(species, behavior, date, tide, overall_abundance, specific_abundance) %>% -->
+<!--   filter(species == "COMMON LOON") %>% -->
+<!--   mutate(behavior = if_else(behavior == "DIVING", "diving", "other")) %>% -->
+<!--   group_by(date, overall_abundance, tide) %>% -->
+<!--   count(behavior) %>% -->
+<!--   mutate(diving_count = n) -->
+<!-- loon_2023_diving <-loon_2023_diving %>% -->
+<!--   filter(behavior == "diving") %>% -->
+<!--   mutate(diving_percentage = diving_count/overall_abundance) -->
+<!-- ``` -->
+<!-- Running an ANOVA test -->
+<!-- ```{r} -->
+<!-- # Perform ANOVA -->
+<!-- anova_model1 <- aov(diving_percentage ~ tide, data = loon_2023_diving) -->
+<!-- summary(anova_model1) -->
+<!-- # Perform Tukey's HSD test for pairwise comparisons -->
+<!-- tukey_results1 <- TukeyHSD(anova_model1) -->
+<!-- print(tukey_results1) -->
+<!-- ``` -->
+<!-- REPORT: -->
 
 # Tidal Conditions and Dive Times - 2024
 
@@ -241,8 +272,18 @@ dive times.
 Null Hypothesis: Low tide will not cause G. immer to have significantly
 longer dive times.
 
+### Data Tidying
+
 ``` r
 library(stringr)
+library(ggpubr)
+```
+
+    ## Warning: package 'ggpubr' was built under R version 4.3.3
+
+``` r
+# install.packages("moments")
+# library(moments)
 
 loons_dive_2024 <- loons_2024 %>% 
   filter(species == "common_loon") %>% 
@@ -266,10 +307,133 @@ loons_dive_2024 <- loons_dive_2024 %>%
                            "high" = "high_ebb"))
 ```
 
-``` r
-loons_dive_2024$tide.f <- fct_relevel(loons_dive_2024$general_tide, c("low", "mid", "high"))
+### Randomly Sampling
 
-ggplot(data = loons_dive_2024, mapping = aes(x = tide.f, y = dive_time_obs)) + 
+``` r
+library(tidymodels)
+```
+
+    ## Warning: package 'tidymodels' was built under R version 4.3.3
+
+    ## ── Attaching packages ────────────────────────────────────── tidymodels 1.1.1 ──
+
+    ## ✔ broom        1.0.5      ✔ rsample      1.2.0 
+    ## ✔ dials        1.2.1      ✔ tune         1.1.2 
+    ## ✔ infer        1.0.6      ✔ workflows    1.1.4 
+    ## ✔ modeldata    1.3.0      ✔ workflowsets 1.0.1 
+    ## ✔ recipes      1.0.10     ✔ yardstick    1.3.0
+
+    ## Warning: package 'dials' was built under R version 4.3.3
+
+    ## Warning: package 'infer' was built under R version 4.3.3
+
+    ## Warning: package 'modeldata' was built under R version 4.3.3
+
+    ## Warning: package 'recipes' was built under R version 4.3.3
+
+    ## Warning: package 'rsample' was built under R version 4.3.3
+
+    ## Warning: package 'tune' was built under R version 4.3.3
+
+    ## Warning: package 'workflows' was built under R version 4.3.3
+
+    ## Warning: package 'workflowsets' was built under R version 4.3.3
+
+    ## Warning: package 'yardstick' was built under R version 4.3.3
+
+    ## ── Conflicts ───────────────────────────────────────── tidymodels_conflicts() ──
+    ## ✖ infer::chisq_test() masks rstatix::chisq_test()
+    ## ✖ scales::discard()   masks purrr::discard()
+    ## ✖ rstatix::filter()   masks dplyr::filter(), stats::filter()
+    ## ✖ recipes::fixed()    masks stringr::fixed()
+    ## ✖ dials::get_n()      masks rstatix::get_n()
+    ## ✖ dplyr::lag()        masks stats::lag()
+    ## ✖ infer::prop_test()  masks rstatix::prop_test()
+    ## ✖ yardstick::spec()   masks readr::spec()
+    ## ✖ recipes::step()     masks stats::step()
+    ## ✖ infer::t_test()     masks rstatix::t_test()
+    ## • Use suppressPackageStartupMessages() to eliminate package startup messages
+
+``` r
+#low tide
+loons_lowdive_2024 <- loons_dive_2024 %>% 
+  filter(general_tide == "low") %>% 
+  select(dive_time_obs)
+
+set.seed(101)
+
+sampled_low <- loons_lowdive_2024 %>%
+  specify(response = dive_time_obs) %>% 
+  generate(reps = 1000, type = "bootstrap") %>% 
+  calculate(stat = "mean")
+
+sampled_low <- sampled_low %>% 
+  mutate(replicate = as.character(replicate)) %>% 
+  mutate(tide = if_else(replicate != 0, "low", replicate)) %>% 
+  select(tide, stat)
+
+#mid tide
+loons_middive_2024 <- loons_dive_2024 %>% 
+  filter(general_tide == "mid") %>% 
+  select(dive_time_obs)
+
+set.seed(101)
+
+sampled_mid <- loons_middive_2024 %>%
+  specify(response = dive_time_obs) %>% 
+  generate(reps = 1000, type = "bootstrap") %>% 
+  calculate(stat = "mean")
+
+sampled_mid <- sampled_mid %>% 
+  mutate(replicate = as.character(replicate)) %>% 
+  mutate(tide = if_else(replicate != 0, "mid", replicate)) %>% 
+  select(tide, stat)
+
+#high tide
+loons_highdive_2024 <- loons_dive_2024 %>% 
+  filter(general_tide == "high") %>% 
+  select(dive_time_obs)
+
+set.seed(101)
+
+sampled_high <- loons_highdive_2024 %>%
+  specify(response = dive_time_obs) %>% 
+  generate(reps = 1000, type = "bootstrap") %>% 
+  calculate(stat = "mean")
+
+sampled_high <- sampled_high %>% 
+  mutate(replicate = as.character(replicate)) %>% 
+  mutate(tide = if_else(replicate != 0, "high", replicate)) %>% 
+  select(tide, stat)
+
+#joining dataset
+dive_samples <- rbind(sampled_low, sampled_high)
+dive_samples <- rbind(dive_samples, sampled_mid)
+```
+
+### Visualizations
+
+``` r
+ggplot(data = dive_samples, mapping = aes(x = stat)) + 
+  geom_histogram() + 
+  facet_wrap(~tide, ncol = 1) + 
+  theme_minimal() +
+  labs(title = "Dive Times of Common Loons", 
+       subtitle = "during low, mid, and high tide", 
+       x = "Dive Time (seconds)", 
+       y = "Count")
+```
+
+    ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
+
+![](analysis_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+
+Below we are visualizing dive times in the form of a boxplot.
+
+``` r
+dive_samples$tide <- fct_relevel(dive_samples$tide, c("low", "mid", "high"))
+
+ggplot(data = dive_samples, mapping = aes(x = tide, y = stat)) + 
   geom_boxplot() +
   labs(title = "Tidal Conditions and Dive Times", 
        subtitle = "of Gavia immer", 
@@ -277,132 +441,113 @@ ggplot(data = loons_dive_2024, mapping = aes(x = tide.f, y = dive_time_obs)) +
        y = "Dive Time (seconds)")
 ```
 
-![](analysis_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](analysis_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+### Statistics
 
 ``` r
-woomaov = aov(dive_time_obs ~ general_tide, data = loons_dive_2024)
-summary(woomaov)
+diveaov = aov(stat ~ tide, data = dive_samples)
+summary(diveaov)
 ```
 
-    ##              Df Sum Sq Mean Sq F value Pr(>F)  
-    ## general_tide  2   1883   941.3   4.649  0.012 *
-    ## Residuals    90  18222   202.5                 
+    ##               Df Sum Sq Mean Sq F value Pr(>F)    
+    ## tide           2 151665   75832    5713 <2e-16 ***
+    ## Residuals   2997  39781      13                   
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 ``` r
-TukeyHSD(woomaov)
+TukeyHSD(diveaov)
 ```
 
     ##   Tukey multiple comparisons of means
     ##     95% family-wise confidence level
     ## 
-    ## Fit: aov(formula = dive_time_obs ~ general_tide, data = loons_dive_2024)
+    ## Fit: aov(formula = stat ~ tide, data = dive_samples)
     ## 
-    ## $general_tide
-    ##                diff        lwr       upr     p adj
-    ## low-high   5.378254  -3.324744 14.081252 0.3088282
-    ## mid-high -11.421746 -22.964415  0.120923 0.0530862
-    ## mid-low  -16.800000 -29.932902 -3.667098 0.0084069
+    ## $tide
+    ##                diff        lwr        upr p adj
+    ## mid-low  -17.058500 -17.440558 -16.676442     0
+    ## high-low  -5.487406  -5.869464  -5.105348     0
+    ## high-mid  11.571094  11.189036  11.953152     0
 
 ``` r
 #high to low
-loons_dive_2024_1 <- loons_dive_2024 %>% 
-  filter(general_tide == "high"|general_tide == "mid")
+loons_dive_2024_1 <- dive_samples %>%
+  filter(tide == "high"|tide == "mid")
 
-t.test(dive_time_obs ~ general_tide, data = loons_dive_2024_1)
+t.test(stat ~ tide, data = loons_dive_2024_1)
 ```
 
     ## 
     ##  Welch Two Sample t-test
     ## 
-    ## data:  dive_time_obs by general_tide
-    ## t = 2.2879, df = 10.923, p-value = 0.04309
-    ## alternative hypothesis: true difference in means between group high and group mid is not equal to 0
+    ## data:  stat by tide
+    ## t = -77.381, df = 1212, p-value < 2.2e-16
+    ## alternative hypothesis: true difference in means between group mid and group high is not equal to 0
     ## 95 percent confidence interval:
-    ##   0.4246512 22.4188408
+    ##  -11.86447 -11.27772
     ## sample estimates:
-    ## mean in group high  mean in group mid 
-    ##           42.02175           30.60000
+    ##  mean in group mid mean in group high 
+    ##           30.39510           41.96619
 
 ``` r
 #low to high
-loons_dive_2024_1 <- loons_dive_2024 %>% 
-  filter(general_tide == "high"|general_tide == "low")
+loons_dive_2024_1 <- dive_samples %>%
+  filter(tide == "high"|tide == "low")
 
-t.test(dive_time_obs ~ general_tide, data = loons_dive_2024_1)
+t.test(stat ~ tide, data = loons_dive_2024_1)
 ```
 
     ## 
     ##  Welch Two Sample t-test
     ## 
-    ## data:  dive_time_obs by general_tide
-    ## t = -1.1709, df = 23.866, p-value = 0.2532
-    ## alternative hypothesis: true difference in means between group high and group low is not equal to 0
+    ## data:  stat by tide
+    ## t = 39.158, df = 1244.3, p-value < 2.2e-16
+    ## alternative hypothesis: true difference in means between group low and group high is not equal to 0
     ## 95 percent confidence interval:
-    ##  -14.861111   4.104603
+    ##  5.212480 5.762331
     ## sample estimates:
-    ## mean in group high  mean in group low 
-    ##           42.02175           47.40000
+    ##  mean in group low mean in group high 
+    ##           47.45360           41.96619
 
 ``` r
 #low to mid
-loons_dive_2024_1 <- loons_dive_2024 %>% 
-  filter(general_tide == "mid"|general_tide == "low")
+loons_dive_2024_1 <- dive_samples %>%
+  filter(tide == "mid"|tide == "low")
 
-t.test(dive_time_obs ~ general_tide, data = loons_dive_2024_1)
+t.test(stat ~ tide, data = loons_dive_2024_1)
 ```
 
     ## 
     ##  Welch Two Sample t-test
     ## 
-    ## data:  dive_time_obs by general_tide
-    ## t = 2.6115, df = 22.734, p-value = 0.01569
+    ## data:  stat by tide
+    ## t = 87.921, df = 1987.6, p-value < 2.2e-16
     ## alternative hypothesis: true difference in means between group low and group mid is not equal to 0
     ## 95 percent confidence interval:
-    ##   3.483392 30.116608
+    ##  16.678 17.439
     ## sample estimates:
     ## mean in group low mean in group mid 
-    ##              47.4              30.6
+    ##           47.4536           30.3951
 
-REPORT: There was no significant difference between dive times during
-low tides and high tides \[insert test stat\] and between dive times
-during mid tides and high tides \[insert test statistic\]. The dive
-times during mid tides were significantly lower than dive times during
-low tides \[insert test statistic\].
+REPORT: The dive times of Common Loons were significantly longer during
+high tide in comparison to dives during mid tide (Welch’s Two Sample
+t-test; t = 77.381, df = 1212, p-value \< 0.0005). The average dive time
+during high tide was 41.97 seconds. The average dive time during mid
+tide was 30.4 seconds.
 
-The average dive time during high tide was 42.02 seconds, 30.6 seconds
-during mid tides, and 47.4 seconds during low tides.
+REPORT: The dive times of Common Loons were significantly longer during
+low tide in comparison to dives during high tide (Welch’s Two Sample
+t-test; t = -39.158, df = 1244.3, p-value \< 0.0005). The average dive
+time during low tide was 47.45 seconds. The average dive time during
+high tide was 41.97 seconds.
 
-``` r
-#setting linear model- using tidal height
-times_vs_tide_model <- linear_reg() %>% 
-  set_engine("lm") %>% 
-  fit(dive_time_obs ~ tidal_height, data = loons_dive_2024)
-
-#augmenting the weight data
-times_vs_tide_model_augment <- augment(times_vs_tide_model$fit)
-
-ggplot(times_vs_tide_model_augment, mapping = aes(x = .fitted, y = .resid)) +
-  geom_jitter(alpha = 0.75) +
-  geom_smooth(color = "black") +
-  labs(x = "Predicted Dive Time", y = "Residuals")
-```
-
-    ## `geom_smooth()` using method = 'loess' and formula = 'y ~ x'
-
-![](analysis_files/figure-gfm/adjusted-r-squared-1.png)<!-- -->
-
-``` r
-#assessing the r-squared value
-glance(times_vs_tide_model)$r.squared
-```
-
-    ## [1] 0.0001608561
-
-R_SQUARED REPORT: The r-squared value is `[...]`, which means that the
-variable `general_tide` accounts for \[…\] of the variation in the
-dependent variable, `dive_time_obs`.
+REPORT: The dive times of Common Loons were significantly longer during
+low tide in comparison to dives during mid tide (Welch’s Two Sample
+t-test; t = 87.921, df = 1987.6, p-value \< 0.0005). The average dive
+time during low tide was 47.45 seconds. The average dive time during mid
+tide was 30.4 seconds.
 
 # Exposure Level and Abundance - 2023
 
@@ -425,28 +570,19 @@ loons_2023 %>%
        y = "Abundance")
 ```
 
-![](analysis_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](analysis_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
 
 ``` r
-#install packages
-install.packages("ggridges")
-```
-
-    ## Warning: package 'ggridges' is in use and will not be installed
-
-``` r
-library(ggridges)
-
 loons_2023 %>% 
   ggplot(mapping = aes(x = specific_abundance)) +
   geom_histogram() +
   geom_density() + 
-  facet_wrap(~shelter_gradient, ncol = 1)
+  facet_wrap(~shelter_gradient, ncol = 2)
 ```
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](analysis_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](analysis_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 ``` r
 #plot
@@ -470,7 +606,7 @@ loons_2023 %>%
 
     ## Picking joint bandwidth of 0.467
 
-![](analysis_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
+![](analysis_files/figure-gfm/unnamed-chunk-8-2.png)<!-- -->
 
 ``` r
 abundanceexposureaov = aov(specific_abundance ~ shelter_gradient, data = loons_2023)
@@ -516,7 +652,10 @@ TukeyHSD(abundanceexposureaov)
     ## sheltered-moderately_exposed            0.6535007
     ## sheltered-moderately_sheltered          0.9851163
 
-REPORT: \[insert report here\]
+REPORT: An Analysis of Variance test demonstrated that coastal exposure
+level has a significant effect on the abundance of G. immer (ANOVA,
+F_4,126 = 6.167; p = 0.000145). An unplanned analytical comparison
+demonstrated that G. immer presence \[finish this\].
 
 # Exposure Level and Behavior
 
@@ -539,7 +678,7 @@ loons_2023 %>%
        y = "Count")
 ```
 
-![](analysis_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](analysis_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ``` r
 behavior_exposure_kruskal <- kruskal.test(behavior ~ shelter_gradient, data = loons_2023)
@@ -589,7 +728,7 @@ loons_2023 %>%
 
     ## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 
-![](analysis_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](analysis_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ``` r
 loons_2023 %>%
@@ -602,7 +741,7 @@ loons_2023 %>%
 
     ## Picking joint bandwidth of 0.244
 
-![](analysis_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->
+![](analysis_files/figure-gfm/unnamed-chunk-12-2.png)<!-- -->
 
 ``` r
 waveclassaov = aov(wave_class ~ behavior, data = loons_2023)
@@ -615,6 +754,9 @@ summary(waveclassaov)
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
+Wave class did not significantly affect G. immer behavior (one-way
+ANOVA, F_4,126 = 2.356, P = 0.0572).
+
 \#Meters Offshore and Dive Times
 
 Hypothesis: Distance from shore will significantly affect G. immer dive
@@ -622,12 +764,6 @@ times.
 
 Null Hypothesis: Distance from shore will not significantly affect G.
 immer dive times.
-
-\#With the dive time and how many meters offshore the loon was seen are
-both quantitative variables, we should use a simple regression
-statistical test to determine if there is a statistical significance
-between the location of the loons (by meters offshore) and their dive
-times.
 
 ``` r
 loons_dive_2024 <- loons_2024 %>% 
@@ -648,11 +784,13 @@ loons_dive_2024 %>%
 
     ## `geom_smooth()` using formula = 'y ~ x'
 
-    ## Warning: Removed 2 rows containing non-finite values (`stat_smooth()`).
+    ## Warning: Removed 2 rows containing non-finite outside the scale range
+    ## (`stat_smooth()`).
 
-    ## Warning: Removed 2 rows containing missing values (`geom_point()`).
+    ## Warning: Removed 2 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
 
-![](analysis_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](analysis_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 ``` r
 #linear model
@@ -681,9 +819,10 @@ summary(loon.dive.meters.lm)
     ## Multiple R-squared:  0.2381, Adjusted R-squared:  0.2295 
     ## F-statistic: 27.81 on 1 and 89 DF,  p-value: 9.298e-07
 
-``` r
-#Cedar suggested that the p-values aren't really an indication of the fit with linear models, that's the r2 which is fine
-```
+A linear model demonstrated a significant positive relationship between
+dive time and meters off shore (F1,89 = 27.81 : p = \<0.5). 24% of the
+total variability in dive time can be predicted through a knowledge of
+meters off shore.
 
 \#Tidal height and dive times
 
@@ -701,11 +840,13 @@ loons_dive_2024 %>%
 
     ## `geom_smooth()` using formula = 'y ~ x'
 
-    ## Warning: Removed 3 rows containing non-finite values (`stat_smooth()`).
+    ## Warning: Removed 3 rows containing non-finite outside the scale range
+    ## (`stat_smooth()`).
 
-    ## Warning: Removed 3 rows containing missing values (`geom_point()`).
+    ## Warning: Removed 3 rows containing missing values or values outside the scale range
+    ## (`geom_point()`).
 
-![](analysis_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](analysis_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 ``` r
 dive_time_tide_height_lm <- lm(dive_time_obs ~ tidal_height, data = loons_dive_2024)
@@ -736,6 +877,9 @@ summary(dive_time_tide_height_lm)
 #This is actually so interesting
 ```
 
+A linear model demonstrated no significant relationship between dive
+time and tidal height (F1,88 = 0.014 : p = 0.91).
+
 \#Tidal classification and dive times
 
 Hypothesis: Tidal class will significantly affect G. immer dive times.
@@ -756,7 +900,7 @@ ggplot(mapping = aes(x = tide, y = dive_time_obs)) +
   geom_boxplot()
 ```
 
-![](analysis_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](analysis_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 ``` r
 full_tide_aov = aov(dive_time_obs ~ tide, data = loons_dive_2024)
@@ -802,6 +946,36 @@ TukeyHSD(full_tide_aov)
     ## high_ebb-high_flood    10.5572727  -4.275193 25.3897387 0.3341765
     ## high_ebb-high_slack     8.2060606  -3.068348 19.4804694 0.3077188
 
-``` r
-#Is this useful?
-```
+An Analysis of Variance test demonstrated that tidal class has a
+significant effect on the length of G. immer dive times (ANOVA, F_6,86 =
+4.599; p = 0.000427). An uplanned analytical comparison demonstrated
+that G. immer dive times at low slack tide were signficantly different
+than those at mid ebb tide (TukeyB, p \< 0.0005055), and dive lengths at
+high ebb tide were significantly different than those at mid ebb tide
+(TukeyB, p = 0.0017457). Otherwise, there were no significant
+differences in dive times between other tidal classes (TukeyB, p \>
+0.05)
+
+# Discussion / Conclusion
+
+# Citations
+
+Bent, A. C. 2009. Life Histories of North American Diving Birds. Cornell
+University Press: Ithaca, New York.
+
+Daub, B. C. 1989. Behavior of Common Loons in Winter. Journal of Field
+Ornithology 60: 305-311.
+
+Ford, T. B. and Gieg, J. A. 1995. Winter Behavior of the Common Loon.
+Journal of Field Ornithology 66: 22-29.
+
+McIntyre, J. W. 1978. Wintering Behavior of Common Loons. The Auk 95:
+396-403.
+
+Holm, K. and Burger, A. 2002. Foraging Behavior and Resource
+Partitioning by Diving Birds During Winter in Areas of Strong Tidal
+Currents. Waterbirds 25(3): 312-325.
+
+Thompson, Stephanie A. & Price, J. J. (2006). Water Clarity and Diving
+Behavior in Wintering Common Loons. Waterbirds: The International
+Journal of Waterbird Biology, 29(2), 169–175.
