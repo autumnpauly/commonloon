@@ -14,7 +14,9 @@ Although Common Loons (Gavia immer) have been studied extensively during the bre
 Our general hypothesis when analyzing this data is that environmental conditions affect the behavior of the *G. immer*. The null hypothesis to this statement is that environmental conditions do not affect the behavior of the *G. immer*.
 
 ## Methods
-In 2023, observations were conducted at nine established observation sites along the coastline of Mount Desert Island in Hancock County (Maine). Observations occurred from January 2023 to March 2023 on a biweekly basis, where each waterfowl individual was recorded as well as their behaviors, referencing Daub’s (1989) list of behaviors, and coordinate location. Locational coordinates were obtained by estimating the individual’s rough location digitally (accurate to + or - 10 m). Each transect site was visited for roughly 5-10 minutes, where data collection followed initial observation. Utilizing a Kestrel 2500, weather data was recorded accurately to + or - 1°C of temperatures and within 3% of wind speed. Referencing Daub’s (1989) list of behaviors, each species’ behavior during the observation was noted. The weather and environmental data recorded included wind speed and direction, barometer, cloud cover, precipitation, humidity, temperature, tidal percentage, and wave class (Beaufort Wind Speed). Tidal data was gathered from NOAA’s digital tidal charts. This study was repeated in 2024 with the addition of observational variables including species dive times and tidal height. 
+In 2023, observations were conducted at nine established observation sites along the coastline of Mount Desert Island in Hancock County (Maine). Observations occurred from January 2023 to March 2023 on a biweekly basis, where each waterfowl individual was recorded as well as their behaviors, referencing Daub’s (1989) list of behaviors, and coordinate location. Locational coordinates were obtained by estimating the individual’s rough location digitally (accurate to + or - 10 m). Each transect site was visited for roughly 5-10 minutes, where data collection followed initial observation. Utilizing a Kestrel 2500, weather data was recorded accurately to + or - 1°C of temperatures and within 3% of wind speed. Referencing Daub’s (1989) list of behaviors, each species’ behavior during the observation was noted. The weather and environmental data recorded included wind speed and direction, barometer, cloud cover, precipitation, humidity, temperature, tidal percentage, and wave class (Beaufort Wind Speed). Tidal data was gathered from NOAA’s digital tidal charts. 
+
+In 2024, this study was repeated with the addition of observational variables including species dive times and tidal height. Dive times were recorded by using binoculars and a handheld timing watch to observe and time an individual several times. Tidal height was gathered from NOAA's digital tidal chart. 
 
 # Data Analysis
 ## Load Packages and Data
@@ -34,12 +36,10 @@ loons_2024 <- read_csv("loon_2024_tidy.csv")
 ```
 
 ## General Tidal Stage and Behavior for 2023
-
 The first analysis that will be conducted will be investigating the potential relationship between general tidal stages and *G. immer* behavior. As stated above, the behaviors chosen are referencing Daub’s (1989) list of behaviors. The tidal condition was sorted into three categories: `high`, `mid`, and `low`. 
 
 Hypothesis: General tidal stages have a significant effect on *G. immer* behavior. 
 Null Hypothesis: General tidal stages will not have a significant effect on *G. immer* behavior.
-
 
 ### Statistics
 #### Chi-Squared Test of Independence
@@ -70,7 +70,7 @@ chi_sq_test1
 # chi_sq_test1$expected
 ```
 
-REPORT: A Chi-squared test indicated that there was a relationship between the behavior of *G. immer* and tidal condition (Pearson's Chi-squared test; X-squared = 33.184, df = 10, p-value > 0.005). 
+REPORT: A Chi-squared test indicated that there was a relationship between the behavior of *G. immer* and tidal condition (X^2(8, n=131) = 21.28, df = 8, p-value > 0.05). 
 
 ## Tidal Conditions and Dive Times in 2024
 
