@@ -33,14 +33,12 @@ loons_2023 <- read_csv("loon_2023_tidy.csv")
 loons_2024 <- read_csv("loon_2024_tidy.csv")
 ```
 
-## Tidal Condition and Behavior for 2023
+## General Tidal Stage and Behavior for 2023
 
-The first analysis that will be conducted will be investigating the potential relationship between tidal condition and *G. immer* behavior. As was stated above, the behaviors chosen are referencing Daub’s (1989) list of behaviors. The tidal condition was sorted into three categories: `high`, `mid`, and `low`. 
+The first analysis that will be conducted will be investigating the potential relationship between general tidal stages and *G. immer* behavior. As stated above, the behaviors chosen are referencing Daub’s (1989) list of behaviors. The tidal condition was sorted into three categories: `high`, `mid`, and `low`. 
 
-Hypothesis: Tidal height has a significant effect on *G. immer* behavior
-Null Hypothesis: Tidal height will not have a significant effect on *G. immer* behavior
-
-The null hypothesis for this analysis suggests that behaviors of Common Loons will be dependent of tidal condition, whilst the hypothesis suggests the opposite. 
+Hypothesis: General tidal stages have a significant effect on *G. immer* behavior. 
+Null Hypothesis: General tidal stages will not have a significant effect on *G. immer* behavior.
 
 
 ### Statistics
@@ -76,7 +74,7 @@ REPORT: The behavior of Common Loons is dependent on tidal condition (Pearson's 
 
 ## Tidal Conditions and Dive Times in 2024
 
-The second analysis that will be conducted will be investigating the potential relationship between tidal condition and *G. immer* dive times. The null hypothesis for this analysis suggests that dive times of *G. immer* will be dependent of tidal condition, whilst the hypothesis suggests the opposite. 
+The second analysis that will be conducted will investigate the potential relationship between general tidal stages and *G. immer* dive times. 
 
 Hypothesis: Low tide will cause *G. immer* to have significantly longer dive times. 
 Null Hypothesis: Low tide will not cause *G. immer* to have significantly longer dive times. 
@@ -157,6 +155,9 @@ REPORT: The dive times of *G. immer* does not differ significantly from various 
 
 
 
+
+
+
 ## Exposure Level and Abundance in 2023
 
 The third analysis that will be conducted will be investigating the potential relationship between exposure level and *G. immer* abundance during the 2023 observation period. The null hypothesis for this analysis suggests that *G. immer* abundance will be independent of exposure level, whilst the hypothesis suggests the opposite. 
@@ -215,15 +216,13 @@ summary(abundanceexposureaov)
 TukeyHSD(abundanceexposureaov)
 ```
 
-REPORT: An Analysis of Variance test demonstrated that coastal exposure level has a significant effect on the abundance of *G. immer* (ANOVA, F_4,126 = 6.167; p = 0.000145). 
-An unplanned analytical comparison demonstrated that *G. immer* presence [finish this]. 
+REPORT: A One-Way ANOVA demonstrated that coastal exposure level has a significant effect on the abundance of *G. immer* (ANOVA, F_4,126 = 6.167; p = 0.000145). An unplanned analytical comparison demonstrated that *G. immer* presence [finish this].
 
 ## Exposure Level and Behavior
 
-The third analysis that will be conducted will be investigating the potential relationship between exposure level and *G. immer* behavior during the 2023 observation period. The null hypothesis for this analysis suggests that *G. immer* behavior will be independent of exposure level, whilst the hypothesis suggests the opposite. 
+The fourth analysis that will be conducted will be investigating the potential relationship between exposure level and *G. immer* behavior during the 2023 observation period. 
 
-Null Hypothesis: Exposure level of location has no significant impact on *G. immer* behavior. 
-
+Null Hypothesis: Exposure level of location has no significant impact on *G. immer* behavior.
 Hypothesis: Exposure level of location significantly impacts *G. immer* behavior. 
 
 ### Visualizations
@@ -232,7 +231,7 @@ Hypothesis: Exposure level of location significantly impacts *G. immer* behavior
 loons_2023 %>% 
   count(behavior, shelter_gradient) %>% 
   ggplot(aes(x = behavior, y = n)) +
-  geom_col(fill = "firebrick4", color = "black") +
+  geom_col(fill = "white", color = "black") +
   facet_wrap(~ shelter_gradient, nrow = 1) + 
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
   labs(title = "Count of Common Loon Behavior", 
@@ -242,17 +241,8 @@ loons_2023 %>%
 ```
 
 ### Statistics
-
-```{r, warning=FALSE, echo=FALSE}
-behavior_exposure_kruskal <- kruskal.test(behavior ~ shelter_gradient, data = loons_2023)
-behavior_exposure_kruskal
-
-behavior_exposure_dunn <- loons_2023 %>% dunn_test(behavior ~ shelter_gradient, p.adjust.method = "bonferroni")
-behavior_exposure_dunn
-```
-
 #### Chi-Squared Test of Independence
-The Chi-Squared Test of Independence examines whether there is a relationship between two categorical variables. Our null hypothesis, that exposure will not have a significant effect on *G. immer* behavior, assumes that exposure level and behavior are independent.
+The Chi-Squared Test of Independence examines whether there is a relationship between two categorical variables. Our null hypothesis is that exposure will not have a significant effect on *G. immer* behavior assumes that exposure level and behavior are independent.
 
 #### Expected Frequencies and Contingency Table
 Before performing the chi-square test, we need to calculate the expected frequencies for each cell in the contingency table. These expected frequencies represent what you would expect to observe if there were no association between exposure and behavior.
@@ -270,9 +260,11 @@ chi_sq_test2 <- chisq.test(contingency_table2)
 chi_sq_test2
 ```
 
-REPORT: There was no significant association between exposure level and behavior, so there is no need for a Post-hoc test. [write up stats thing here]. 
+REPORT: 
+A Pearson's Chi-squared test demonstrated that there was no significant association between exposure level and behavior (X^2(16,n=131) = 16.77, p = 0.40). 
 
 ## Wave Class and Behavior
+The fifth analysis that will be conducted will be investigating the potential relationship between wave class and *G. immer* behavior during the 2023 observation period. 
 
 Hypothesis: Wave class will significantly affect *G. immer* behavior.
 
@@ -299,12 +291,41 @@ summary(waveclassaov)
 ```
 
 
-Wave class did not significantly affect *G. immer* behavior (one-way ANOVA, F_4,126 = 2.356, P = 0.0572).
+REPORT: Wave class did not significantly affect *G. immer* behavior (one-way ANOVA, F_4,126 = 2.356, P = 0.0572).
+
+### Statistics
+#### Chi-Squared Test of Independence
+The Chi-Squared Test of Independence examines whether there is a relationship between two categorical variables. 
+
+#### Expected Frequencies and Contingency what is Table
+Before performing the chi-square test, we need to calculate the expected frequencies for each cell in the contingency table. These expected frequencies represent what you would expect to observe if there were no association between wave class and behavior.
+
+```{r contingency-table2, echo=FALSE}
+contingency_table3 <- table(loons_2023$wave_class, loons_2023$behavior)
+contingency_table3
+```
+
+#### Chi-square Test
+Now that we have the contingency table of expected frequencies, we can perform the statistical test. 
+
+```{r chi-square-test2, warning=FALSE, echo=FALSE}
+chi_sq_test3 <- chisq.test(contingency_table3)
+chi_sq_test3
+```
+
+REPORT: A chi-squared test demonstrated that wave class did not significantly affect *G. immer* behavior in our sample (Chi-squared(24, n=131) = 28.64, p = 0.23).
+
+
+
+
+
+
+
 
 ## Meters Offshore and Dive Times
+The sixth analysis that will be conducted will be investigating the potential relationship between distance from shore and *G. immer* dive times during the 2024 observation period. 
 
 Hypothesis: Distance from shore will significantly affect *G. immer* dive times. 
-
 Null Hypothesis: Distance from shore will not significantly affect *G. immer* dive times.
 
 ### Visualizations
@@ -327,25 +348,53 @@ loons_dive_2024 %>%
 ```
 
 ### Statistics
+With both of our variables being continuous and numerical, we need to perform a regression test. First, we need to determine if there is a linear relationship between the variables. 
 
 ```{r}
-#linear model
-loon.dive.meters.lm <- lm(dive_time_obs ~ meters_offshore, data = loons_dive_2024)
-
-summary(loon.dive.meters.lm)
+loons_dive_2024 %>% 
+  ggplot(aes(x = meters_offshore, y = dive_time_obs)) + 
+  geom_jitter() + 
+  geom_smooth(method = "lm") + 
+  labs(title = "Dive Times vs. Meters Offshore", 
+       subtitle = "of G. immer", 
+       x = "Distance Offshore (m)", 
+       y = "Dive Time (seconds)")
 ```
 
+Next, we need to determine if both variables are normally distributed. 
 
-A linear model demonstrated a significant positive relationship between dive time and meters off shore (F1,89 = 27.81 : p = <0.5). 24% of the total variability in dive time can be predicted through a knowledge of meters off shore.
+```{r}
+#Meters Offshore
+ggplot(data = loons_dive_2024, mapping = aes(x = meters_offshore)) + 
+  geom_histogram()
+
+#Dive Times
+ggplot(data = loons_dive_2024, mapping = aes(x = dive_time_obs)) + 
+  geom_histogram()
+```
+
+#### Statistics
+With the variable `meters_offshore` having a non-normal distribution, we will want to use a non-parametric version of a linear correlation test (i.e. Pearson's R). One such test is Spearman's Rho. 
+
+```{r warning=FALSE}
+dive_wave_corr <- cor.test(x=loons_dive_2024$meters_offshore, y = loons_dive_2024$dive_time_obs, method = 'spearman')
+
+dive_wave_corr
+```
+
+REPORT: A Spearman'scorrelation indicates a moderate positive monotonic relationship between the variables `meters_offshore` and `dive_time_obs` (rs[93] = .50, p < 0.005). 
+
+
+
+
 
 ## Tidal height and dive times
+The seventh analysis that will be conducted will be investigating the potential relationship between tidal height and *G. immer* dive times during the 2024 observation period. 
 
 Hypothesis: Tidal height will significantly affect *G. immer* dive times.
-
 Null Hypothesis: Tidal height will not significantly affect *G. immer* dive times.
 
 ### Visualizations
-
 ```{r}
 loons_dive_2024 %>% 
   ggplot(aes(x = tidal_height, y = dive_time_obs)) + 
@@ -354,16 +403,37 @@ loons_dive_2024 %>%
 ```
 
 ### Statistics
+First, we need to see if our variables have a linear relationship
 
 ```{r}
-dive_time_tide_height_lm <- lm(dive_time_obs ~ tidal_height, data = loons_dive_2024)
-summary(dive_time_tide_height_lm)
-
-#This is actually so interesting
+loons_dive_2024 %>% 
+  ggplot(aes(x = tidal_height, y = dive_time_obs)) + 
+  geom_point() +
+  geom_smooth(method = "lm")
 ```
 
+Next, we need to determine if both variables are normally distributed. 
 
-A linear model demonstrated no significant relationship between dive time and tidal height (F1,88 = 0.014 : p = 0.91).
+```{r}
+#tidal height
+ggplot(data = loons_dive_2024, mapping = aes(x = tidal_height)) + 
+  geom_histogram()
+
+#dive times
+ggplot(data = loons_dive_2024, mapping = aes(x = dive_time_obs)) + 
+  geom_histogram()
+```
+
+#### Statistics
+With the variable `tidal_height` having a non-normal distribution, we will want to use a non-parametric version of a linear correlation test, such as the Spearman's correlation. 
+
+```{r warning=FALSE}
+dive_height_corr <- cor.test(x=loons_dive_2024$tidal_height, y = loons_dive_2024$dive_time_obs, method = 'spearman')
+
+dive_height_corr
+```
+
+REPORT: A Spearman's correlation indicates that there is no significant relationship between the variables `tidal_height` and `dive_time_obs` (rs[93] = -0.06, p = 0.54).
 
 ## Tidal classification and dive times
 
@@ -397,6 +467,12 @@ TukeyHSD(full_tide_aov)
 An Analysis of Variance test demonstrated that tidal class has a significant effect on the length of *G. immer* dive times (ANOVA, F_6,86 = 4.599; p = 0.000427). An uplanned analytical comparison demonstrated that *G. immer* dive times at low slack tide were signficantly different than those at mid ebb tide (TukeyB, p < 0.0005055), and dive lengths at high ebb tide were significantly different than those at mid ebb tide (TukeyB, p = 0.0017457). Otherwise, there were no significant differences in dive times between other tidal classes (TukeyB, p > 0.05)
 
 # Discussion / Conclusion
+
+
+
+
+
+
 
 # Citations
 Bent, A. C. 2009. Life Histories of North American Diving Birds. Cornell University Press: Ithaca, New York.
