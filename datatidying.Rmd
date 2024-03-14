@@ -65,6 +65,29 @@ loons_2023 <- loons_2023 %>%
   filter(species == "COMMON LOON")
 ```
 
+### Tide
+
+The six tidal stages should be releveled to be reflective of the tidal cycle. 
+
+```{r refactor-tide, message=FALSE, warning=FALSE}
+#releveling the exposure levels from most exposed to least exposed 
+tide_factor <- fct_relevel(loons_2024$tide, c(
+                "high_ebb", 
+                "mid_ebb",
+                "low_slack",
+                "low_flood", 
+                "mid_flood",
+                "high_flood", 
+                "high_slack"))
+```
+
+After tidying this, we need to save these changes into our dataset. 
+
+```{r saving-new-dataset, message=FALSE, warning=FALSE}
+#saving a dataset to include only loons and the shelter factor
+loons_2024 <- loons_2024 %>% 
+  mutate(tide_factor = tide_factor)
+```
 
 ### Changing `chr` variables to `num`
 
