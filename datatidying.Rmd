@@ -63,10 +63,6 @@ After tidying this, we need to save these changes into our dataset.
 loons_2023 <- loons_2023 %>% 
   mutate(shelter_factor = shelter_factor) %>% 
   filter(species == "COMMON LOON")
-
-#counting how many different exposure observations we have
-loons_2023 %>% 
-  count(shelter_factor)
 ```
 
 
@@ -83,46 +79,6 @@ loons_2023 <- loons_2023 %>%
   mutate(barometer = as.numeric(barometer)) %>% 
   mutate(date = as_date(date, format = "%m/%d/%Y")) %>% 
   mutate(time = hms::as_hms(time))
-```
-
-
-### Location
-
-There are nine locations that were visited during the 2023 study and six locations were visited during the 2024 dataset. This suggests that there is a limited amount of spatial analysis that can be conducted between the years. There appears to be no further tidying needed for this variable.
-
-```{r location-tidying, warning=FALSE}
-#determining how many locations we have
-unique(loons_2023$location)
-unique(loons_2024$location)
-```
-
-### Behavior
-
-There are five values for the variable `behavior` to assess the behavior of the species being observed in 2023 and eight values for the species observed in 2024. There appears to be no further tidying needed for this variable. 
-
-```{r}
-unique(loons_2023$behavior)
-unique(loons_2024$behavior)
-```
-
-Now, we'll want to create a dataset where the only species being observed are Common Loons. 
-
-```{r behavior-tidying}
-#Count occurence of behaviors
-loons_2023_behavior <- loons_2023 %>% 
-  filter(species == "COMMON LOON") %>% 
-  group_by(date, behavior, species, tide, tide_percentage) %>% 
-  count(behavior)
-```
-
-```{r}
-#Count the occurrences of behavior of loons
-ggplot(data = loons_2023_behavior, mapping = aes(x = behavior)) + 
-  geom_bar()
-
-#Count how many low, high, and mid tide observations we have
-ggplot(data = loons_2023_behavior, mapping = aes(x = tide)) + 
-  geom_bar()
 ```
 
 # Writing CSV
