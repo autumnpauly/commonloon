@@ -139,128 +139,149 @@ loons_dive_2024 <- loons_dive_2024 %>%
 As can be seen in the histograms below, we do not have a normal distribution of data during any of the tidal cycles. To mitigate this, we will be randomly sampling dive times during each tidal stage 100 times. 
 
 ```{r , warning=FALSE, echo=FALSE}
-ggplot(data = loons_dive_2024, mapping = aes(x = dive_time_obs)) + 
-  geom_histogram()+ 
-  facet_wrap(~general_tide)
+# ggplot(data = loons_dive_2024, mapping = aes(x = dive_time_obs)) + 
+#   geom_histogram()+ 
+#   facet_wrap(~general_tide, ncol = 1)
+# 
+# loons_dive_2024_means <- loons_dive_2024 %>%
+#   group_by(general_tide) %>%
+#   summarise(mean = mean(dive_time_obs))
 ```
 
 ```{r, warning=FALSE}
-#low tide
-loons_lowdive_2024 <- loons_dive_2024 %>% 
-  filter(general_tide == "low") %>% 
-  select(dive_time_obs)
-
-set.seed(101)
-
-sampled_low <- loons_lowdive_2024 %>%
-  specify(response = dive_time_obs) %>% 
-  generate(reps = 1000, type = "bootstrap") %>% 
-  calculate(stat = "mean")
-
-sampled_low <- sampled_low %>% 
-  mutate(replicate = as.character(replicate)) %>% 
-  mutate(tide = if_else(replicate != 0, "low", replicate)) %>% 
-  select(tide, stat)
-
-#mid tide
-loons_middive_2024 <- loons_dive_2024 %>% 
-  filter(general_tide == "mid") %>% 
-  select(dive_time_obs)
-
-set.seed(101)
-
-sampled_mid <- loons_middive_2024 %>%
-  specify(response = dive_time_obs) %>% 
-  generate(reps = 1000, type = "bootstrap") %>% 
-  calculate(stat = "mean")
-
-sampled_mid <- sampled_mid %>% 
-  mutate(replicate = as.character(replicate)) %>% 
-  mutate(tide = if_else(replicate != 0, "mid", replicate)) %>% 
-  select(tide, stat)
-
-#high tide
-loons_highdive_2024 <- loons_dive_2024 %>% 
-  filter(general_tide == "high") %>% 
-  select(dive_time_obs)
-
-set.seed(101)
-
-sampled_high <- loons_highdive_2024 %>%
-  specify(response = dive_time_obs) %>% 
-  generate(reps = 1000, type = "bootstrap") %>% 
-  calculate(stat = "mean")
-
-sampled_high <- sampled_high %>% 
-  mutate(replicate = as.character(replicate)) %>% 
-  mutate(tide = if_else(replicate != 0, "high", replicate)) %>% 
-  select(tide, stat)
-
-#joining dataset
-dive_samples <- rbind(sampled_low, sampled_high)
-dive_samples <- rbind(dive_samples, sampled_mid)
+# #low tide
+# loons_lowdive_2024 <- loons_dive_2024 %>% 
+#   filter(general_tide == "low") %>% 
+#   select(dive_time_obs)
+# 
+# set.seed(101)
+# 
+# sampled_low <- loons_lowdive_2024 %>%
+#   specify(response = dive_time_obs) %>% 
+#   generate(reps = 1000, type = "bootstrap") %>% 
+#   calculate(stat = "mean")
+# 
+# sampled_low <- sampled_low %>% 
+#   mutate(replicate = as.character(replicate)) %>% 
+#   mutate(tide = if_else(replicate != 0, "low", replicate)) %>% 
+#   select(tide, stat)
+# 
+# #mid tide
+# loons_middive_2024 <- loons_dive_2024 %>% 
+#   filter(general_tide == "mid") %>% 
+#   select(dive_time_obs)
+# 
+# set.seed(101)
+# 
+# sampled_mid <- loons_middive_2024 %>%
+#   specify(response = dive_time_obs) %>% 
+#   generate(reps = 1000, type = "bootstrap") %>% 
+#   calculate(stat = "mean")
+# 
+# sampled_mid <- sampled_mid %>% 
+#   mutate(replicate = as.character(replicate)) %>% 
+#   mutate(tide = if_else(replicate != 0, "mid", replicate)) %>% 
+#   select(tide, stat)
+# 
+# #high tide
+# loons_highdive_2024 <- loons_dive_2024 %>% 
+#   filter(general_tide == "high") %>% 
+#   select(dive_time_obs)
+# 
+# set.seed(101)
+# 
+# sampled_high <- loons_highdive_2024 %>%
+#   specify(response = dive_time_obs) %>% 
+#   generate(reps = 1000, type = "bootstrap") %>% 
+#   calculate(stat = "mean")
+# 
+# sampled_high <- sampled_high %>% 
+#   mutate(replicate = as.character(replicate)) %>% 
+#   mutate(tide = if_else(replicate != 0, "high", replicate)) %>% 
+#   select(tide, stat)
+# 
+# #joining dataset
+# dive_samples <- rbind(sampled_low, sampled_high)
+# dive_samples <- rbind(dive_samples, sampled_mid)
 ```
 
 Now, we can see that we have a normal distribution of dive times during all tidal cycles, which now makes an ANOVA an appropriate statistical test to use for this data frame. 
 
 ```{r sampledivetimes, warning=FALSE, echo=FALSE}
-ggplot(data = dive_samples, mapping = aes(x = stat)) + 
-  geom_histogram() + 
-  facet_wrap(~tide, ncol = 1) + 
-  theme_minimal() +
-  labs(title = "Dive Times of Common Loons", 
-       subtitle = "during low, mid, and high tide", 
-       x = "Dive Time (seconds)", 
-       y = "Count")
+# ggplot(data = dive_samples, mapping = aes(x = stat)) + 
+#   geom_histogram() + 
+#   facet_wrap(~tide, ncol = 1) + 
+#   theme_minimal() +
+#   labs(title = "Dive Times of Common Loons", 
+#        subtitle = "during low, mid, and high tide", 
+#        x = "Dive Time (seconds)", 
+#        y = "Count") +
+#   geom_vline(data = loons_dive_2024_means, aes(xintercept = mean, color = general_tide))
 ```
-
-### Visualizations
-Below we are visualizing dive times in the form of a boxplot. As we can see below, it appears as though the dive times are longest during low tide, followed by second longest during high tide, and shortest during low tide. We will need to perform statistical tests to see if there are any significant differences between the tidal stages.  
 
 ```{r echo=FALSE, warning=FALSE}
-dive_samples$tide <- fct_relevel(dive_samples$tide, c("low", "mid", "high"))
-
-ggplot(data = dive_samples, mapping = aes(x = tide, y = stat)) + 
-  geom_boxplot() +
-  labs(title = "Tidal Conditions and Dive Times", 
-       subtitle = "of Gavia immer", 
-       x = "Tidal Stage", 
-       y = "Dive Time (seconds)")
+# dive_samples$tide <- fct_relevel(dive_samples$tide, c("low", "mid", "high"))
+# 
+# ggplot(data = dive_samples, mapping = aes(x = tide, y = stat)) + 
+#   geom_boxplot() +
+#   labs(title = "Tidal Conditions and Dive Times", 
+#        subtitle = "of Gavia immer", 
+#        x = "Tidal Stage", 
+#        y = "Dive Time (seconds)")
 ```
 
-### Statistics
 To determine if there is a significant difference in dive times of Common loons during different tidal stages, where the tidal stages are categorical with three levels (high tide, mid tide, and low tide), and the dive time is a continuous numerical variable, a one-way analysis of variance (ANOVA) will be used. 
 
 ```{r diveaov, echo=FALSE}
-diveaov = aov(stat ~ tide, data = dive_samples)
+# diveaov = aov(stat ~ tide, data = dive_samples)
 ```
 
 ```{r anova2,warning=FALSE, echo=FALSE}
-summary(diveaov)
-TukeyHSD(diveaov)
+# summary(diveaov)
+# TukeyHSD(diveaov)
 ```
 
 ```{r ,message=FALSE, echo=FALSE, warning=FALSE}
-#high to low
-loons_dive_2024_1 <- dive_samples %>%
-  filter(tide == "high"|tide == "mid")
-
-t.test(stat ~ tide, data = loons_dive_2024_1)
-
-#low to high
-loons_dive_2024_1 <- dive_samples %>%
-  filter(tide == "high"|tide == "low")
-
-t.test(stat ~ tide, data = loons_dive_2024_1)
-
-#low to mid
-loons_dive_2024_1 <- dive_samples %>%
-  filter(tide == "mid"|tide == "low")
-
-t.test(stat ~ tide, data = loons_dive_2024_1)
+# #high to low
+# loons_dive_2024_1 <- dive_samples %>%
+#   filter(tide == "high"|tide == "mid")
+# 
+# t.test(stat ~ tide, data = loons_dive_2024_1)
+# 
+# #low to high
+# loons_dive_2024_1 <- dive_samples %>%
+#   filter(tide == "high"|tide == "low")
+# 
+# t.test(stat ~ tide, data = loons_dive_2024_1)
+# 
+# #low to mid
+# loons_dive_2024_1 <- dive_samples %>%
+#   filter(tide == "mid"|tide == "low")
+# 
+# t.test(stat ~ tide, data = loons_dive_2024_1)
 ```
 
 REPORT: An analysis of variance (ANOVA) on these dive times yielded significant variation among various tidal stages (One-Way ANOVA; F(2,2997) = 5713, p <0.005). A post hoc Tukey HSD test showed that each tidal stage differed significantly from each other (Figure above). The average dive time during high tide was 41.97 seconds, 30.4 during mid tide, and 47.45 during low tide. 
+
+### Kruskal-Wallace
+```{r}
+ggplot(data = loons_dive_2024, mapping = aes(x = dive_time_obs)) +
+  geom_histogram()+
+  facet_wrap(~general_tide, ncol = 1)
+```
+
+#### Statistics 
+
+```{r, warning=FALSE, echo=FALSE}
+dive_kruskal <- kruskal.test(dive_time_obs ~ general_tide, data = loons_dive_2024)
+dive_kruskal
+
+dive_dunn <- loons_dive_2024 %>% dunn_test(dive_time_obs ~ general_tide, p.adjust.method = "bonferroni")
+dive_dunn
+```
+
+### Visualizations
+Below we are visualizing dive times in the form of a boxplot. As we can see below, it appears as though the dive times are longest during low tide, followed by second longest during high tide, and shortest during low tide. We will need to perform statistical tests to see if there are any significant differences between the tidal stages. 
 
 ## Exposure Level and Abundance in 2023
 
@@ -375,44 +396,7 @@ chi_sq_test2 <- chisq.test(contingency_table2)
 chi_sq_test2
 ```
 
-REPORT: There was no significant association between exposure level and behavior, so there is no need for a Post-hoc test. 
-
-#### Bonferroni Adjustment
-[insert section about what a bonferroni adjustment is]
-
-```{r}
-#calculating expected vs. observed frequencies
-observed <- chi_sq_test2$observed
-expected <- chi_sq_test2$expected
-
-#calculating residuals
-residuals <- observed - expected
-
-#calculate number of exposure levels
-n_levels <- nrow(contingency_table2)
-
-#creating matrix to store p-vales for pairwise comparison
-p_values <- matrix(NA, ncol = n_levels, nrow = n_levels)
-
-#pairwise comparison
-for (i in 1:(n_levels - 1)) {
-  for (j in (i + 1):n_levels) {
-
-#Calculate standardized residuals for the cell (i, j)
-cell_residual <- residuals[i, j]
-    
-#calculate Bonferroni-adjusted p-value
-    p_values[i, j] <- pchisq(cell_residual^2, df = 1, lower.tail = FALSE) * (n_levels * (n_levels - 1)) / 2
-  }
-}
-
-p_values <- p_values + t(p_values)
-diag(p_values) <- 1  # Set diagonal to 1 since we're not interested in self-comparisons
-
-p_value
-```
-
-REPORT: 
+REPORT: There was no significant association between exposure level and behavior, so there is no need for a Post-hoc test. [write up stats thing here]. 
 
 ## Wave Class and Behavior
 
