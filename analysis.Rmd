@@ -436,9 +436,9 @@ dive_height_corr
 REPORT: A Spearman's correlation indicates that there is no significant relationship between the variables `tidal_height` and `dive_time_obs` (rs[93] = -0.06, p = 0.54).
 
 ## Tidal classification and dive times
+The eighth analysis that will be conducted will be investigating the potential relationship between specific tidal stage and *G. immer* dive times during the 2024 observation period. 
 
 Hypothesis: Tidal class will significantly affect *G. immer* dive times.
-
 Null Hypothesis: Tidal class will not significantly affect *G. immer* dive times.
 
 ### Visualizations
