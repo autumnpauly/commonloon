@@ -35,6 +35,28 @@ loons_2023 <- read_csv("loon_2023_tidy.csv")
 loons_2024 <- read_csv("loon_2024_tidy.csv")
 ```
 
+## General Statistics
+The mean dive time of loons during this study was 41.95 seconds with a standard error of 1.53.
+
+```{r}
+loons_dive_2024 %>% 
+  summary()
+
+#standard error function
+std.error <- function(x) sd(x)/sqrt(length(x))
+
+std.error(loons_dive_2024$dive_time_obs)
+```
+
+There was an average of 9.55 loons observed per day during this study, with there being 2.12 being observed at each site.
+
+```{r}
+loons_2023 %>% 
+  summary()
+
+```
+
+
 ## General Tidal Stage and Behavior for 2023
 The first analysis that will be conducted will be investigating the potential relationship between general tidal stages and *G. immer* behavior. As stated above, the behaviors chosen are referencing Daub’s (1989) list of behaviors. The tidal condition was sorted into three categories: `high`, `mid`, and `low`. 
 
@@ -70,6 +92,42 @@ chi_sq_test1
 ```
 
 REPORT: A Chi-squared test indicated a significant relationship between *G. immer* behavior and tidal condition (X^2(8, n=131) = 21.28, df = 8, p-value > 0.05). This indicates that there is a relationship between tidal height and *G. immer* behavior, allowing the null hypothesis to be rejected. 
+
+## General Tidal Stage and Abundance at each site
+The next analysis that will be conducted will be investigating the potential relationship between general tidal stages and *G. immer* abundance at each site.
+
+The hypothesis is that tidal height would significantly affect the abundance of *G. immer* The null hypothesis stated that tidal height would not have a significant effect on *G. immer* abundance at each site.
+
+### Statistics
+#### Chi-Squared Test of Independence
+The Chi-Squared Test of Independence examines whether there is a relationship between two categorical variables.
+
+#### Expected Frequencies and Contingency Table
+Before performing the chi-square test, we need to calculate the expected frequencies for each cell in the contingency table. These expected frequencies represent what you would expect to observe if there were no association between tidal condition and behavior.
+
+```{r contingency-table, echo=FALSE}
+contingency_table_abun <- table(loons_2023$tide, loons_2023$location)
+contingency_table_abun
+
+loons_2024_loon <- loons_2024 %>% 
+  filter(species == "common_loon")
+
+contingency_table_abun24 <- table(loons_2024_loon$tide, loons_2024_loon$location)
+contingency_table_abun24
+```
+
+#### Chi-square Test
+Now that we have the contingency table of expected frequencies, we can perform the statistical test. 
+
+```{r chi-square-test, warning=FALSE, echo=FALSE}
+chi_sq_testabun <- chisq.test(contingency_table_abun)
+chi_sq_testabun
+
+chisq24abun <- chisq.test(contingency_table_abun24)
+chisq24abun
+```
+
+REPORT: A Chi-squared test indicated no significant relationship between *G. immer* abundance and tidal condition at each site (X^2(16, n=131) = 26.28, df = 16, p-value = 0.05017). This indicates that there is no relationship between tidal height and *G. immer* abundance at each site, allowing us to reject the hypothesis. 
 
 ## Tidal Conditions and Dive Times in 2024
 
@@ -144,7 +202,57 @@ divetimeggline + stat_compare_means(label.y = 75)
 
 REPORT: The Kruskal-Wallis test revealed that there was no significant difference in dive times among the various tidal stages (Kruskal-Wallis rank sum test; H(2) = 5.82, P = 0.054). This suggests that tidal stage does not have a statistically significant effect on *G. immer* dive times, allowing us to reject our hypothesis. This implies that other factors besides tidal stage could be influencing dive behavior in *G. immer*. 
 
+## Site Location and Dive Times in 2024
 
+This study aimed to investigate the potential effect of site locations on the dive times of *G. immer*. The hypothesis posited that sites would result in significantly different dive times for *G. immer*. Conversely, the null hypothesis stated that location would not have a significant impact on *G. immer* dive times.
+
+```{r}
+loons_2024_loon <- loons_2024_loon %>% 
+  separate_longer_delim(dive_time_obs, delim = ",") %>% 
+  mutate(dive_time_obs = as.numeric(dive_time_obs))
+```
+
+
+### Visualizations
+As can be seen below, we do not have a normal distribution for the variable `dive_time_obs`. We will need to perform a non-parametric test. 
+
+```{r warning=TRUE, echo = FALSE}
+ggplot(data = loons_2024_loon, mapping = aes(x = dive_time_obs)) +
+  geom_histogram()+
+  labs(title = "Distribution of Dive Times of G. Immer", 
+       subtitle = "At various tidal stages", 
+       x = "Dive Time (seconds)", 
+       y = "Count")
+```
+
+#### Statistics 
+The non-parametric nature of our dataset suggests that we need to use the Kruskal-Wallis H test (the "one-way ANOVA on ranks"), which is the non-parametric alternative to the one-way ANOVA test. 
+
+```{r, warning=FALSE, echo=FALSE}
+library(rstatix)
+site_kruskal <- kruskal.test(dive_time_obs ~ location, data = loons_2024_loon)
+site_kruskal
+```
+
+```{r , warning=FALSE, echo=FALSE, message=FALSE}
+#post-hoc test
+site_dunn <- loons_2024_loon %>% dunn_test(dive_time_obs ~ location, p.adjust.method = "bonferroni")
+site_dunn
+```
+
+```{r , echo=FALSE, warning=FALSE}
+library(ggpubr)
+divetimeggline <- ggline(loons_2024_loon, x = "location", y = "dive_time_obs",
+       add = c(add = "mean_se", "jitter"),
+       ylab = "Location", xlab = "Dive Time (seconds)", title = "G. Immer Dive Times at Various Sites")
+
+divetimeggline + stat_compare_means(label.y = 75)
+
+ggplot(data = loons_2024_loon, mapping = aes(x = location, y = dive_time_obs)) + 
+  geom_boxplot()
+```
+
+REPORT: The Kruskal-Wallis test revealed that there was no significant difference in dive times among the various tidal stages (Kruskal-Wallis rank sum test; H(2) = 5.82, P = 0.054). This suggests that tidal stage does not have a statistically significant effect on *G. immer* dive times, allowing us to reject our hypothesis. This implies that other factors besides tidal stage could be influencing dive behavior in *G. immer*.
 
 
 
@@ -431,6 +539,7 @@ ggplot(mapping = aes(x = tide, y = dive_time_obs)) +
 
 ### Statistics
 
+Below are the statistics tests that test against all tidal stages. 
 ```{r}
 full_tide_aov = aov(dive_time_obs ~ tide, data = loons_dive_2024)
 summary(full_tide_aov)
@@ -438,6 +547,19 @@ TukeyHSD(full_tide_aov)
 ```
 
 REPORT: The ANOVA test demonstrated that tidal class has a significant effect on the length of G. immer dive times (ANOVA, F_6,86 = 4.599; p = 0.000427). An unplanned analytical comparison demonstrated that *G. immer* dive times at low slack tide were significantly different than those at mid ebb tide (TukeyB, p < 0.005), and dive lengths at high ebb tide were significantly different than those at mid ebb tide (TukeyB, p < 0.05). Otherwise, there were no significant differences in dive times between other tidal classes (TukeyB, p > 0.05). These findings allow us to reject the null hypothesis. 
+
+Below are the statistics tests that test against all tidal stages. 
+```{r}
+loons_dive_2024_2 <- loons_dive_2024 %>% 
+  filter(tide == "low_slack"|tide == "high_flood"|tide == "low_flood") %>% 
+  mutate(flood = if_else(tide == "high_flood"|tide == "low_flood", "flood", "low_slack"))
+
+loons_dive_2024_2
+
+t.test(dive_time_obs ~ flood, data = loons_dive_2024_2)
+```
+
+REPORT: A Welch's Two Sample t-test demonstrated that there was no significant difference in dive times during low-slack periods and flooding periods (df = 14.65, p = 0.05007). 
 
 # Discussion / Conclusion
 ## Tidal Influence on *G. immer* Behavior
