@@ -91,7 +91,7 @@ chi_sq_test1
 # chi_sq_test1$expected
 ```
 
-REPORT: A Chi-squared test indicated a significant relationship between *G. immer* behavior and tidal condition (X^2(8, n=131) = 21.28, df = 8, p-value > 0.05). This indicates that there is a relationship between tidal height and *G. immer* behavior, allowing the null hypothesis to be rejected. 
+REPORT: A Chi-squared test indicated a significant relationship between *G. immer* behavior and general tidal stage (X^2(8, n=131) = 21.28, df = 8, p-value > 0.05). This indicates that there is a relationship between general tidal stage and *G. immer* behavior, allowing the null hypothesis to be rejected. 
 
 ## General Tidal Stage and Abundance at each site
 The next analysis that will be conducted will be investigating the potential relationship between general tidal stages and *G. immer* abundance at each site.
