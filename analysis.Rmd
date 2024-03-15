@@ -38,8 +38,7 @@ loons_2024 <- read_csv("loon_2024_tidy.csv")
 ## General Tidal Stage and Behavior for 2023
 The first analysis that will be conducted will be investigating the potential relationship between general tidal stages and *G. immer* behavior. As stated above, the behaviors chosen are referencing Daub’s (1989) list of behaviors. The tidal condition was sorted into three categories: `high`, `mid`, and `low`. 
 
-Hypothesis: General tidal stages have a significant effect on *G. immer* behavior. 
-Null Hypothesis: General tidal stages will not have a significant effect on *G. immer* behavior.
+It was hypothesized that tidal height would significantly affect the behavior of *G. immer* The null hypothesis stated that tidal height would not have a significant effect on *G. immer* behavior.
 
 ### Statistics
 #### Chi-Squared Test of Independence
@@ -70,14 +69,12 @@ chi_sq_test1
 # chi_sq_test1$expected
 ```
 
-REPORT: A Chi-squared test indicated that there was a relationship between the behavior of *G. immer* and tidal condition (X^2(8, n=131) = 21.28, df = 8, p-value > 0.05). 
+REPORT: A Chi-squared test indicated a significant relationship between *G. immer* behavior and tidal condition (X^2(8, n=131) = 21.28, df = 8, p-value > 0.05). This indicates that there is a relationship between tidal height and *G. immer* behavior, allowing the null hypothesis to be rejected. 
 
 ## Tidal Conditions and Dive Times in 2024
 
-The next analysis that will be conducted will investigate the potential relationship between general tidal stages and *G. immer* dive times. 
+This study aimed to investigate the potential effect of tidal stage on the dive times of *G. immer*. The hypothesis posited that low tide would result in significantly longer dive times for *G. immer*. Conversely, the null hypothesis stated that tidal stage would not have a significant impact on *G. immer* dive times.
 
-Hypothesis: Low tide will cause *G. immer* to have significantly longer dive times. 
-Null Hypothesis: Low tide will not cause *G. immer* to have significantly longer dive times. 
 
 ```{r message=FALSE, echo=FALSE, warning=FALSE}
 library(stringr)
@@ -145,7 +142,7 @@ divetimeggline <- ggline(loons_dive_2024, x = "general_tide", y = "dive_time_obs
 divetimeggline + stat_compare_means(label.y = 75)
 ```
 
-REPORT: The dive times of *G. immer* does not differ significantly from various tidal stages (Kruskal-Wallis rank sum test; H(2) = 5.82, P = 0.054). 
+REPORT: The Kruskal-Wallis test revealed that there was no significant difference in dive times among the various tidal stages (Kruskal-Wallis rank sum test; H(2) = 5.82, P = 0.054). This suggests that tidal stage does not have a statistically significant effect on *G. immer* dive times, allowing us to reject our hypothesis. This implies that other factors besides tidal stage could be influencing dive behavior in *G. immer*. 
 
 
 
@@ -157,11 +154,7 @@ REPORT: The dive times of *G. immer* does not differ significantly from various 
 
 
 ## Exposure Level and Abundance in 2023
-The next analysis that will be conducted will be investigating the potential relationship between exposure level and *G. immer* abundance during the 2023 observation period. The null hypothesis for this analysis suggests that *G. immer* abundance will be independent of exposure level, whilst the hypothesis suggests the opposite. 
-
-Null Hypothesis: Higher exposure level of location will not significantly positively affect *G. immer* presence.  
-
-Hypothesis: Higher exposure level of location significantly positively affects *G. immer* presence. 
+This study aimed to explore the relationship between coastal exposure level and the presence of *G. immer*. The hypothesis suggested that higher exposure levels of coastal locations would positively affect the presence of *G. immer*. Conversely, the null hypothesis posited that coastal exposure level would not significantly influence *G. immer* presence.
 
 ### Visualizations
 Below we are visualizing abundance in the form of boxplots. 
@@ -213,13 +206,16 @@ summary(abundanceexposureaov)
 TukeyHSD(abundanceexposureaov)
 ```
 
-REPORT: A One-Way ANOVA demonstrated that coastal exposure level has a significant effect on the abundance of *G. immer* (ANOVA, F_4,126 = 6.167; p = 0.000145). An unplanned analytical comparison demonstrated that *G. immer* presence [finish this].
+REPORT: The One-Way ANOVA revealed a significant effect of coastal exposure level on the abundance of *G. immer* (ANOVA, F_4,126 = 6.167; p = 0.000145). A Tukey HSD post-hoc comparison demonstrated that there was a significantly higher abundance of *G. immer* at exposed locations in comparison to moderately exposed locations. Additionally, there was a significantly higher abundance of *G. immer* at exposed locations in comparision to moderately sheltered locations. This indicates that coastal exposure level does indeed have a statistically significant influence on G. immer presence, allowing us to reject the null hypothesis. 
+
+
+
+
+
+
 
 ## Exposure Level and Behavior
-The next analysis that will be conducted will be investigating the potential relationship between exposure level and *G. immer* behavior during the 2023 observation period. 
-
-Null Hypothesis: Exposure level of location has no significant impact on *G. immer* behavior.
-Hypothesis: Exposure level of location significantly impacts *G. immer* behavior. 
+This study aimed to investigate the potential influence of location exposure level on the behavior of Gavia immer (common loon). The hypothesis proposed that exposure level of the location significantly impacts G. immer behavior. In contrast, the null hypothesis stated that there would be no significant impact of location exposure level on G. immer behavior. 
 
 ### Visualizations
 
@@ -256,14 +252,10 @@ chi_sq_test2 <- chisq.test(contingency_table2)
 chi_sq_test2
 ```
 
-REPORT: A Chi-squared test demonstrated that there was no significant association between exposure level and behavior (X^2(16,n=131) = 16.77, p = 0.40). 
+REPORT: The Chi-Squared test revealed no significant association between exposure level of the location and *G. immer* behavior (X^2(16,n=131) = 16.77, p = 0.40). This suggests that exposure level of the location does not have a statistically significant impact on *G. immer* behavior, allowing us to reject the hypothesis. This implies that other factors may be more influential in determining behavioral patterns in *G. immer*. 
 
 ## Wave Class and Behavior
-The next analysis that will be conducted will be investigating the potential relationship between wave class and *G. immer* behavior during the 2023 observation period. 
-
-Hypothesis: Wave class will significantly affect *G. immer* behavior.
-
-Null Hypothesis: Wave class will not significantly affect *G. immer* behavior.
+This study aimed to investigate the potential influence of wave class on the behavior of *G. immer*. The hypothesis proposed that wave class significantly affects *G. immer* behavior. Conversely, the null hypothesis stated that there would be no significant effect of wave class on *G. immer* behavior.
 
 ### Visualizations
 
@@ -308,20 +300,10 @@ chi_sq_test3 <- chisq.test(contingency_table3)
 chi_sq_test3
 ```
 
-REPORT: A chi-squared test demonstrated that wave class did not significantly affect *G. immer* behavior in our sample (Chi-squared(24, n=131) = 28.64, p = 0.23).
-
-
-
-
-
-
-
+REPORT: The Chi-Squared test revealed that wave class did not significantly affect *G. immer* behavior in our sample (Chi-squared(24, n=131) = 28.64, p = 0.23). This suggests that there is no statistically significant relationship between wave class and *G. immer* behavior, allowing us to reject the hypothesis. It is possible that other factors not accounted for in this study may have a greater influence on *G. immer* behavior. 
 
 ## Meters Offshore and Dive Times
-The next analysis that will be conducted will be investigating the potential relationship between distance from shore and *G. immer* dive times during the 2024 observation period. 
-
-Hypothesis: Distance from shore will significantly affect *G. immer* dive times. 
-Null Hypothesis: Distance from shore will not significantly affect *G. immer* dive times.
+This study aimed to explore the potential effect of distance from shore on the dive times of *G. immer*. The hypothesis suggested that distance from shore would significantly influence *G. immer* dive times. Conversely, the null hypothesis posited that there would be no significant effect of distance from shore on *G. immer* dive times. 
 
 ### Visualizations
 
@@ -377,17 +359,10 @@ dive_wave_corr <- cor.test(x=loons_dive_2024$meters_offshore, y = loons_dive_202
 dive_wave_corr
 ```
 
-REPORT: A Spearman'scorrelation indicates a moderate positive monotonic relationship between the variables `meters_offshore` and `dive_time_obs` (rs[93] = .50, p < 0.005). 
-
-
-
-
+REPORT: A Spearman'scorrelation revealed a moderate positive monotonic relationship between the variables `meters_offshore` and `dive_time_obs` (rs[93] = .50, p < 0.005). This indicates that there is a statistically significant association between distance from shore and G. immer dive times, allowing us to reject the null hypothesis. This implies that G. immer may exhibit longer dive times when further from the shore.
 
 ## Tidal height and dive times
-The next analysis that will be conducted will be investigating the potential relationship between tidal height and *G. immer* dive times during the 2024 observation period. 
-
-Hypothesis: Tidal height will significantly affect *G. immer* dive times.
-Null Hypothesis: Tidal height will not significantly affect *G. immer* dive times.
+This study aimed to investigate the potential effect of tidal height on the dive times of *G. immer*. The hypothesis proposed that tidal height would significantly influence *G. immer* dive times. Conversely, the null hypothesis stated that there would be no significant effect of tidal height on *G. immer* dive times.
 
 ### Visualizations
 ```{r}
@@ -428,13 +403,12 @@ dive_height_corr <- cor.test(x=loons_dive_2024$tidal_height, y = loons_dive_2024
 dive_height_corr
 ```
 
-REPORT: A Spearman's correlation indicates that there is no significant relationship between the variables `tidal_height` and `dive_time_obs` (rs[93] = -0.06, p = 0.54).
+REPORT: Spearman's correlation analysis indicated that there is no significant relationship between tidal height and *G. immer* dive times  (rs[93] = -0.06, p = 0.54). This suggests that tidal height does not have a statistically significant impact on *G. immer* dive times, allowing us to reject the hypothesis. This implies that other factors may have a greater influence on dive behavior in *G. immer*.
+
+
 
 ## Tidal classification and dive times
-The next analysis that will be conducted will be investigating the potential relationship between specific tidal stage and *G. immer* dive times during the 2024 observation period. 
-
-Hypothesis: Tidal class will significantly affect *G. immer* dive times.
-Null Hypothesis: Tidal class will not significantly affect *G. immer* dive times.
+This study aimed to explore the potential effect of tidal class on the dive times of *G. immer*. The hypothesis posited that tidal class would significantly influence *G. immer* dive times. Conversely, the null hypothesis stated that there would be no significant effect of tidal class on *G. immer* dive times.
 
 ### Visualizations
 
@@ -448,7 +422,11 @@ loons_dive_2024$tide <- fct_relevel(loons_dive_2024$tide, c("mid_ebb",
                                                             "high_ebb"))
 loons_dive_2024 %>% 
 ggplot(mapping = aes(x = tide, y = dive_time_obs)) + 
-  geom_boxplot()
+  geom_boxplot() + 
+  theme_minimal() + 
+  labs(title = "",
+       x = "Specific Tidal Stage", 
+       y = "Dive Time (seconds)")
 ```
 
 ### Statistics
@@ -459,9 +437,16 @@ summary(full_tide_aov)
 TukeyHSD(full_tide_aov)
 ```
 
-An Analysis of Variance test demonstrated that tidal class has a significant effect on the length of *G. immer* dive times (ANOVA, F_6,86 = 4.599; p = 0.000427). An unplanned analytical comparison demonstrated that *G. immer* dive times at low slack tide were significantly different than those at mid ebb tide (TukeyB, p < 0.005), and dive lengths at high ebb tide were significantly different than those at mid ebb tide (TukeyB, p < 0.05). Otherwise, there were no significant differences in dive times between other tidal classes (TukeyB, p > 0.05)
+REPORT: The ANOVA test demonstrated that tidal class has a significant effect on the length of G. immer dive times (ANOVA, F_6,86 = 4.599; p = 0.000427). An unplanned analytical comparison demonstrated that *G. immer* dive times at low slack tide were significantly different than those at mid ebb tide (TukeyB, p < 0.005), and dive lengths at high ebb tide were significantly different than those at mid ebb tide (TukeyB, p < 0.05). Otherwise, there were no significant differences in dive times between other tidal classes (TukeyB, p > 0.05). These findings allow us to reject the null hypothesis. 
 
 # Discussion / Conclusion
+## Tidal Influence on *G. immer* Behavior
+
+
+
+
+## Coastal Exposure Level and Other Factors
+
 
 
 
