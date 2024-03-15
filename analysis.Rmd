@@ -35,6 +35,7 @@ loons_2023 <- read_csv("loon_2023_tidy.csv")
 loons_2024 <- read_csv("loon_2024_tidy.csv")
 ```
 
+
 ## General Statistics
 The mean dive time of loons during this study was 41.95 seconds with a standard error of 1.53.
 
@@ -195,7 +196,7 @@ library(ggpubr)
 divetimeggline <- ggline(loons_dive_2024, x = "general_tide", y = "dive_time_obs",
        add = c(add = "mean_se", "jitter"),
        order = c("high", "mid", "low"),
-       ylab = "Tidal Stage", xlab = "Dive Time (seconds)", title = "G. Immer Dive Times at Various Tidal Stages")
+       ylab = "Tidal Stage", xlab = "Dive Time (seconds)", title = "")
 
 divetimeggline + stat_compare_means(label.y = 75)
 ```
@@ -244,7 +245,7 @@ site_dunn
 library(ggpubr)
 divetimeggline <- ggline(loons_2024_loon, x = "location", y = "dive_time_obs",
        add = c(add = "mean_se", "jitter"),
-       ylab = "Location", xlab = "Dive Time (seconds)", title = "G. Immer Dive Times at Various Sites")
+       ylab = "Location", xlab = "Dive Time (seconds)", title = "", label)
 
 divetimeggline + stat_compare_means(label.y = 75)
 
@@ -273,10 +274,13 @@ As we can see below, it appears as though there is the highest abundance at loca
 loons_2023 %>% 
   ggplot(mapping = aes(x = shelter_gradient, y = specific_abundance)) + 
   geom_boxplot() +
+  theme_minimal() +
   labs(title = "Common Loon Abundance", 
        subtitle = "by Shelter Gradient", 
        x = "Shelter Gradient", 
        y = "Abundance")
+
+ggboxplot(loons_2023, x = "shelter_gradient", y = "specific_abundance", add = "jitter", xlab="Shelter Gradient", ylab="Abundance", order = c("exposed", "moderately_exposed", "moderate", "moderately_sheltered", "sheltered"))
 ```
 
 ```{r warning=FALSE, echo=FALSE}
@@ -430,6 +434,24 @@ loons_dive_2024 %>%
   ggplot(aes(x = meters_offshore, y = dive_time_obs)) + 
   geom_jitter() + 
   geom_smooth(method = "lm")
+
+#lm
+lm3=lm(loons_dive_2024$meters_offshore~loons_dive_2024$dive_time_obs)
+lm3
+
+plot(loons_dive_2024$meters_offshore,loons_dive_2024$dive_time_obs,pch=16)
+lm3=lm(loons_dive_2024$meters_offshore~loons_dive_2024$dive_time_obs)
+abline(lm3)
+
+
+#scatterplot
+meters_offshore <- loons_dive_2024$meters_offshore
+dive_time_obs <- loons_dive_2024$dive_time_obs
+
+plot(meters_offshore, dive_time_obs, main="Scatter plot", xlab="Meters Offshore", ylab="Dive Time (second)", pch=19)
+abline(lm(dive_time_obs~meters_offshore), col="black") + 
+text(80, 20, bquote(r^2 == .(round((summary(lm3)$r.squared), 2))),cex=1)
+text(80, 12, bquote(P == .(round((summary(lm3)$coefficients[2,4]), 2))),cex=1)
 ```
 
 ### Statistics
@@ -535,6 +557,13 @@ ggplot(mapping = aes(x = tide, y = dive_time_obs)) +
   labs(title = "",
        x = "Specific Tidal Stage", 
        y = "Dive Time (seconds)")
+
+library(ggpubr)
+divetimeagainggline <- ggline(loons_dive_2024, x = "tide", y = "dive_time_obs",
+       add = c(add = "mean_se", "jitter"),
+       order = c("mid_ebb", "low_slack", "low_flood", "mid_flood", "high_flood", "high_slack", "high_ebb"),
+       ylab = "Tidal Stage", xlab = "Dive Time (seconds)", title = "")
+divetimeagainggline
 ```
 
 ### Statistics
