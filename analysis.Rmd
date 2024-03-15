@@ -245,7 +245,7 @@ site_dunn
 library(ggpubr)
 divetimeggline <- ggline(loons_2024_loon, x = "location", y = "dive_time_obs",
        add = c(add = "mean_se", "jitter"),
-       ylab = "Location", xlab = "Dive Time (seconds)", title = "", label)
+       ylab = "Location", xlab = "Dive Time (seconds)", title = "")
 
 divetimeggline + stat_compare_means(label.y = 75)
 
@@ -449,9 +449,7 @@ meters_offshore <- loons_dive_2024$meters_offshore
 dive_time_obs <- loons_dive_2024$dive_time_obs
 
 plot(meters_offshore, dive_time_obs, main="Scatter plot", xlab="Meters Offshore", ylab="Dive Time (second)", pch=19)
-abline(lm(dive_time_obs~meters_offshore), col="black") + 
-text(80, 20, bquote(r^2 == .(round((summary(lm3)$r.squared), 2))),cex=1)
-text(80, 12, bquote(P == .(round((summary(lm3)$coefficients[2,4]), 2))),cex=1)
+abline(lm(dive_time_obs~meters_offshore), col="black")
 ```
 
 ### Statistics
@@ -489,7 +487,7 @@ dive_wave_corr <- cor.test(x=loons_dive_2024$meters_offshore, y = loons_dive_202
 dive_wave_corr
 ```
 
-REPORT: A Spearman'scorrelation revealed a moderate positive monotonic relationship between the variables `meters_offshore` and `dive_time_obs` (rs[93] = .50, p < 0.005). This indicates that there is a statistically significant association between distance from shore and G. immer dive times, allowing us to reject the null hypothesis. This implies that G. immer may exhibit longer dive times when further from the shore.
+REPORT: A Spearman's correlation revealed a moderate positive monotonic relationship between the variables `meters_offshore` and `dive_time_obs` (rs[93] = .50, p < 0.005). This indicates that there is a statistically significant association between distance from shore and G. immer dive times, allowing us to reject the null hypothesis. This implies that G. immer may exhibit longer dive times when further from the shore.
 
 ## Tidal height and dive times
 This study aimed to investigate the potential effect of tidal height on the dive times of *G. immer*. The hypothesis proposed that tidal height would significantly influence *G. immer* dive times. Conversely, the null hypothesis stated that there would be no significant effect of tidal height on *G. immer* dive times.
@@ -591,19 +589,11 @@ t.test(dive_time_obs ~ flood, data = loons_dive_2024_2)
 REPORT: A Welch's Two Sample t-test demonstrated that there was no significant difference in dive times during low-slack periods and flooding periods (df = 14.65, p = 0.05007). 
 
 # Discussion / Conclusion
-## Tidal Influence on *G. immer* Behavior
+This study provides insights into the winter ecology and behavioral dynamics of the Common Loon (Gavia immer) along the coastline of Mount Desert Island, Maine. While much of the existing research has focused on the breeding season ecology of this species, this study sheds light on their non-breeding season behaviors, particularly in coastal wintering habitats.
 
+Our findings reveal relationships between environmental factors and loon behavior, highlighting the multifaceted nature of ecological interactions shaping the dynamics of G. immer populations. Furthermore, our study highlights the significant role of habitat characteristics, particularly coastal exposure level, in shaping the spatial distribution and abundance of loon populations along the coastline. The observed preference of loons for exposed coastal environments underscores the importance of habitat structure and resource availability in mediating population dynamics and ecological interactions.
 
-
-
-## Coastal Exposure Level and Other Factors
-
-
-
-
-
-
-
+Further studies are warranted to determine more comprehensive ecological dynamics of loon populations in diverse coastal environments to ensure the long-term conservation and sustainability of this species.
 
 # Citations
 Bent, A. C. 2009. Life Histories of North American Diving Birds. Cornell University Press: Ithaca, New York.
