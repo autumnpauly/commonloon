@@ -178,17 +178,23 @@ This study aimed to investigate the potential effect of tidal stage on the dive 
 library(stringr)
 library(ggpubr)
 library(tidymodels)
+library(tidyverse)
 ```
 
 ```{r mutation, baby, echo=FALSE, message=FALSE, warning=FALSE}
 loons_dive_2024 <- loons_2024 %>% 
   filter(species == "common_loon") %>% 
-  select(tide, behavior, dive_time_obs, tidal_height) %>% 
+  select(tide, behavior, dive_time_obs, tidal_height, latitude, longitude) %>% 
   filter(dive_time_obs != "n/a") %>% 
   filter(dive_time_obs != "na")
 
 loons_dive_2024 <- loons_dive_2024 %>% 
   separate_longer_delim(dive_time_obs, delim = ",")
+
+loons_dive_2024 <- loons_dive_2024 %>% 
+  separate_wider_delim(latitude, delim = ",", names = c("latitude", "longitude2"), too_few = "align_start") %>% 
+  mutate(longitude2 = as.numeric(longitude2)) %>% 
+  mutate(latitude = as.numeric(latitude))
 
 loons_dive_2024 <- loons_dive_2024 %>%
   mutate(dive_time_obs = as.numeric(dive_time_obs))
@@ -201,6 +207,25 @@ loons_dive_2024 <- loons_dive_2024 %>%
                            "high" = "high_flood",
                            "high" = "high_slack",
                            "high" = "high_ebb"))
+```
+
+
+```{r}
+#This is specifically to export coordinates, I know it's big but I didn't have a better solution
+
+loons_dive_2024_1 <- loons_dive_2024 %>% 
+  filter(is.na(longitude2) == F ) %>% 
+  mutate(longitude = longitude2) %>% 
+  select(-longitude2)
+
+loons_dive_2024_2 <- loons_dive_2024 %>% 
+  filter(is.na(longitude) == F ) %>% 
+  select(- longitude2)
+
+loons_dive_2024 <- loons_dive_2024_1 %>% 
+  bind_rows(loons_dive_2024_2) %>% 
+  write_csv("loons_dive_2024_GPS.csv")
+
 ```
 
 ### Visualizations
