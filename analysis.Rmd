@@ -35,13 +35,52 @@ loons_2023 <- read_csv("loon_2023_tidy.csv")
 loons_2024 <- read_csv("loon_2024_tidy.csv")
 ```
 
+### Diving Loons 2024
+
+```{r loons-dive-2024}
+# loons_dive_2024 <- loons_2024 %>% 
+#   filter(species == "common_loon", 
+#          behavior == "diving")
+```
+
+```{r}
+# loons_dive_2024 <- loons_dive_2024 %>% 
+#   separate_longer_delim(dive_time_obs, delim = ", ") %>% 
+#   separate_longer_delim(dive_time_obs, delim = ",") %>% 
+  
+  
+# loons_dive_2024 <- loons_dive_2024
+#   mutate(dive_time_obs = as.numeric(dive_time_obs))
+  
+loons_dive_2024 <- loons_2024 %>% 
+  filter(species == "common_loon") %>% 
+  select(tide, behavior, dive_time_obs, tidal_height) %>% 
+  filter(dive_time_obs != "n/a") %>% 
+  filter(dive_time_obs != "na")
+
+loons_dive_2024 <- loons_dive_2024 %>% 
+  separate_longer_delim(dive_time_obs, delim = ",")
+
+loons_dive_2024 <- loons_dive_2024 %>%
+  mutate(dive_time_obs = as.numeric(dive_time_obs))
+
+loons_dive_2024 <- loons_dive_2024 %>% 
+  mutate(general_tide = fct_recode(tide, "low" = "low_flood", 
+                           "low" = "low_slack",
+                           "mid" = "mid_flood",
+                           "mid" = "mid_ebb",
+                           "high" = "high_flood",
+                           "high" = "high_slack",
+                           "high" = "high_ebb"))
+```
+
 
 ## General Statistics
 The mean dive time of loons during this study was 41.95 seconds with a standard error of 1.53.
 
 ```{r}
-loons_dive_2024 %>% 
-  summary()
+#summary of dive times in 2024
+summary(loons_dive_2024)
 
 #standard error function
 std.error <- function(x) sd(x)/sqrt(length(x))
@@ -607,3 +646,204 @@ McIntyre, J. W. 1978. Wintering Behavior of Common Loons. The Auk 95: 396-403.
 Holm, K. and Burger, A. 2002. Foraging Behavior and Resource Partitioning by Diving Birds During Winter in Areas of Strong Tidal Currents. Waterbirds 25(3): 312-325.
 
 Thompson, Stephanie A. & Price, J. J. (2006). Water Clarity and Diving Behavior in Wintering Common Loons. Waterbirds: The International Journal of Waterbird Biology, 29(2), 169–175.
+
+
+
+
+### Randomly Sampling Data
+
+```{r , warning=FALSE, echo=FALSE}
+ ggplot(data = loons_dive_2024, mapping = aes(x = dive_time_obs)) +
+   geom_histogram()+
+   facet_wrap(~general_tide, ncol = 1)
+
+ loons_dive_2024_means <- loons_dive_2024 %>%
+   group_by(general_tide) %>%
+   summarise(mean = mean(dive_time_obs))
+```
+
+```{r, warning=FALSE}
+library(infer)
+
+#low tide
+loons_lowdive_2024 <- loons_dive_2024 %>%
+  filter(general_tide == "low") %>%
+  select(dive_time_obs)
+
+set.seed(101)
+
+sampled_low <- loons_lowdive_2024 %>%
+  specify(response = dive_time_obs) %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "mean")
+
+sampled_low <- sampled_low %>%
+  mutate(replicate = as.character(replicate)) %>%
+  mutate(tide = if_else(replicate != 0, "low", replicate)) %>%
+  select(tide, stat)
+
+
+
+#mid tide
+loons_middive_2024 <- loons_dive_2024 %>%
+  filter(general_tide == "mid") %>%
+  select(dive_time_obs)
+
+set.seed(101)
+
+sampled_mid <- loons_middive_2024 %>%
+  specify(response = dive_time_obs) %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "mean")
+
+sampled_mid <- sampled_mid %>%
+  mutate(replicate = as.character(replicate)) %>%
+  mutate(tide = if_else(replicate != 0, "mid", replicate)) %>%
+  select(tide, stat)
+
+
+
+#high tide
+loons_highdive_2024 <- loons_dive_2024 %>%
+  filter(general_tide == "high") %>%
+  select(dive_time_obs)
+
+set.seed(101)
+
+sampled_high <- loons_highdive_2024 %>%
+  specify(response = dive_time_obs) %>%
+  generate(reps = 1000, type = "bootstrap") %>%
+  calculate(stat = "mean")
+
+sampled_high <- sampled_high %>%
+  mutate(replicate = as.character(replicate)) %>%
+  mutate(tide = if_else(replicate != 0, "high", replicate)) %>%
+  select(tide, stat)
+
+#joining dataset
+dive_samples <- rbind(sampled_low, sampled_high)
+dive_samples <- rbind(dive_samples, sampled_mid)
+```
+
+Now, we can see that we have a normal distribution of dive times during all tidal cycles, which now makes an ANOVA an appropriate statistical test to use for this data frame. 
+
+```{r sampledivetimes, warning=FALSE, echo=FALSE}
+ggplot(data = dive_samples, mapping = aes(x = stat)) +
+  geom_histogram() +
+  facet_wrap(~tide, ncol = 1) +
+  theme_minimal() +
+  labs(title = "Dive Times of Common Loons",
+       subtitle = "during low, mid, and high tide",
+       x = "Dive Time (seconds)",
+       y = "Count") +
+  geom_vline(data = loons_dive_2024_means, aes(xintercept = mean, color = general_tide))
+```
+
+```{r echo=FALSE, warning=FALSE}
+dive_samples$tide <- fct_relevel(dive_samples$tide, c("low", "mid", "high"))
+
+ggplot(data = dive_samples, mapping = aes(x = tide, y = stat)) +
+  geom_boxplot() +
+  labs(title = "Tidal Conditions and Dive Times",
+       subtitle = "of Gavia immer",
+       x = "Tidal Stage",
+       y = "Dive Time (seconds)")
+```
+
+To determine if there is a significant difference in dive times of Common loons during different tidal stages, where the tidal stages are categorical with three levels (high tide, mid tide, and low tide), and the dive time is a continuous numerical variable, a one-way analysis of variance (ANOVA) will be used. 
+
+```{r diveaov, echo=FALSE}
+diveaov = aov(stat ~ tide, data = dive_samples)
+```
+
+```{r anova2,warning=FALSE, echo=FALSE}
+summary(diveaov)
+TukeyHSD(diveaov)
+```
+
+```{r ,message=FALSE, echo=FALSE, warning=FALSE}
+#high to low
+loons_dive_2024_1 <- dive_samples %>%
+  filter(tide == "high"|tide == "mid")
+
+t.test(stat ~ tide, data = loons_dive_2024_1)
+
+#low to high
+loons_dive_2024_1 <- dive_samples %>%
+  filter(tide == "high"|tide == "low")
+
+t.test(stat ~ tide, data = loons_dive_2024_1)
+
+#low to mid
+loons_dive_2024_1 <- dive_samples %>%
+  filter(tide == "mid"|tide == "low")
+
+t.test(stat ~ tide, data = loons_dive_2024_1)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
