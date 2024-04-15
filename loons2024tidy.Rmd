@@ -1,0 +1,49 @@
+---
+title: "Common Loon 2024 Data Tidying"
+subtitle: "for Statistics Final Project"
+author: "Draxler and Pauly"
+output: 
+  html_document: 
+    toc: true
+---
+## Loading the Packages and Data
+
+We will be using the `tidyverse` and `lubridate` packages to assist with data tidying. 
+
+```{r loading-packages, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(lubridate)
+```
+
+## Loading Data
+```{r}
+loons_2024 <- read_csv("loons_2024.csv")
+```
+
+### Filtering for Loons
+```{r only-loons-2024}
+loons_2024 <- loons_2024 %>% 
+  filter(species == "common_loon")
+```
+
+### Tide
+The six tidal stages should be releveled to be reflective of the tidal cycle. 
+
+```{r refactor-tide-2024, message=FALSE, warning=FALSE}
+#releveling the exposure levels from most exposed to least exposed 
+loons_2024 <- loons_2024 %>% 
+  mutate(tide = fct_relevel(loons_2024$tide, c(
+                "high_ebb", 
+                "mid_ebb",
+                "low_slack",
+                "low_flood", 
+                "mid_flood",
+                "high_flood", 
+                "high_slack")))
+```
+
+### Writing CSV
+```{r}
+write_csv(loons_2024, "loon_2024_tidy.csv")
+```
+

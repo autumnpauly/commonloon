@@ -25,8 +25,7 @@ First we need to load in the data that was collected in 2023 and 2024.
 all_bird_untidy_2023 <- read_csv("loons_2023.csv")
 loons_2023 <- read_csv("loons_2023.csv")
 
-#2024
-loons_2024 <- read_csv("loons_2024.csv")
+
 ```
 
 ## Tidying the Data
@@ -63,24 +62,10 @@ After tidying this, we need to save these changes into our dataset.
 loons_2023 <- loons_2023 %>% 
   mutate(shelter_factor = shelter_factor) %>% 
   filter(species == "COMMON LOON")
+
 ```
 
-### Tide
 
-The six tidal stages should be releveled to be reflective of the tidal cycle. 
-
-```{r refactor-tide, message=FALSE, warning=FALSE}
-#releveling the exposure levels from most exposed to least exposed 
-loons_2024 <- loons_2024 %>% 
-  mutate(tide = fct_relevel(loons_2024$tide, c(
-                "high_ebb", 
-                "mid_ebb",
-                "low_slack",
-                "low_flood", 
-                "mid_flood",
-                "high_flood", 
-                "high_slack")))
-```
 
 ### Changing `chr` variables to `num`
 
@@ -126,5 +111,5 @@ Now, we should write this new tidied dataset as a CSV so that it can be read acr
 
 ```{r CSV-writing}
 write_csv(loons_2023, "loon_2023_tidy.csv")
-write_csv(loons_2024, "loon_2024_tidy.csv")
+
 ```
