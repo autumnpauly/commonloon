@@ -256,13 +256,14 @@ dive_dunn
 ```
 
 ```{r , echo=FALSE, warning=FALSE}
-library(ggpubr)
-divetimeggline <- ggline(loons_dive_2024, x = "general_tide", y = "dive_time_obs",
-       add = c(add = "mean_se", "jitter"),
-       order = c("high", "mid", "low"),
-       ylab = "Tidal Stage", xlab = "Dive Time (seconds)", title = "")
-
-divetimeggline + stat_compare_means(label.y = 75)
+#This is not working - putting in code jail
+# library(ggpubr)
+# divetimeggline <- ggline(loons_dive_2024, x = "general_tide", y = "dive_time_obs",
+#        add = c(add = "mean_se", "jitter"),
+#        order = c("high", "mid", "low"),
+#        ylab = "Tidal Stage", xlab = "Dive Time (seconds)", title = "")
+# 
+# divetimeggline + stat_compare_means(label.y = 75)
 ```
 
 REPORT: The Kruskal-Wallis test revealed that there was no significant difference in dive times among the various tidal stages (Kruskal-Wallis rank sum test; H(2) = 5.82, P = 0.054). This suggests that tidal stage does not have a statistically significant effect on *G. immer* dive times, allowing us to reject our hypothesis. This implies that other factors besides tidal stage could be influencing dive behavior in *G. immer*. 
