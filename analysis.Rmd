@@ -809,6 +809,21 @@ t.test(stat ~ tide, data = loons_dive_2024_1)
 
 
 
+```{r}
+library(tidyverse)
+dives_gis_tidy <- read_csv("dives_gis_tidy.csv") 
+
+
+dives_gis_tidy %>% 
+  ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
+  geom_point() +
+  geom_smooth(method = "lm")
+
+depth_lm <- lm(water_depth_m ~ dive_time_obs, data = dives_gis_tidy)
+summary(depth_lm)
+
+
+```
 
 
 

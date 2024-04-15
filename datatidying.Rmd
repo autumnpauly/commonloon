@@ -96,6 +96,29 @@ loons_2023 <- loons_2023 %>%
   mutate(time = hms::as_hms(time))
 ```
 
+
+###Tidy gis based data
+```{r}
+dives_gis <- read_csv("loons_dive_2024_gis_temp.csv") 
+  
+dives_gis1 <- dives_gis %>% 
+  filter(is.na(`RASTERVALU...10`) == F ) %>% 
+  mutate(bathy_depth_m = `RASTERVALU...10`) %>% 
+  select(-`RASTERVALU...10`)
+
+dives_gis2 <- dives_gis %>% 
+  filter(is.na(`RASTERVALU...9`) == F ) %>% 
+  mutate( bathy_depth_m = `RASTERVALU...9`) %>% 
+  select(-`RASTERVALU...9`)
+
+dives_gis1 %>% 
+  bind_rows(dives_gis2) %>% 
+  select(-RASTERVALU) %>%
+  mutate(water_depth_m = (bathy_depth_m * -1) + tidal_height) %>% 
+  write_csv("dives_gis_tidy.csv")
+```
+
+
 # Writing CSV
 
 Now, we should write this new tidied dataset as a CSV so that it can be read across all the .Rmd files. 
@@ -104,6 +127,3 @@ Now, we should write this new tidied dataset as a CSV so that it can be read acr
 write_csv(loons_2023, "loon_2023_tidy.csv")
 write_csv(loons_2024, "loon_2024_tidy.csv")
 ```
-
-
-
