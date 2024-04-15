@@ -71,14 +71,15 @@ The six tidal stages should be releveled to be reflective of the tidal cycle.
 
 ```{r refactor-tide, message=FALSE, warning=FALSE}
 #releveling the exposure levels from most exposed to least exposed 
-loons_2024 <- fct_relevel(loons_2024$tide, c(
+loons_2024 <- loons_2024 %>% 
+  mutate(tide = fct_relevel(loons_2024$tide, c(
                 "high_ebb", 
                 "mid_ebb",
                 "low_slack",
                 "low_flood", 
                 "mid_flood",
                 "high_flood", 
-                "high_slack"))
+                "high_slack")))
 ```
 
 ### Changing `chr` variables to `num`
