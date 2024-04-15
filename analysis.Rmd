@@ -651,7 +651,7 @@ loons_dive_2024_2
 t.test(dive_time_obs ~ flood, data = loons_dive_2024_2)
 ```
 
-REPORT: A Welch's Two Sample t-test demonstrated that there was no significant difference in dive times during low-slack periods and flooding periods (df = 14.65, p = 0.05007). 
+REPORT: A Welch's Two Sample t-test demonstrated that there was a significant difference in dive times during low-slack periods and flooding periods (df = 12.743, p = 0.04036). 
 
 # Discussion / Conclusion
 This study provides insights into the winter ecology and behavioral dynamics of the Common Loon (Gavia immer) along the coastline of Mount Desert Island, Maine. While much of the existing research has focused on the breeding season ecology of this species, this study sheds light on their non-breeding season behaviors, particularly in coastal wintering habitats.
