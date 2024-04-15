@@ -814,13 +814,48 @@ library(tidyverse)
 dives_gis_tidy <- read_csv("dives_gis_tidy.csv") 
 
 
-dives_gis_tidy %>% 
-  ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
-  geom_point() +
-  geom_smooth(method = "lm")
+dives_gis_tidy_high <- dives_gis_tidy %>%
+  filter(general_tide == "high") 
 
-depth_lm <- lm(water_depth_m ~ dive_time_obs, data = dives_gis_tidy)
-summary(depth_lm)
+dives_gis_tidy_high %>% 
+  ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
+  geom_jitter() +
+  geom_smooth(method = "lm") +
+  labs(
+    title = "High"
+  )
+
+dives_gis_tidy_high_lm <- lm(water_depth_m ~ dive_time_obs, data = dives_gis_tidy_high)
+summary(dives_gis_tidy_high_lm)
+
+
+dives_gis_tidy_mid <- dives_gis_tidy %>% 
+  filter(general_tide == "mid")
+
+dives_gis_tidy_mid %>% 
+  ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
+  geom_jitter() +
+  geom_smooth(method = "lm") +
+  labs(
+    title = "Mid"
+  )
+
+dives_gis_tidy_mid_lm <- lm(water_depth_m ~ dive_time_obs, data = dives_gis_tidy_mid)
+summary(dives_gis_tidy_mid_lm)
+
+dives_gis_tidy_low <- dives_gis_tidy %>% 
+  filter(general_tide == "low")
+
+dives_gis_tidy_low %>% 
+  ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
+  geom_jitter() +
+  geom_smooth(method = "lm") +
+  labs(
+    title = "Low"
+  )
+
+dives_gis_tidy_low_lm <- lm(water_depth_m ~ dive_time_obs, data = dives_gis_tidy_low)
+summary(dives_gis_tidy_low_lm)
 
 
 ```
