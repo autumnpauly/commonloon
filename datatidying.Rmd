@@ -63,6 +63,10 @@ loons_2023 <- loons_2023 %>%
   mutate(shelter_factor = shelter_factor) %>% 
   filter(species == "COMMON LOON")
 
+loons_2023 <- loons_2023 %>% 
+  mutate(general_tide = case_when(tide == "LOW" ~ "low",
+                                      tide == "MID" ~ "mid",
+                                      tide == "HIGH" ~ "high"))
 ```
 
 
