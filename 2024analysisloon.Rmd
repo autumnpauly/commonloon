@@ -1,0 +1,284 @@
+---
+title: "Winter Habitat Use by Common Loons (Gavia Immer) in 2024"
+subtitle: "on Mount Desert Island, Maine"
+author: "Draxler and Pauly"
+date: "03/12/2024"
+output: 
+  html_document: 
+    toc: true
+---
+
+# Data Analysis
+## Load Packages and Data
+```{r load-packages, message = FALSE, warning=FALSE}
+#install.packages("tidyverse")
+library(tidyverse)
+library(rmarkdown)
+library(scales)
+library(ggridges)
+library(rstatix)
+library(parsnip)
+```
+
+```{r read-in-data, message = FALSE, warning=FALSE}
+loons_2024 <- read_csv("loon_2024_tidy.csv")
+```
+
+## Diving Loons 2024
+```{r}
+loons_dive_2024 <- loons_2024 %>% 
+  filter(species == "common_loon") %>% 
+  select(tide, behavior, dive_time_obs, tidal_height) %>% 
+  filter(dive_time_obs != "n/a") %>% 
+  filter(dive_time_obs != "na")
+
+loons_dive_2024 <- loons_dive_2024 %>% 
+  separate_longer_delim(dive_time_obs, delim = ",")
+
+loons_dive_2024 <- loons_dive_2024 %>%
+  mutate(dive_time_obs = as.numeric(dive_time_obs))
+
+loons_dive_2024 <- loons_dive_2024 %>% 
+  mutate(general_tide = fct_recode(tide, "low" = "low_flood", 
+                           "low" = "low_slack",
+                           "mid" = "mid_flood",
+                           "mid" = "mid_ebb",
+                           "high" = "high_flood",
+                           "high" = "high_slack",
+                           "high" = "high_ebb"))
+```
+
+## General Statistics
+The mean dive time of loons during this study was 41.95 seconds with a standard error of 1.53.
+
+```{r}
+#summary of dive times in 2024
+summary(loons_dive_2024)
+
+#standard error function
+std.error <- function(x) sd(x)/sqrt(length(x))
+
+std.error(loons_dive_2024$dive_time_obs)
+```
+
+
+
+
+
+
+## General Tidal Stage and Abundance at each site
+The next analysis that will be conducted will be investigating the potential relationship between general tidal stages and *G. immer* abundance at each site.
+
+The hypothesis is that tidal height would significantly affect the abundance of *G. immer* The null hypothesis stated that tidal height would not have a significant effect on *G. immer* abundance at each site.
+
+### Statistics
+#### Chi-Squared Test of Independence
+The Chi-Squared Test of Independence examines whether there is a relationship between two categorical variables.
+
+#### Expected Frequencies and Contingency Table
+Before performing the chi-square test, we need to calculate the expected frequencies for each cell in the contingency table. These expected frequencies represent what you would expect to observe if there were no association between tidal condition and behavior.
+
+```{r contingency-table, echo=FALSE}
+contingency_table_abun24 <- table(loons_2024$tide, loons_2024$location)
+contingency_table_abun24
+```
+
+#### Chi-square Test
+Now that we have the contingency table of expected frequencies, we can perform the statistical test. 
+
+```{r chi-square-test, warning=FALSE, echo=FALSE}
+chisq24abun <- chisq.test(contingency_table_abun24)
+chisq24abun
+```
+
+REPORT: A Chi-squared test indicated no significant relationship between *G. immer* abundance and tidal condition at each site (X^2(16, n=131) = 26.28, df = 16, p-value = 0.05017). This indicates that there is no relationship between tidal height and *G. immer* abundance at each site, allowing us to reject the hypothesis.
+
+
+
+
+
+
+
+
+## Tidal Conditions and Dive Times in 2024
+
+This study aimed to investigate the potential effect of tidal stage on the dive times of *G. immer*. The hypothesis posited that low tide would result in significantly longer dive times for *G. immer*. Conversely, the null hypothesis stated that tidal stage would not have a significant impact on *G. immer* dive times.
+
+
+```{r message=FALSE, echo=FALSE, warning=FALSE}
+library(stringr)
+library(ggpubr)
+library(tidymodels)
+library(tidyverse)
+```
+
+```{r mutation, baby, echo=FALSE, message=FALSE, warning=FALSE}
+loons_dive_2024 <- loons_2024 %>% 
+  filter(species == "common_loon") %>% 
+  select(tide, behavior, dive_time_obs, tidal_height, latitude, longitude) %>% 
+  filter(dive_time_obs != "n/a") %>% 
+  filter(dive_time_obs != "na")
+
+loons_dive_2024 <- loons_dive_2024 %>% 
+  separate_longer_delim(dive_time_obs, delim = ",")
+
+loons_dive_2024 <- loons_dive_2024 %>% 
+  separate_wider_delim(latitude, delim = ",", names = c("latitude", "longitude2"), too_few = "align_start") %>% 
+  mutate(longitude2 = as.numeric(longitude2)) %>% 
+  mutate(latitude = as.numeric(latitude))
+
+loons_dive_2024 <- loons_dive_2024 %>%
+  mutate(dive_time_obs = as.numeric(dive_time_obs))
+
+loons_dive_2024 <- loons_dive_2024 %>% 
+  mutate(general_tide = fct_recode(tide, "low" = "low_flood", 
+                           "low" = "low_slack",
+                           "mid" = "mid_flood",
+                           "mid" = "mid_ebb",
+                           "high" = "high_flood",
+                           "high" = "high_slack",
+                           "high" = "high_ebb"))
+```
+
+
+```{r}
+#This is specifically to export coordinates, I know it's big but I didn't have a better solution
+
+loons_dive_2024_1 <- loons_dive_2024 %>% 
+  filter(is.na(longitude2) == F ) %>% 
+  mutate(longitude = longitude2) %>% 
+  select(-longitude2)
+
+loons_dive_2024_2 <- loons_dive_2024 %>% 
+  filter(is.na(longitude) == F ) %>% 
+  select(- longitude2)
+
+loons_dive_2024 <- loons_dive_2024_1 %>% 
+  bind_rows(loons_dive_2024_2) %>% 
+  write_csv("loons_dive_2024_GPS.csv")
+
+```
+
+### Visualizations
+As can be seen below, we do not have a normal distribution for the variable `dive_time_obs`. We will need to perform a non-parametric test. 
+
+```{r warning=TRUE, echo = FALSE}
+ggplot(data = loons_dive_2024, mapping = aes(x = dive_time_obs)) +
+  geom_histogram()+
+  facet_wrap(~general_tide, ncol = 1) + 
+  labs(title = "Distribution of Dive Times of G. Immer", 
+       subtitle = "At various tidal stages", 
+       x = "Dive Time (seconds)", 
+       y = "Count")
+```
+
+#### Statistics 
+The non-parametric nature of our dataset suggests that we need to use the Kruskal-Wallis H test (the "one-way ANOVA on ranks"), which is the non-parametric alternative to the one-way ANOVA test. 
+
+```{r, warning=FALSE, echo=FALSE}
+library(rstatix)
+dive_kruskal <- kruskal.test(dive_time_obs ~ general_tide, data = loons_dive_2024)
+dive_kruskal
+```
+```{r , warning=FALSE, echo=FALSE, message=FALSE}
+#post-hoc test
+dive_dunn <- loons_dive_2024 %>% dunn_test(dive_time_obs ~ general_tide, p.adjust.method = "bonferroni")
+dive_dunn
+```
+
+```{r , echo=FALSE, warning=FALSE}
+#This is not working - putting in code jail
+# library(ggpubr)
+# divetimeggline <- ggline(loons_dive_2024, x = "general_tide", y = "dive_time_obs",
+#        add = c(add = "mean_se", "jitter"),
+#        order = c("high", "mid", "low"),
+#        ylab = "Tidal Stage", xlab = "Dive Time (seconds)", title = "")
+# 
+# divetimeggline + stat_compare_means(label.y = 75)
+```
+
+REPORT: The Kruskal-Wallis test revealed that there was no significant difference in dive times among the various tidal stages (Kruskal-Wallis rank sum test; H(2) = 5.82, P = 0.054). This suggests that tidal stage does not have a statistically significant effect on *G. immer* dive times, allowing us to reject our hypothesis. This implies that other factors besides tidal stage could be influencing dive behavior in *G. immer*.
+
+
+
+
+
+
+
+
+
+
+## Meters Offshore and Dive Times
+This study aimed to explore the potential effect of distance from shore on the dive times of *G. immer*. The hypothesis suggested that distance from shore would significantly influence *G. immer* dive times. Conversely, the null hypothesis posited that there would be no significant effect of distance from shore on *G. immer* dive times. 
+
+### Visualizations
+
+```{r}
+loons_dive_2024 <- loons_2024 %>% 
+  filter(species == "common_loon") %>% 
+  select(tide, behavior, dive_time_obs, tidal_height, meters_offshore) %>% 
+  filter(dive_time_obs != "n/a") %>% 
+  filter(dive_time_obs != "na")
+
+loons_dive_2024 <- loons_dive_2024 %>% 
+  separate_longer_delim(dive_time_obs, delim = ",") %>% 
+  mutate(dive_time_obs = as.numeric(dive_time_obs))
+
+loons_dive_2024 %>% 
+  ggplot(aes(x = meters_offshore, y = dive_time_obs)) + 
+  geom_jitter() + 
+  geom_smooth(method = "lm")
+
+#lm
+lm3=lm(loons_dive_2024$meters_offshore~loons_dive_2024$dive_time_obs)
+lm3
+
+plot(loons_dive_2024$meters_offshore,loons_dive_2024$dive_time_obs,pch=16)
+lm3=lm(loons_dive_2024$meters_offshore~loons_dive_2024$dive_time_obs)
+abline(lm3)
+
+
+#scatterplot
+meters_offshore <- loons_dive_2024$meters_offshore
+dive_time_obs <- loons_dive_2024$dive_time_obs
+
+plot(meters_offshore, dive_time_obs, main="Scatter plot", xlab="Meters Offshore", ylab="Dive Time (second)", pch=19)
+abline(lm(dive_time_obs~meters_offshore), col="black")
+```
+
+### Statistics
+With both of our variables being continuous and numerical, we need to perform a regression test. First, we need to determine if there is a linear relationship between the variables. 
+
+```{r}
+loons_dive_2024 %>% 
+  ggplot(aes(x = meters_offshore, y = dive_time_obs)) + 
+  geom_jitter() + 
+  geom_smooth(method = "lm") + 
+  labs(title = "Dive Times vs. Meters Offshore", 
+       subtitle = "of G. immer", 
+       x = "Distance Offshore (m)", 
+       y = "Dive Time (seconds)")
+```
+
+Next, we need to determine if both variables are normally distributed. 
+
+```{r}
+#Meters Offshore
+ggplot(data = loons_dive_2024, mapping = aes(x = meters_offshore)) + 
+  geom_histogram()
+
+#Dive Times
+ggplot(data = loons_dive_2024, mapping = aes(x = dive_time_obs)) + 
+  geom_histogram()
+```
+
+#### Statistics
+With the variable `meters_offshore` having a non-normal distribution, we will want to use a non-parametric version of a linear correlation test (i.e. Pearson's R). One such test is Spearman's Rho. 
+
+```{r warning=FALSE}
+dive_wave_corr <- cor.test(x=loons_dive_2024$meters_offshore, y = loons_dive_2024$dive_time_obs, method = 'spearman')
+
+dive_wave_corr
+```
+
+REPORT: A Spearman's correlation revealed a moderate positive monotonic relationship between the variables `meters_offshore` and `dive_time_obs` (rs[93] = .50, p < 0.005). This indicates that there is a statistically significant association between distance from shore and G. immer dive times, allowing us to reject the null hypothesis. This implies that G. immer may exhibit longer dive times when further from the shore.

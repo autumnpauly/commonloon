@@ -32,7 +32,6 @@ library(parsnip)
 
 ```{r read-in-data, message = FALSE, warning=FALSE}
 loons_2023 <- read_csv("loon_2023_tidy.csv")
-loons_2024 <- read_csv("loon_2024_tidy.csv")
 ```
 
 ### Diving Loons 2024
@@ -51,27 +50,7 @@ loons_2024 <- read_csv("loon_2024_tidy.csv")
   
 # loons_dive_2024 <- loons_dive_2024
 #   mutate(dive_time_obs = as.numeric(dive_time_obs))
-  
-loons_dive_2024 <- loons_2024 %>% 
-  filter(species == "common_loon") %>% 
-  select(tide, behavior, dive_time_obs, tidal_height) %>% 
-  filter(dive_time_obs != "n/a") %>% 
-  filter(dive_time_obs != "na")
 
-loons_dive_2024 <- loons_dive_2024 %>% 
-  separate_longer_delim(dive_time_obs, delim = ",")
-
-loons_dive_2024 <- loons_dive_2024 %>%
-  mutate(dive_time_obs = as.numeric(dive_time_obs))
-
-loons_dive_2024 <- loons_dive_2024 %>% 
-  mutate(general_tide = fct_recode(tide, "low" = "low_flood", 
-                           "low" = "low_slack",
-                           "mid" = "mid_flood",
-                           "mid" = "mid_ebb",
-                           "high" = "high_flood",
-                           "high" = "high_slack",
-                           "high" = "high_ebb"))
 ```
 
 
