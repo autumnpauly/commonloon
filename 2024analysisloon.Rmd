@@ -67,31 +67,25 @@ std.error(loons_dive_2024$dive_time_obs)
 
 
 ## General Tidal Stage and Abundance at each site
-The next analysis that will be conducted will be investigating the potential relationship between general tidal stages and *G. immer* abundance at each site.
-
-The hypothesis is that tidal height would significantly affect the abundance of *G. immer* The null hypothesis stated that tidal height would not have a significant effect on *G. immer* abundance at each site.
 
 ### Statistics
 #### Chi-Squared Test of Independence
-The Chi-Squared Test of Independence examines whether there is a relationship between two categorical variables.
-
 #### Expected Frequencies and Contingency Table
-Before performing the chi-square test, we need to calculate the expected frequencies for each cell in the contingency table. These expected frequencies represent what you would expect to observe if there were no association between tidal condition and behavior.
-
 ```{r contingency-table, echo=FALSE}
 contingency_table_abun24 <- table(loons_dive_2024$tide, loons_dive_2024$location)
 contingency_table_abun24
 ```
 
 #### Chi-square Test
-Now that we have the contingency table of expected frequencies, we can perform the statistical test. 
-
 ```{r chi-square-test, warning=FALSE, echo=FALSE}
 chisq24abun <- chisq.test(contingency_table_abun24)
 chisq24abun
 ```
 
 REPORT: A Chi-squared test indicated a significant relationship between *G. immer* abundance and tidal condition at each site (X^2(16, n=131) = 26.28, df = 35, p-value > 0.005). This indicates that there is a relationship between tidal height and *G. immer* abundance at each site, allowing us to reject the null hypothesis.
+
+
+
 
 ```{r}
 #the results suggested that there was a relationship - let's find out what this is. 
@@ -101,14 +95,26 @@ REPORT: A Chi-squared test indicated a significant relationship between *G. imme
 
 
 
+## Behavior at Tidal Heights
 
+```{r}
+loons_2023 <- read_csv("loon_2023_tidy.csv")
 
+loons_2023_behavior <- loons_2023 %>% select(behavior, general_tide)
+loons_2024_behavior <- loons_dive_2024 %>% select(behavior, general_tide)
+loons_behavior <- bind_rows(loons_2023_behavior, loons_2024_behavior)
+contingency_table1 <- table(loons_behavior$general_tide, loons_behavior$behavior)
+contingency_table1
+```
 
+```{r}
+chi_sq_test1 <- chisq.test(contingency_table1)	
+chi_sq_test1
+```
+
+REPORT: A Chi-squared test indicated a significant relationship between *G. immer* behavior and general tidal stage (X^2(12, n=307) = 75.8, df = 12, p-value > 0.005). This indicates that there is a relationship between general tidal stage and *G. immer* behavior, allowing the null hypothesis to be rejected.
 
 ## Tidal Conditions and Dive Times in 2024
-
-This study aimed to investigate the potential effect of tidal stage on the dive times of *G. immer*. The hypothesis posited that low tide would result in significantly longer dive times for *G. immer*. Conversely, the null hypothesis stated that tidal stage would not have a significant impact on *G. immer* dive times.
-
 ```{r message=FALSE, echo=FALSE, warning=FALSE}
 library(stringr)
 library(ggpubr)
@@ -139,7 +145,6 @@ loons_dive_2024 <- loons_dive_2024 %>%
                            "high" = "high_ebb"))
 ```
 
-
 ```{r}
 #This is specifically to export coordinates, I know it's big but I didn't have a better solution
 
@@ -159,8 +164,6 @@ loons_dive_2024 <- loons_dive_2024_1 %>%
 ```
 
 ### Visualizations
-As can be seen below, we do not have a normal distribution for the variable `dive_time_obs`. We will need to perform a non-parametric test. 
-
 ```{r warning=TRUE, echo = FALSE}
 ggplot(data = loons_dive_2024, mapping = aes(x = dive_time_obs)) +
   geom_histogram()+
@@ -172,8 +175,6 @@ ggplot(data = loons_dive_2024, mapping = aes(x = dive_time_obs)) +
 ```
 
 #### Statistics 
-The non-parametric nature of our dataset suggests that we need to use the Kruskal-Wallis H test (the "one-way ANOVA on ranks"), which is the non-parametric alternative to the one-way ANOVA test. 
-
 ```{r, warning=FALSE, echo=FALSE}
 library(rstatix)
 ```
@@ -243,9 +244,15 @@ REPORT: The Kruskal-Wallis test revealed that there was a significant difference
 
 
 
-## Meters Offshore and Dive Times
-This study aimed to explore the potential effect of distance from shore on the dive times of *G. immer*. The hypothesis suggested that distance from shore would significantly influence *G. immer* dive times. Conversely, the null hypothesis posited that there would be no significant effect of distance from shore on *G. immer* dive times. 
 
+
+
+
+
+
+
+
+## Meters Offshore and Dive Times
 ### Visualizations
 
 ```{r}
@@ -274,8 +281,6 @@ summary(low_lm)
 ```
 
 ### Statistics
-With both of our variables being continuous and numerical, we need to perform a regression test. First, we need to determine if there is a linear relationship between the variables. 
-
 ```{r}
 loons_dive_2024 %>% 
   ggplot(aes(x = meters_offshore, y = dive_time_obs)) + 
@@ -286,8 +291,6 @@ loons_dive_2024 %>%
        x = "Distance Offshore (m)", 
        y = "Dive Time (seconds)")
 ```
-
-Next, we need to determine if both variables are normally distributed. 
 
 ```{r}
 #Meters Offshore
@@ -300,8 +303,6 @@ ggplot(data = loons_dive_2024, mapping = aes(x = dive_time_obs)) +
 ```
 
 #### Statistics
-With the variable `meters_offshore` having a non-normal distribution, we will want to use a non-parametric version of a linear correlation test (i.e. Pearson's R). One such test is Spearman's Rho. 
-
 ```{r warning=FALSE}
 dive_wave_corr <- cor.test(x=loons_dive_2024$meters_offshore, y = loons_dive_2024$dive_time_obs, method = 'spearman')
 
@@ -309,6 +310,10 @@ dive_wave_corr
 ```
 
 REPORT: A Spearman's correlation revealed a moderate positive monotonic relationship between the variables `meters_offshore` and `dive_time_obs` (rs[93] = .50, p < 0.005). This indicates that there is a statistically significant association between distance from shore and G. immer dive times, allowing us to reject the null hypothesis. This implies that G. immer may exhibit longer dive times when further from the shore.
+
+
+
+
 
 #Tidal height
 ```{r}

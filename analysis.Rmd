@@ -100,7 +100,10 @@ The Chi-Squared Test of Independence examines whether there is a relationship be
 Before performing the chi-square test, we need to calculate the expected frequencies for each cell in the contingency table. These expected frequencies represent what you would expect to observe if there were no association between tidal condition and behavior.
 
 ```{r contingency-table, echo=FALSE}
-contingency_table1 <- table(loons_2023$tide, loons_2023$behavior)
+loons_2023_behavior <- loons_2023 %>% select(behavior, general_tide)
+loons_2024_behavior <- loons_dive_2024 %>% select(behavior, general_tide)
+loons_behavior <- bind_rows(loons_2023_behavior, loons_2024_behavior)
+contingency_table1 <- table(loons_behavior$general_tide, loons_behavior$behavior)
 contingency_table1
 ```
 
@@ -108,20 +111,11 @@ contingency_table1
 Now that we have the contingency table of expected frequencies, we can perform the statistical test. 
 
 ```{r chi-square-test, warning=FALSE, echo=FALSE}
-chi_sq_test1 <- chisq.test(contingency_table1)
+chi_sq_test1 <- chisq.test(contingency_table1)	
 chi_sq_test1
-
-# # x-squared
-# chi_sq_test1$statistic
-# 
-# #p-value
-# chi_sq_test1$p.value
-# 
-# #expected frequencies
-# chi_sq_test1$expected
 ```
 
-REPORT: A Chi-squared test indicated a significant relationship between *G. immer* behavior and general tidal stage (X^2(8, n=131) = 21.28, df = 8, p-value > 0.05). This indicates that there is a relationship between general tidal stage and *G. immer* behavior, allowing the null hypothesis to be rejected. 
+REPORT: A Chi-squared test indicated a significant relationship between *G. immer* behavior and general tidal stage (X^2(12, n=307) = 75.8, df = 12, p-value > 0.005). This indicates that there is a relationship between general tidal stage and *G. immer* behavior, allowing the null hypothesis to be rejected.
 
 
 
