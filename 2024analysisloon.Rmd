@@ -309,3 +309,87 @@ dive_wave_corr
 ```
 
 REPORT: A Spearman's correlation revealed a moderate positive monotonic relationship between the variables `meters_offshore` and `dive_time_obs` (rs[93] = .50, p < 0.005). This indicates that there is a statistically significant association between distance from shore and G. immer dive times, allowing us to reject the null hypothesis. This implies that G. immer may exhibit longer dive times when further from the shore.
+
+#Tidal height
+```{r}
+#Tidal hight has no significant effect on dive time
+tidal_height_lm <- lm(dive_time_obs~tidal_height, data = loons_dive_2024)
+summary(tidal_height_lm)
+
+loons_dive_2024%>% 
+  ggplot(aes(x = meters_offshore, y = tidal_height)) + 
+  geom_point() +
+  geom_smooth(method = "lm") +
+  scale_color_viridis_d(option = "A")
+
+#Differentiating by tidal height had no statistical significance
+# #Low tide lm
+# loons_dive_low_2024 <- loons_dive_2024 %>% 
+#   filter(general_tide == "low")
+# 
+# loons_dive_mid_2024 <- loons_dive_2024 %>% 
+#   filter(general_tide == "mid")
+# 
+# loons_dive_high_2024 <- loons_dive_2024 %>% 
+#   filter(general_tide == "high")
+# 
+# 
+# high_tide_lm <- lm(dive_time_obs~tidal_height, data = loons_dive_high_2024)
+# summary(high_tide_lm)
+```
+
+#Water depth
+```{r}
+#Prep
+loons_dive_2024_gis <- read_csv("loons_dive_2024_gis.csv")
+  
+dives_gis1 <- loons_dive_2024_gis %>% 
+  filter(is.na(`RASTERVALU...11`) == F ) %>% 
+  mutate(bathy_depth_m = `RASTERVALU...11`) %>% 
+  select(-`RASTERVALU...11`)
+
+dives_gis2 <- loons_dive_2024_gis %>% 
+  filter(is.na(`RASTERVALU...12`) == F ) %>% 
+  mutate( bathy_depth_m = `RASTERVALU...12`) %>% 
+  select(-`RASTERVALU...12`)
+
+loons_dive_2024_gis <- dives_gis1 %>% 
+  bind_rows(dives_gis2) %>% 
+  select(-RASTERVALU) %>%
+  mutate(water_depth_m = (bathy_depth_m * -1) + tidal_height)
+
+loons_dive_2024_gis <- loons_dive_2024_gis %>% 
+  mutate(general_tide = fct_recode(tide, "low" = "low_flood", 
+                           "low" = "low_ebb",
+                           "low" = "low_slack",
+                           "mid" = "mid_flood",
+                           "mid" = "mid_ebb",
+                           "high" = "high_flood",
+                           "high" = "high_slack",
+                           "high" = "high_ebb"))
+
+#Analyze
+water_depth_lm <- lm(dive_time_obs~water_depth_m, data = loons_dive_2024_gis)
+summary(water_depth_lm)
+
+loons_dive_2024_gis %>% 
+  ggplot(aes(x = water_depth_m, y = dive_time_obs, color = general_tide)) + 
+  geom_point() +
+  geom_smooth(method = "lm") +
+  scale_color_viridis_d(option = "A")
+
+#low specific
+
+loons_dive_2024_gis_low <- loons_dive_2024_gis %>% 
+  filter(general_tide == "low")
+
+water_depth_low_lm <- lm(dive_time_obs~water_depth_m, data = loons_dive_2024_gis_low)
+summary(water_depth_low_lm)
+
+loons_dive_2024_gis_low %>% 
+  ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
+  geom_point() +
+  geom_smooth(method = "lm") +
+  scale_color_viridis_d(option = "A")
+```
+
