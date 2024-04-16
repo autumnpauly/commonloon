@@ -67,6 +67,14 @@ loons_2023 <- loons_2023 %>%
   mutate(general_tide = case_when(tide == "LOW" ~ "low",
                                       tide == "MID" ~ "mid",
                                       tide == "HIGH" ~ "high"))
+
+loons_2023 <- loons_2023 %>% 
+  mutate(behavior = case_when(behavior == "PEERING" ~ "peering",
+                              behavior == "DIVING" ~ "diving",
+                              behavior == "DRIFTING" ~ "drifting",
+                              behavior == "MAINTENANCE" ~ "maintenance", 
+                              behavior == "ASHORE" ~ "ashore"
+                                      ))
 ```
 
 
@@ -89,23 +97,23 @@ loons_2023 <- loons_2023 %>%
 
 ###Tidy gis based data
 ```{r}
-dives_gis <- read_csv("loons_dive_2024_gis_temp.csv") 
-  
-dives_gis1 <- dives_gis %>% 
-  filter(is.na(`RASTERVALU...10`) == F ) %>% 
-  mutate(bathy_depth_m = `RASTERVALU...10`) %>% 
-  select(-`RASTERVALU...10`)
-
-dives_gis2 <- dives_gis %>% 
-  filter(is.na(`RASTERVALU...9`) == F ) %>% 
-  mutate( bathy_depth_m = `RASTERVALU...9`) %>% 
-  select(-`RASTERVALU...9`)
-
-dives_gis1 %>% 
-  bind_rows(dives_gis2) %>% 
-  select(-RASTERVALU) %>%
-  mutate(water_depth_m = (bathy_depth_m * -1) + tidal_height) %>% 
-  write_csv("dives_gis_tidy.csv")
+# dives_gis <- read_csv("loons_dive_2024_gis_temp.csv") 
+#   
+# dives_gis1 <- dives_gis %>% 
+#   filter(is.na(`RASTERVALU...10`) == F ) %>% 
+#   mutate(bathy_depth_m = `RASTERVALU...10`) %>% 
+#   select(-`RASTERVALU...10`)
+# 
+# dives_gis2 <- dives_gis %>% 
+#   filter(is.na(`RASTERVALU...9`) == F ) %>% 
+#   mutate( bathy_depth_m = `RASTERVALU...9`) %>% 
+#   select(-`RASTERVALU...9`)
+# 
+# dives_gis1 %>% 
+#   bind_rows(dives_gis2) %>% 
+#   select(-RASTERVALU) %>%
+#   mutate(water_depth_m = (bathy_depth_m * -1) + tidal_height) %>% 
+#   write_csv("dives_gis_tidy.csv")
 ```
 
 
