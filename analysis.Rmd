@@ -148,8 +148,26 @@ chisq24abun
 
 REPORT: A Chi-squared test indicated no significant relationship between *G. immer* abundance and tidal condition at each site (X^2(16, n=131) = 26.28, df = 16, p-value = 0.05017). This indicates that there is no relationship between tidal height and *G. immer* abundance at each site, allowing us to reject the hypothesis. 
 
-## Tidal Conditions and Dive Times in 2024
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## Tidal Conditions and Dive Times in 2024
 This study aimed to investigate the potential effect of tidal stage on the dive times of *G. immer*. The hypothesis posited that low tide would result in significantly longer dive times for *G. immer*. Conversely, the null hypothesis stated that tidal stage would not have a significant impact on *G. immer* dive times.
 
 
