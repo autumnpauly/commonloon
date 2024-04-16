@@ -259,28 +259,55 @@ This study aimed to explore the potential effect of distance from shore on the d
 
 ### Visualizations
 
-```{r}
-loons_dive_2024 <- loons_dive_2024 %>% 
-  separate_longer_delim(dive_time_obs, delim = ",") %>% 
-  mutate(dive_time_obs = as.numeric(dive_time_obs))
-
+```{r low dive lm}
+#low
 loons_dive_2024 %>% 
   ggplot(aes(x = meters_offshore, y = dive_time_obs)) + 
   geom_jitter() + 
   geom_smooth(method = "lm")
 
+loons_dive_low_2024 <- loons_dive_2024 %>% 
+  filter(general_tide == "low")
+
 #lm
-lm3=lm(loons_dive_2024$meters_offshore~loons_dive_2024$dive_time_obs)
+lm3=lm(loons_dive_low_2024$meters_offshore~loons_dive_low_2024$dive_time_obs)
 lm3
 
-plot(loons_dive_2024$meters_offshore,loons_dive_2024$dive_time_obs,pch=16)
-lm3=lm(loons_dive_2024$meters_offshore~loons_dive_2024$dive_time_obs)
+plot(loons_dive_low_2024$meters_offshore,loons_dive_low_2024$dive_time_obs,pch=16)
+lm3=lm(loons_dive_low_2024$meters_offshore~loons_dive_low_2024$dive_time_obs)
 abline(lm3)
 
 
 #scatterplot
-meters_offshore <- loons_dive_2024$meters_offshore
-dive_time_obs <- loons_dive_2024$dive_time_obs
+meters_offshore <- loons_dive_low_2024$meters_offshore
+dive_time_obs <- loons_dive_low_2024$dive_time_obs
+
+plot(meters_offshore, dive_time_obs, main="Scatter plot", xlab="Meters Offshore", ylab="Dive Time (second)", pch=19)
+abline(lm(dive_time_obs~meters_offshore), col="black")
+```
+
+```{r mid dive lm}
+#mid
+loons_dive_2024 %>% 
+  ggplot(aes(x = meters_offshore, y = dive_time_obs)) + 
+  geom_jitter() + 
+  geom_smooth(method = "lm")
+
+loons_dive_low_2024 <- loons_dive_2024 %>% 
+  filter(general_tide == "low")
+
+#lm
+lm3=lm(loons_dive_low_2024$meters_offshore~loons_dive_low_2024$dive_time_obs)
+lm3
+
+plot(loons_dive_low_2024$meters_offshore,loons_dive_low_2024$dive_time_obs,pch=16)
+lm3=lm(loons_dive_low_2024$meters_offshore~loons_dive_low_2024$dive_time_obs)
+abline(lm3)
+
+
+#scatterplot
+meters_offshore <- loons_dive_low_2024$meters_offshore
+dive_time_obs <- loons_dive_low_2024$dive_time_obs
 
 plot(meters_offshore, dive_time_obs, main="Scatter plot", xlab="Meters Offshore", ylab="Dive Time (second)", pch=19)
 abline(lm(dive_time_obs~meters_offshore), col="black")
