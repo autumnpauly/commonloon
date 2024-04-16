@@ -21,14 +21,13 @@ library(parsnip)
 ```
 
 ```{r read-in-data, message = FALSE, warning=FALSE}
-loons_2024 <- read_csv("loon_2024_tidy.csv")
+loons_2024 <- read_csv("loons_dive_2024.csv")
 ```
 
 ## Diving Loons 2024
 ```{r}
 loons_dive_2024 <- loons_2024 %>% 
-  filter(species == "common_loon") %>% 
-  select(tide, behavior, dive_time_obs, tidal_height) %>% 
+  select(tide, behavior, dive_time_obs, tidal_height, latitude, longitude, meters_offshore, location, general_tide) %>% 
   filter(dive_time_obs != "n/a") %>% 
   filter(dive_time_obs != "na")
 
@@ -49,7 +48,7 @@ loons_dive_2024 <- loons_dive_2024 %>%
 ```
 
 ## General Statistics
-The mean dive time of loons during this study was 41.95 seconds with a standard error of 1.53.
+The mean dive time of loons during this study was 36.87 seconds with a standard error of 1.09.
 
 ```{r}
 #summary of dive times in 2024
@@ -79,7 +78,7 @@ The Chi-Squared Test of Independence examines whether there is a relationship be
 Before performing the chi-square test, we need to calculate the expected frequencies for each cell in the contingency table. These expected frequencies represent what you would expect to observe if there were no association between tidal condition and behavior.
 
 ```{r contingency-table, echo=FALSE}
-contingency_table_abun24 <- table(loons_2024$tide, loons_2024$location)
+contingency_table_abun24 <- table(loons_dive_2024$tide, loons_dive_2024$location)
 contingency_table_abun24
 ```
 
@@ -91,8 +90,13 @@ chisq24abun <- chisq.test(contingency_table_abun24)
 chisq24abun
 ```
 
-REPORT: A Chi-squared test indicated no significant relationship between *G. immer* abundance and tidal condition at each site (X^2(16, n=131) = 26.28, df = 16, p-value = 0.05017). This indicates that there is no relationship between tidal height and *G. immer* abundance at each site, allowing us to reject the hypothesis.
+REPORT: A Chi-squared test indicated a significant relationship between *G. immer* abundance and tidal condition at each site (X^2(16, n=131) = 26.28, df = 35, p-value > 0.005). This indicates that there is a relationship between tidal height and *G. immer* abundance at each site, allowing us to reject the null hypothesis.
 
+```{r}
+#the results suggested that there was a relationship - let's find out what this is. 
+
+#should we pursue this?
+```
 
 
 
@@ -112,12 +116,6 @@ library(tidyverse)
 ```
 
 ```{r mutation, baby, echo=FALSE, message=FALSE, warning=FALSE}
-loons_dive_2024 <- loons_2024 %>% 
-  filter(species == "common_loon") %>% 
-  select(tide, behavior, dive_time_obs, tidal_height, latitude, longitude, tide) %>% 
-  filter(dive_time_obs != "n/a") %>% 
-  filter(dive_time_obs != "na")
-
 loons_dive_2024 <- loons_dive_2024 %>% 
   separate_longer_delim(dive_time_obs, delim = ",")
 
@@ -176,25 +174,58 @@ The non-parametric nature of our dataset suggests that we need to use the Kruska
 
 ```{r, warning=FALSE, echo=FALSE}
 library(rstatix)
+```
 
+```{r}
 #general tide
 dive_kruskal <- kruskal.test(dive_time_obs ~ general_tide, data = loons_dive_2024)
 dive_kruskal
 
-#tide
-dive_kruskal <- kruskal.test(dive_time_obs ~ tide, data = loons_dive_2024)
-dive_kruskal
-
-#tidal height
-dive_kruskal <- kruskal.test(dive_time_obs ~ tidal_height, data = loons_dive_2024)
-dive_kruskal
-```
-
-```{r , warning=FALSE, echo=FALSE, message=FALSE}
 #post-hoc test
 dive_dunn <- loons_dive_2024 %>% dunn_test(dive_time_obs ~ general_tide, p.adjust.method = "bonferroni")
 dive_dunn
 ```
+
+```{r}
+#tide
+dive_kruskal <- kruskal.test(dive_time_obs ~ tide, data = loons_dive_2024)
+dive_kruskal
+
+#post-hoc test
+dive_dunn <- loons_dive_2024 %>% dunn_test(dive_time_obs ~ tide, p.adjust.method = "bonferroni")
+dive_dunn
+
+#mean values
+loons_dive_2024 %>% 
+  select(dive_time_obs, tide) %>% 
+  group_by(tide) %>% 
+  mutate(mean_tide = mean(dive_time_obs)) %>% 
+  distinct(tide, mean_tide)
+```
+
+significant differences: 
+high_ebb and mid_ebb - P > 0.05
+There were significantly longer dive times during high ebb (41.99 seconds) than during mid ebb (p > 0.05)
+
+high_ebb and mid_flood - P > 0.005
+There were significantly longer dive times during high ebb than during mid flood (p > 0.05)
+
+high_slack and mid_flood - P > 0.05
+There were significantly longer dive times during high slack than during mid flood (p > 0.05)
+
+low_ebb and low_slack - p > 0.05
+There were significantly longer dive times during low slack than during low ebb (p > 0.05)
+
+low_flood and mid_flood - P > 0.05
+There were significantly longer dive times during low flood than during mid flood (p > 0.05)
+
+low_slack and mid_ebb - P > 0.05
+There were significantly longer dive times during low slack than during mid ebb (p > 0.05)
+
+low_slack and mid_flood - P > 0.005
+There were significantly longer dive times during low slack than during mid flood (p > 0.05)
+
+
 
 ```{r , echo=FALSE, warning=FALSE}
 #This is not working - putting in code jail
@@ -229,12 +260,6 @@ This study aimed to explore the potential effect of distance from shore on the d
 ### Visualizations
 
 ```{r}
-loons_dive_2024 <- loons_2024 %>% 
-  filter(species == "common_loon") %>% 
-  select(tide, behavior, dive_time_obs, tidal_height, meters_offshore) %>% 
-  filter(dive_time_obs != "n/a") %>% 
-  filter(dive_time_obs != "na")
-
 loons_dive_2024 <- loons_dive_2024 %>% 
   separate_longer_delim(dive_time_obs, delim = ",") %>% 
   mutate(dive_time_obs = as.numeric(dive_time_obs))
