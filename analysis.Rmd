@@ -76,6 +76,17 @@ loons_2023 %>%
 ```
 
 
+
+
+
+
+
+
+
+
+
+
+
 ## General Tidal Stage and Behavior for 2023
 The first analysis that will be conducted will be investigating the potential relationship between general tidal stages and *G. immer* behavior. As stated above, the behaviors chosen are referencing Daub’s (1989) list of behaviors. The tidal condition was sorted into three categories: `high`, `mid`, and `low`. 
 
@@ -111,6 +122,17 @@ chi_sq_test1
 ```
 
 REPORT: A Chi-squared test indicated a significant relationship between *G. immer* behavior and general tidal stage (X^2(8, n=131) = 21.28, df = 8, p-value > 0.05). This indicates that there is a relationship between general tidal stage and *G. immer* behavior, allowing the null hypothesis to be rejected. 
+
+
+
+
+
+
+
+
+
+
+
 
 ## General Tidal Stage and Abundance at each site
 The next analysis that will be conducted will be investigating the potential relationship between general tidal stages and *G. immer* abundance at each site.
