@@ -267,7 +267,8 @@ ggplot(data = loons_dive_2024, mapping = aes(x = tide, y = dive_time_obs, fill =
   theme_bw() + 
   scale_x_discrete(labels = c("High Ebb", "Mid Ebb", "Low Ebb", "Low Slack", "Low Flood", "Mid Flood", "High Flood", "High Slack")) + 
   coord_fixed(ratio = 0.035) + 
-  theme(panel.background = element_rect(fill = "#e4f1e2ff"))
+  theme(panel.background = element_rect(fill = "#e4f1e2ff")) #+
+  # geom_text(aes(label = tidal_height), position = position_dodge(width = 0.9), vjust = -1.3)
 
 ```
 
@@ -307,11 +308,18 @@ loons_dive_2024%>%
 loons_dive_low_2024 <- loons_dive_2024 %>% 
   filter(general_tide == "low")
 
-loons_dive_low_2024%>% 
+loons_dive_low_2024 %>% 
   ggplot(aes(x = meters_offshore, y = dive_time_obs)) + 
-  geom_point() +
-  geom_smooth(method = "lm") +
-  scale_color_viridis_d(option = "A")
+  geom_jitter() + 
+  geom_smooth(method = "lm") + 
+  labs(#title = "Dive Times vs. Meters Offshore", 
+       #subtitle = "of G. immer", 
+       x = "Distance Offshore (m)", 
+       y = "Dive Time (seconds)") +
+  stat_smooth(method = "lm", fullrange = T, color = "black", fill = "chartreuse4") +
+  scale_x_continuous(expand = c(0,0)) +
+  theme(panel.background = element_rect(fill = "#e4f1e2",
+                                        color = "black"))
 
 low_lm <- lm(dive_time_obs~meters_offshore, data = loons_dive_low_2024)
 summary(low_lm)
@@ -319,14 +327,20 @@ summary(low_lm)
 
 ### Statistics
 ```{r}
+knitr::opts_chunk$set(warning = FALSE, message = FALSE) 
+
 loons_dive_2024 %>% 
   ggplot(aes(x = meters_offshore, y = dive_time_obs)) + 
   geom_jitter() + 
   geom_smooth(method = "lm") + 
-  labs(title = "Dive Times vs. Meters Offshore", 
-       subtitle = "of G. immer", 
+  labs(#title = "Dive Times vs. Meters Offshore", 
+       #subtitle = "of G. immer", 
        x = "Distance Offshore (m)", 
-       y = "Dive Time (seconds)")
+       y = "Dive Time (seconds)") +
+  stat_smooth(method = "lm", fullrange = T, color = "black", fill = "chartreuse4") +
+  scale_x_continuous(expand = c(0,0)) +
+  theme(panel.background = element_rect(fill = "#e4f1e2",
+                                        color = "black"))
 ```
 
 ```{r}
@@ -415,10 +429,9 @@ water_depth_lm <- lm(dive_time_obs~water_depth_m, data = loons_dive_2024_gis)
 summary(water_depth_lm)
 
 loons_dive_2024_gis %>% 
-  ggplot(aes(x = water_depth_m, y = dive_time_obs, color = general_tide)) + 
+  ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
   geom_point() +
-  geom_smooth(method = "lm") +
-  scale_color_viridis_d(option = "A")
+  geom_smooth(method = "lm")
 
 #low specific
 
@@ -431,13 +444,34 @@ summary(water_depth_low_lm)
 loons_dive_2024_gis_low %>% 
   ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
   geom_point() +
-  geom_smooth(method = "lm") +
+  stat_smooth(method = "lm", fullrange = T, color = "black", fill = "chartreuse4") +
+  scale_x_continuous(expand = c(0,0)) +
+  theme(panel.background = element_rect(fill = "#e4f1e2",
+                                        color = "black")) +
+  #xlim(0,16) +
   labs(
-    title = "Water Depth and Dive Time at Low Tide",
-    y = "Length of Dive Time (s)",
+    #title = "Water Depth and Dive Time at Low Tide",
+    y = "Dive Time (seconds)",
     x = "Depth at Location of Dive (m)"
-  )
+    )
+
+
+# mid specific
+
+loons_dive_2024_gis_mid <- loons_dive_2024_gis %>% 
+  filter(general_tide == "mid")
+
+water_depth_mid_lm <- lm(dive_time_obs~water_depth_m, data = loons_dive_2024_gis_mid)
+summary(water_depth_mid_lm)
+
+# high specific
+loons_dive_2024_gis_high <- loons_dive_2024_gis %>% 
+  filter(general_tide == "high")
+
+water_depth_high_lm <- lm(dive_time_obs~water_depth_m, data = loons_dive_2024_gis_high)
+summary(water_depth_high_lm)
 ```
+
 
 ## POSTER - Linear Models - Distance Offshore at low tide
 Linear model of relationship between the meters offshore at low tide and dive times of loons
