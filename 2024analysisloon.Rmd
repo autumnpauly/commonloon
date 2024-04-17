@@ -103,7 +103,9 @@ loons_2023 <- read_csv("loon_2023_tidy.csv")
 loons_2023_behavior <- loons_2023 %>% select(behavior, general_tide)
 loons_2024_behavior <- loons_dive_2024 %>% select(behavior, general_tide)
 loons_behavior <- bind_rows(loons_2023_behavior, loons_2024_behavior)
-contingency_table1 <- table(loons_behavior$general_tide, loons_behavior$behavior)
+
+
+contingency_table1 <- table(loons_2023_behavior$general_tide, loons_2023_behavior$behavior)
 contingency_table1
 ```
 
@@ -113,6 +115,10 @@ chi_sq_test1
 ```
 
 REPORT: A Chi-squared test indicated a significant relationship between *G. immer* behavior and general tidal stage (X^2(12, n=307) = 75.8, df = 12, p-value > 0.005). This indicates that there is a relationship between general tidal stage and *G. immer* behavior, allowing the null hypothesis to be rejected.
+
+
+
+
 
 ## Tidal Conditions and Dive Times in 2024
 ```{r message=FALSE, echo=FALSE, warning=FALSE}
@@ -195,17 +201,28 @@ loons_dive_2024 %>%
   mutate(mean_tide = mean(dive_time_obs)) %>% 
   distinct(general_tide, mean_tide)
 
-#This is not working - putting in code jail
+#plot for dive times in general tide
 divetimegglinegeneral <- ggline(loons_dive_2024, x = "general_tide", y = "dive_time_obs",
        add = c(add = "mean_se", "jitter"),
        order = c("high", "mid", "low"),
-       ylab = "Tidal Stage", xlab = "Dive Time (seconds)", title = "")
+       ylab = "Dive Time (seconds)", xlab = "Tidal Stage", title = "")
 
-divetimegglinegeneral + stat_compare_means(label.y = 75)
+divetimegglinegeneral + stat_compare_means(label.y = 75) + scale_x_discrete(labels = c("High", "Mid", "Low"))
 
 ```
 
-REPORT: The Kruskal-Wallis test revealed that there was a significant difference in dive times among the general tidal stages (Kruskal-Wallis rank sum test; H(2) = 29.76, P >0.005). 
+REPORT: The Kruskal-Wallis test revealed that there was a significant difference in dive times among the general tidal stages (Kruskal-Wallis rank sum test; H(2) = 29.76, P > 0.005).
+
+
+
+
+
+
+
+
+
+
+
 
 ```{r}
 #tide
@@ -225,13 +242,33 @@ loons_dive_2024 %>%
   arrange(desc(mean_tide))
 
 #This is not working - putting in code jail
+
+loons_dive_2024$tide <- factor(loons_dive_2024$tide, levels = c("high_ebb", "mid_ebb", "low_ebb", "low_slack", "low_flood","mid_flood", "high_flood", "high_slack"))
+
 library(ggpubr)
+library(RColorBrewer)
 divetimeggline <- ggline(loons_dive_2024, x = "tide", y = "dive_time_obs",
        add = c(add = "mean_se", "jitter"),
        order = c("high_ebb", "mid_ebb", "low_ebb", "low_slack", "low_flood","mid_flood", "high_flood", "high_slack"),
        ylab = "Tidal Stage", xlab = "Dive Time (seconds)", title = "")
 
-divetimeggline + stat_compare_means(label.y = 75)
+divetimeggline + stat_compare_means(label.y = 75) + 
+  scale_x_discrete(name = "Dive Time (seconds)", 
+                   labels=c("High Ebb", "Mid Ebb", "Low Ebb", "Low Slack", "Low Flood", "Mid Flood", "High Flood", "High Slack"))
+
+
+ggplot(data = loons_dive_2024, mapping = aes(x = tide, y = dive_time_obs, fill = tide)) + 
+  geom_boxplot() +
+  scale_fill_brewer(palette = "YlGn") +
+  labs(title = "", 
+       x = "Tidal Stage", 
+       y = "Dive Time (seconds)") + 
+  guides(fill="none") + 
+  theme_bw() + 
+  scale_x_discrete(labels = c("High Ebb", "Mid Ebb", "Low Ebb", "Low Slack", "Low Flood", "Mid Flood", "High Flood", "High Slack")) + 
+  coord_fixed(ratio = 0.035) + 
+  theme(panel.background = element_rect(fill = "#e4f1e2ff"))
+
 ```
 
 REPORT: The Kruskal-Wallis test revealed that there was a significant difference in dive times among the general tidal stages (Kruskal-Wallis rank sum test; H(7) = 46.048, P > 0.005).
@@ -398,3 +435,46 @@ loons_dive_2024_gis_low %>%
   scale_color_viridis_d(option = "A")
 ```
 
+## POSTER - Linear Models - Distance Offshore at low tide
+Linear model of relationship between the meters offshore at low tide and dive times of loons
+```{r}
+loons_2024_low <- loons_2024 %>% 
+  filter(general_tide == "low")
+
+#scatterplot
+meters_offshore <- loons_2024_low$meters_offshore
+dive_time_obs <- loons_2024_low$dive_time_obs
+
+plot(meters_offshore, dive_time_obs, main="Distance Offshore and Dive Time at Low Tide", xlab="Distance Offshore (m)", ylab="Dive Time (second)", pch=19, col = "red")
+abline(lm(dive_time_obs~meters_offshore), col="black") + 
+  
+```
+
+### Statistics
+```{r}
+dive_metersoffshore_corr <- cor.test(x=loons_2024_low$meters_offshore, y = loons_2024_low$dive_time_obs, method = 'spearman')
+
+dive_metersoffshore_corr
+```
+
+## POSTER - Linear Models - Depth and dive times at low tide
+Linear model of relationship between the meters offshore at low tide and dive times of loons
+```{r}
+loons_2024_low <- loons_2024 %>% 
+  filter(general_tide == "low")
+
+#scatterplot
+meters_offshore <- loons_dive_2024_gis_low$meters_offshore
+dive_time_obs <- loons_dive_2024_gis_low$dive_time_obs
+
+plot(meters_offshore, dive_time_obs, main="Distance Offshore and Dive Time at Low Tide", xlab="Distance Offshore (m)", ylab="Dive Time (second)", pch=19)
+abline(lm(dive_time_obs~meters_offshore), col="black")
+```
+
+### Statistics
+```{r}
+dive_metersoffshore_corr <- cor.test(x=loons_dive_2024_gis_low$meters_offshore, y = loons_dive_2024_gis_low$dive_time_obs, method = 'spearman')
+dive_metersoffshore_corr
+```
+ 
+ 

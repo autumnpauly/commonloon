@@ -144,8 +144,7 @@ Before performing the chi-square test, we need to calculate the expected frequen
 contingency_table_abun <- table(loons_2023$tide, loons_2023$location)
 contingency_table_abun
 
-loons_2024_loon <- loons_2024 %>% 
-  filter(species == "common_loon")
+loons_2024_loon <- loons_2024
 
 contingency_table_abun24 <- table(loons_2024_loon$tide, loons_2024_loon$location)
 contingency_table_abun24
@@ -196,7 +195,6 @@ library(tidyverse)
 
 ```{r mutation, baby, echo=FALSE, message=FALSE, warning=FALSE}
 loons_dive_2024 <- loons_2024 %>% 
-  filter(species == "common_loon") %>% 
   select(tide, behavior, dive_time_obs, tidal_height, latitude, longitude) %>% 
   filter(dive_time_obs != "n/a") %>% 
   filter(dive_time_obs != "na")
@@ -374,7 +372,7 @@ loons_2023 %>%
        x = "Shelter Gradient", 
        y = "Abundance")
 
-ggboxplot(loons_2023, x = "shelter_gradient", y = "specific_abundance", add = "jitter", xlab="Shelter Gradient", ylab="Abundance", order = c("exposed", "moderately_exposed", "moderate", "moderately_sheltered", "sheltered"))
+ggboxplot(loons_2023, x = "shelter_gradient", y = "specific_abundance", add = "jitter", xlab="Shelter Gradient", ylab="Abundance", order = c("exposed", "moderately_exposed", "moderate", "moderately_sheltered", "sheltered")) +  scale_x_discrete(labels=c("Exposed", "Moderately Exposed", "Moderate", "Moderately Sheltered", "Sheltered"))
 ```
 
 ```{r warning=FALSE, echo=FALSE}
@@ -515,7 +513,6 @@ This study aimed to explore the potential effect of distance from shore on the d
 
 ```{r}
 loons_dive_2024 <- loons_2024 %>% 
-  filter(species == "common_loon") %>% 
   select(tide, behavior, dive_time_obs, tidal_height, meters_offshore) %>% 
   filter(dive_time_obs != "n/a") %>% 
   filter(dive_time_obs != "na")
