@@ -255,8 +255,9 @@ divetimeggline <- ggline(loons_dive_2024, x = "tide", y = "dive_time_obs",
 divetimeggline + stat_compare_means(label.y = 75) + 
   scale_x_discrete(name = "Dive Time (seconds)", 
                    labels=c("High Ebb", "Mid Ebb", "Low Ebb", "Low Slack", "Low Flood", "Mid Flood", "High Flood", "High Slack"))
+```
 
-
+```{r tidal-heights-and-dive-times}
 ggplot(data = loons_dive_2024, mapping = aes(x = tide, y = dive_time_obs, fill = tide)) + 
   geom_boxplot() +
   scale_fill_brewer(palette = "YlGn") +
@@ -266,10 +267,11 @@ ggplot(data = loons_dive_2024, mapping = aes(x = tide, y = dive_time_obs, fill =
   guides(fill="none") + 
   theme_bw() + 
   scale_x_discrete(labels = c("High Ebb", "Mid Ebb", "Low Ebb", "Low Slack", "Low Flood", "Mid Flood", "High Flood", "High Slack")) + 
-  coord_fixed(ratio = 0.035) + 
-  theme(panel.background = element_rect(fill = "#e4f1e2ff"))
-
+  coord_fixed(ratio = 0.07) + 
+  theme(panel.background = element_rect(fill = "#e4f1e2ff")) + 
+  theme(axis.text.x = element_text(angle = 25, vjust = 0.5, hjust=0.5))
 ```
+
 
 REPORT: The Kruskal-Wallis test revealed that there was a significant difference in dive times among the general tidal stages (Kruskal-Wallis rank sum test; H(7) = 46.048, P > 0.005).
 
@@ -365,20 +367,29 @@ loons_dive_2024%>%
   scale_color_viridis_d(option = "A")
 
 #Differentiating by tidal height had no statistical significance
-# #Low tide lm
-# loons_dive_low_2024 <- loons_dive_2024 %>% 
-#   filter(general_tide == "low")
-# 
-# loons_dive_mid_2024 <- loons_dive_2024 %>% 
-#   filter(general_tide == "mid")
-# 
-# loons_dive_high_2024 <- loons_dive_2024 %>% 
-#   filter(general_tide == "high")
-# 
-# 
-# high_tide_lm <- lm(dive_time_obs~tidal_height, data = loons_dive_high_2024)
-# summary(high_tide_lm)
+#Low tide lm
+loons_dive_low_2024 <- loons_dive_2024 %>%
+  filter(general_tide == "low")
+
+loons_dive_mid_2024 <- loons_dive_2024 %>%
+  filter(general_tide == "mid")
+
+loons_dive_high_2024 <- loons_dive_2024 %>%
+  filter(general_tide == "high")
+
+
+high_tide_lm <- lm(dive_time_obs~tidal_height, data = loons_dive_high_2024)
+summary(high_tide_lm)
 ```
+
+```{r}
+loons_dive_mid_2024%>% 
+  ggplot(aes(x = meters_offshore, y = tidal_height)) + 
+  geom_point() +
+  geom_smooth(method = "lm") +
+  scale_color_viridis_d(option = "A")
+```
+
 
 #Water depth
 ```{r}
