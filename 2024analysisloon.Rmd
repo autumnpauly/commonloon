@@ -432,7 +432,11 @@ loons_dive_2024_gis_low %>%
   ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
   geom_point() +
   geom_smooth(method = "lm") +
-  scale_color_viridis_d(option = "A")
+  labs(
+    title = "Water Depth and Dive Time at Low Tide",
+    y = "Length of Dive Time (s)",
+    x = "Depth at Location of Dive (m)"
+  )
 ```
 
 ## POSTER - Linear Models - Distance Offshore at low tide
