@@ -154,11 +154,11 @@ contingency_table_abun24
 Now that we have the contingency table of expected frequencies, we can perform the statistical test. 
 
 ```{r chi-square-test, warning=FALSE, echo=FALSE}
-chi_sq_testabun <- chisq.test(contingency_table_abun)
-chi_sq_testabun
-
-chisq24abun <- chisq.test(contingency_table_abun24)
-chisq24abun
+# chi_sq_testabun <- chisq.test(contingency_table_abun)
+# chi_sq_testabun
+# 
+# chisq24abun <- chisq.test(contingency_table_abun24)
+# chisq24abun
 ```
 
 REPORT: A Chi-squared test indicated no significant relationship between *G. immer* abundance and tidal condition at each site (X^2(16, n=131) = 26.28, df = 16, p-value = 0.05017). This indicates that there is no relationship between tidal height and *G. immer* abundance at each site, allowing us to reject the hypothesis. 
@@ -373,6 +373,10 @@ loons_2023 %>%
        y = "Abundance")
 
 ggboxplot(loons_2023, x = "shelter_gradient", y = "specific_abundance", add = "jitter", xlab="Shelter Gradient", ylab="Abundance", order = c("exposed", "moderately_exposed", "moderate", "moderately_sheltered", "sheltered")) +  scale_x_discrete(labels=c("Exposed", "Moderately Exposed", "Moderate", "Moderately Sheltered", "Sheltered"))
+
+ggplot(data = loons_2023, mapping = aes(x = shelter_gradient, y = specific_abundance)) + 
+  geom_boxplot() + 
+  theme_bw()
 ```
 
 ```{r warning=FALSE, echo=FALSE}
@@ -596,21 +600,9 @@ First, we need to see if our variables have a linear relationship
 
 ```{r}
 loons_dive_2024 %>% 
-  ggplot(aes(x = tidal_height, y = dive_time_obs)) + 
+  ggplot(aes(x = tidal_height, y = dive_time_obs, color = dive_time_obs)) + 
   geom_point() +
-  geom_smooth(method = "lm")
-```
-
-Next, we need to determine if both variables are normally distributed. 
-
-```{r}
-#tidal height
-ggplot(data = loons_dive_2024, mapping = aes(x = tidal_height)) + 
-  geom_histogram()
-
-#dive times
-ggplot(data = loons_dive_2024, mapping = aes(x = dive_time_obs)) + 
-  geom_histogram()
+  geom_smooth(method = "lm", col = "black")
 ```
 
 #### Statistics
@@ -622,7 +614,8 @@ dive_height_corr <- cor.test(x=loons_dive_2024$tidal_height, y = loons_dive_2024
 dive_height_corr
 ```
 
-REPORT: Spearman's correlation analysis indicated that there is no significant relationship between tidal height and *G. immer* dive times  (rs[93] = -0.06, p = 0.54). This suggests that tidal height does not have a statistically significant impact on *G. immer* dive times, allowing us to reject the hypothesis. This implies that other factors may have a greater influence on dive behavior in *G. immer*.
+REPORT: 
+There was a weak negative monotonic relationship between tidal height and G. immer dive times (Spearman's rho; rs[176] = 0.216, p > 0.05). This suggests that tidal height does have a statistically significant impact on *G. immer* dive times, while also implying that other factors may have a greater influence on dive behavior in *G. immer*.
 
 
 
