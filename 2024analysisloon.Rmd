@@ -274,7 +274,7 @@ ggplot(mapping = aes(x = tide, y = dive_time_obs, fill = tide)) +
        y = "Dive Time (seconds)") + 
   guides(fill="none") + 
   theme_bw() + 
-  #scale_x_discrete(labels = c("High Ebb", "Mid Ebb", "Low Ebb", "Low Slack", "Low Flood", "Mid Flood", "High Flood", "High Slack")) + 
+  scale_x_discrete(labels = c("High Ebb", "Mid Ebb", "Low Ebb", "Low Slack", "Low Flood", "Mid Flood", "High Flood", "High Slack")) + 
   coord_fixed(ratio = 0.045) + 
   theme(panel.background = element_rect(fill = "#e4f1e2ff")) + 
   theme(axis.text.x = element_text(angle = 25, vjust = 0.5, hjust=0.5)) +
