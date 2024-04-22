@@ -1,11 +1,13 @@
 ---
 title: "Winter Habitat Use by Common Loons (Gavia Immer)"
-subtitle: "on Mount Desert Island, Maine"
 author: "Ellie Gabrielson, Will Draxler, Autumn Pauly"
 date: "03/12/2024"
-output: 
-  html_document: 
-    toc: true
+output:
+  pdf_document:
+    toc: yes
+  html_document:
+    toc: yes
+subtitle: on Mount Desert Island, Maine
 ---
 # Background Information
 ## Introduction
@@ -32,6 +34,8 @@ library(parsnip)
 
 ```{r read-in-data, message = FALSE, warning=FALSE}
 loons_2023 <- read_csv("loon_2023_tidy.csv")
+loons_dive_2024 <- read_csv("loons_dive_2024.csv")
+loons_2024 <- read_csv("loons_2024.csv")
 ```
 
 ### Diving Loons 2024
@@ -110,7 +114,7 @@ contingency_table1
 #### Chi-square Test
 Now that we have the contingency table of expected frequencies, we can perform the statistical test. 
 
-```{r chi-square-test, warning=FALSE, echo=FALSE}
+```{r chi-square-test20, warning=FALSE, echo=FALSE}
 chi_sq_test1 <- chisq.test(contingency_table1)	
 chi_sq_test1
 ```
@@ -140,7 +144,7 @@ The Chi-Squared Test of Independence examines whether there is a relationship be
 #### Expected Frequencies and Contingency Table
 Before performing the chi-square test, we need to calculate the expected frequencies for each cell in the contingency table. These expected frequencies represent what you would expect to observe if there were no association between tidal condition and behavior.
 
-```{r contingency-table, echo=FALSE}
+```{r contingency-table20, echo=FALSE}
 contingency_table_abun <- table(loons_2023$tide, loons_2023$location)
 contingency_table_abun
 
@@ -187,10 +191,10 @@ This study aimed to investigate the potential effect of tidal stage on the dive 
 
 
 ```{r message=FALSE, echo=FALSE, warning=FALSE}
-library(stringr)
-library(ggpubr)
-library(tidymodels)
-library(tidyverse)
+# library(stringr)
+# library(ggpubr)
+# library(tidymodels)
+# library(tidyverse)
 ```
 
 ```{r mutation, baby, echo=FALSE, message=FALSE, warning=FALSE}
@@ -455,7 +459,7 @@ contingency_table2
 #### Chi-square Test
 Now that we have the contingency table of expected frequencies, we can perform the statistical test. 
 
-```{r chi-square-test2, warning=FALSE, echo=FALSE}
+```{r chi-square-test21, warning=FALSE, echo=FALSE}
 chi_sq_test2 <- chisq.test(contingency_table2)
 chi_sq_test2
 ```
@@ -495,7 +499,7 @@ The Chi-Squared Test of Independence examines whether there is a relationship be
 #### Expected Frequencies and Contingency what is Table
 Before performing the chi-square test, we need to calculate the expected frequencies for each cell in the contingency table. These expected frequencies represent what you would expect to observe if there were no association between wave class and behavior.
 
-```{r contingency-table2, echo=FALSE}
+```{r contingency-table21, echo=FALSE}
 contingency_table3 <- table(loons_2023$wave_class, loons_2023$behavior)
 contingency_table3
 ```
@@ -707,7 +711,7 @@ Thompson, Stephanie A. & Price, J. J. (2006). Water Clarity and Diving Behavior 
  #   summarise(mean = mean(dive_time_obs))
 ```
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, echo = FALSE}
 # library(infer)
 # 
 # #low tide
@@ -829,54 +833,54 @@ To determine if there is a significant difference in dive times of Common loons 
 
 
 
-```{r}
-library(tidyverse)
-dives_gis_tidy <- read_csv("dives_gis_tidy.csv") 
-
-
-dives_gis_tidy_high <- dives_gis_tidy %>%
-  filter(general_tide == "high") 
-
-dives_gis_tidy_high %>% 
-  ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
-  geom_jitter() +
-  geom_smooth(method = "lm") +
-  labs(
-    title = "High"
-  )
-
-dives_gis_tidy_high_lm <- lm(water_depth_m ~ dive_time_obs, data = dives_gis_tidy_high)
-summary(dives_gis_tidy_high_lm)
-
-
-dives_gis_tidy_mid <- dives_gis_tidy %>% 
-  filter(general_tide == "mid")
-
-dives_gis_tidy_mid %>% 
-  ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
-  geom_jitter() +
-  geom_smooth(method = "lm") +
-  labs(
-    title = "Mid"
-  )
-
-dives_gis_tidy_mid_lm <- lm(water_depth_m ~ dive_time_obs, data = dives_gis_tidy_mid)
-summary(dives_gis_tidy_mid_lm)
-
-dives_gis_tidy_low <- dives_gis_tidy %>% 
-  filter(general_tide == "low")
-
-dives_gis_tidy_low %>% 
-  ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
-  geom_jitter() +
-  geom_smooth(method = "lm") +
-  labs(
-    title = "Low"
-  )
-
-dives_gis_tidy_low_lm <- lm(water_depth_m ~ dive_time_obs, data = dives_gis_tidy_low)
-summary(dives_gis_tidy_low_lm)
-
+```{r echo = F}
+# library(tidyverse)
+# dives_gis_tidy <- read_csv("dives_gis_tidy.csv") 
+# 
+# 
+# dives_gis_tidy_high <- dives_gis_tidy %>%
+#   filter(general_tide == "high") 
+# 
+# dives_gis_tidy_high %>% 
+#   ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
+#   geom_jitter() +
+#   geom_smooth(method = "lm") +
+#   labs(
+#     title = "High"
+#   )
+# 
+# dives_gis_tidy_high_lm <- lm(water_depth_m ~ dive_time_obs, data = dives_gis_tidy_high)
+# summary(dives_gis_tidy_high_lm)
+# 
+# 
+# dives_gis_tidy_mid <- dives_gis_tidy %>% 
+#   filter(general_tide == "mid")
+# 
+# dives_gis_tidy_mid %>% 
+#   ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
+#   geom_jitter() +
+#   geom_smooth(method = "lm") +
+#   labs(
+#     title = "Mid"
+#   )
+# 
+# dives_gis_tidy_mid_lm <- lm(water_depth_m ~ dive_time_obs, data = dives_gis_tidy_mid)
+# summary(dives_gis_tidy_mid_lm)
+# 
+# dives_gis_tidy_low <- dives_gis_tidy %>% 
+#   filter(general_tide == "low")
+# 
+# dives_gis_tidy_low %>% 
+#   ggplot(aes(x = water_depth_m, y = dive_time_obs)) + 
+#   geom_jitter() +
+#   geom_smooth(method = "lm") +
+#   labs(
+#     title = "Low"
+#   )
+# 
+# dives_gis_tidy_low_lm <- lm(water_depth_m ~ dive_time_obs, data = dives_gis_tidy_low)
+# summary(dives_gis_tidy_low_lm)
+# 
 
 ```
 
